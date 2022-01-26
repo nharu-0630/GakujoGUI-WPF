@@ -1,0 +1,271 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Collections.ObjectModel;
+
+using Newtonsoft.Json;
+using Path = System.IO.Path;
+
+namespace GakujoGUI
+{
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class MainWindow : Window
+    {
+        public ObservableCollection<Report> ReportsList = new ObservableCollection<Report>();
+        public ObservableCollection<Quiz> QuizzesList = new ObservableCollection<Quiz>();
+        public ObservableCollection<ClassContact> ClassContactsList = new ObservableCollection<ClassContact> { };
+        public ObservableCollection<ClassSharedFile> ClassSharedFilesList = new ObservableCollection<ClassSharedFile> { };
+
+        private string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
+        public static string GetJsonPath(string value)
+        {
+            return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
+        }
+
+
+        public MainWindow()
+        {
+            InitializeComponent();
+        }
+
+
+        //private void Login_Click(object sender, RoutedEventArgs e)
+        //{
+
+        //}
+
+        private void GetClassContacts_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(GetJsonPath("ClassContacts")))
+            {
+                ClassContactsList = new ObservableCollection<ClassContact>(JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts"))));
+            }
+        }
+
+        private void ClassContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void OpenClassContactFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OpenClassContactFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GetReports_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(GetJsonPath("Reports")))
+            {
+                ReportsList = new ObservableCollection<Report>(JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports"))));
+            }
+        }
+
+        private void Reports_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void GetQuizzes_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(GetJsonPath("Quizzes")))
+            {
+                QuizzesList = new ObservableCollection<Quiz>(JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes"))));
+            }
+        }
+
+        private void Quizzes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void GetClassSharedFiles_Click(object sender, RoutedEventArgs e)
+        {
+            if (File.Exists(GetJsonPath("ClassSharedFiles")))
+            {
+                ClassSharedFilesList = new ObservableCollection<ClassSharedFile>(JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles"))));
+            }
+        }
+
+        private void ClassSharedFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void OpenClassSharedFile_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OpenClassSharedFolder_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+        public class Report
+        {
+            public string Subjects;
+            public string Title { get; set; }
+            public string Status { get; set; }
+            public DateTime StartDateTime { get; set; }
+            public DateTime EndDateTime { get; set; }
+            public DateTime SubmittedDateTime { get; set; }
+            public string ImplementationFormat { get; set; }
+            public string Operation { get; set; }
+            public string ReportId { get; set; }
+            public string SchoolYear { get; set; }
+            public string SubjectCode { get; set; }
+            public string ClassCode { get; set; }
+
+            public override string ToString()
+            {
+                return "[" + Status + "] " + Subjects.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
+            }
+
+            public string ToShortString()
+            {
+                return Subjects.Split(' ')[0] + " " + Title;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+                Report objReport = (Report)obj;
+                return SubjectCode == objReport.SubjectCode && ClassCode == objReport.ClassCode && ReportId == objReport.ReportId;
+            }
+
+            public override int GetHashCode()
+            {
+                return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ ReportId.GetHashCode();
+            }
+        }
+
+        public class Quiz
+        {
+            public string Subjects { get; set; }
+            public string Title { get; set; }
+            public string Status { get; set; }
+            public DateTime StartDateTime { get; set; }
+            public DateTime EndDateTime { get; set; }
+            public string SubmissionStatus { get; set; }
+            public string ImplementationFormat { get; set; }
+            public string Operation { get; set; }
+            public string QuizId { get; set; }
+            public string SchoolYear { get; set; }
+            public string SubjectCode { get; set; }
+            public string ClassCode { get; set; }
+
+            public override string ToString()
+            {
+                return "[" + SubmissionStatus + "] " + Subjects.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
+            }
+
+            public string ToShortString()
+            {
+                return Subjects.Split(' ')[0] + " " + Title;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+                Quiz objQuiz = (Quiz)obj;
+                return SubjectCode == objQuiz.SubjectCode && ClassCode == objQuiz.ClassCode && QuizId == objQuiz.QuizId;
+            }
+
+            public override int GetHashCode()
+            {
+                return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ QuizId.GetHashCode();
+            }
+        }
+
+        public class ClassContact
+        {
+            public string Subjects { get; set; }
+            public string TeacherName { get; set; }
+            public string ContactType { get; set; }
+            public string Title { get; set; }
+            public string Content { get; set; }
+            public string[] Files { get; set; }
+            public string FileLinkRelease { get; set; }
+            public string ReferenceURL { get; set; }
+            public string Severity { get; set; }
+            public DateTime TargetDateTime { get; set; }
+            public DateTime ContactDateTime { get; set; }
+            public string WebReplyRequest { get; set; }
+
+            public override string ToString()
+            {
+                return Subjects.Split(' ')[0] + " " + Title + " " + ContactDateTime.ToShortDateString();
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+                ClassContact objClassContact = (ClassContact)obj;
+                return Subjects == objClassContact.Subjects && Title == objClassContact.Title && ContactDateTime == objClassContact.ContactDateTime;
+            }
+
+            public override int GetHashCode()
+            {
+                return Subjects.GetHashCode() ^ Title.GetHashCode() ^ ContactDateTime.GetHashCode();
+            }
+        }
+
+        public class ClassSharedFile
+        {
+            public string Subjects { get; set; }
+            public string Title { get; set; }
+            public string Size { get; set; }
+            public string[] Files { get; set; }
+            public string Description { get; set; }
+            public string PublicPeriod { get; set; }
+            public DateTime UpdateDateTime { get; set; }
+
+            public override string ToString()
+            {
+                return Subjects.Split(' ')[0] + " " + Title + " " + UpdateDateTime.ToShortDateString();
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (obj == null || GetType() != obj.GetType())
+                {
+                    return false;
+                }
+                ClassSharedFile objClassSharedFile = (ClassSharedFile)obj;
+                return Subjects == objClassSharedFile.Subjects && Title == objClassSharedFile.Title && UpdateDateTime == objClassSharedFile.UpdateDateTime;
+            }
+
+            public override int GetHashCode()
+            {
+                return Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
+            }
+        }
+    }
+}
