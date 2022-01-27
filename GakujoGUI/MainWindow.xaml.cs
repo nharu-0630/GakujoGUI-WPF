@@ -17,6 +17,7 @@ using System.Collections.ObjectModel;
 
 using Newtonsoft.Json;
 using Path = System.IO.Path;
+using System.Diagnostics;
 
 namespace GakujoGUI
 {
@@ -27,7 +28,7 @@ namespace GakujoGUI
     {
         public ObservableCollection<Report> ReportsList = new ObservableCollection<Report>();
         public ObservableCollection<Quiz> QuizzesList = new ObservableCollection<Quiz>();
-        public ObservableCollection<ClassContact> ClassContactsList = new ObservableCollection<ClassContact> { };
+        public List<ClassContact> ClassContactsList = new List<ClassContact> { };
         public ObservableCollection<ClassSharedFile> ClassSharedFilesList = new ObservableCollection<ClassSharedFile> { };
 
         private string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
@@ -52,23 +53,50 @@ namespace GakujoGUI
         {
             if (File.Exists(GetJsonPath("ClassContacts")))
             {
-                ClassContactsList = new ObservableCollection<ClassContact>(JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts"))));
+                ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
             }
+            ClassContacts.ItemsSource = ClassContactsList;
         }
 
         private void ClassContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (ClassContacts.SelectedIndex != -1)
+            {
+                ClassContactContent.Text = ClassContactsList[ClassContacts.SelectedIndex].Content;
+                ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files;
+                if (ClassContactFiles.Items.Count > 0)
+                {
+                    ClassContactFiles.SelectedIndex = 0;
+                }
+            }
         }
 
         private void OpenClassContactFile_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ClassContactFiles.SelectedIndex != -1)
+            {
+                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]))
+                {
+                    Process process = new Process();
+                    process.StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]) { UseShellExecute = true };
+                    process.Start();
+                }
+            }
         }
 
         private void OpenClassContactFolder_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ClassContactFiles.SelectedIndex != -1)
+            {
+                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]))
+                {
+                    Process process = new Process();
+                    process.StartInfo = new ProcessStartInfo("explorer.exe") {
+                        Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex] + "\"",
+                        UseShellExecute = true };
+                    process.Start();
+                }
+            }
         }
 
         private void GetReports_Click(object sender, RoutedEventArgs e)
