@@ -41,6 +41,11 @@ namespace GakujoGUI
         public MainWindow()
         {
             InitializeComponent();
+            if (File.Exists(GetJsonPath("ClassContacts")))
+            {
+                ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
+            }
+            ClassContacts.ItemsSource = ClassContactsList;
         }
 
 
@@ -51,11 +56,6 @@ namespace GakujoGUI
 
         private void GetClassContacts_Click(object sender, RoutedEventArgs e)
         {
-            if (File.Exists(GetJsonPath("ClassContacts")))
-            {
-                ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
-            }
-            ClassContacts.ItemsSource = ClassContactsList;
         }
 
         private void ClassContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -63,9 +63,13 @@ namespace GakujoGUI
             if (ClassContacts.SelectedIndex != -1)
             {
                 ClassContactContent.Text = ClassContactsList[ClassContacts.SelectedIndex].Content;
-                ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files;
-                if (ClassContactFiles.Items.Count > 0)
+                if (ClassContactsList[ClassContacts.SelectedIndex].Files == null)
                 {
+                    ClassContactFiles.ItemsSource = null;
+                }
+                else
+                {
+                    ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files.Select(x => Path.GetFileName(x));
                     ClassContactFiles.SelectedIndex = 0;
                 }
             }
@@ -91,9 +95,11 @@ namespace GakujoGUI
                 if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]))
                 {
                     Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo("explorer.exe") {
+                    process.StartInfo = new ProcessStartInfo("explorer.exe")
+                    {
                         Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex] + "\"",
-                        UseShellExecute = true };
+                        UseShellExecute = true
+                    };
                     process.Start();
                 }
             }
@@ -294,6 +300,11 @@ namespace GakujoGUI
             {
                 return Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

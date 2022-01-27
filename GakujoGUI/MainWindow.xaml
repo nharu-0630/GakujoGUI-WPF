@@ -1,20 +1,38 @@
-﻿<Window x:Class="GakujoGUI.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:GakujoGUI"
-        mc:Ignorable="d"
-        Title="GakujoGUI" Height="450" Width="800"
-        xmlns:ui="http://schemas.modernwpf.com/2019"
-        ui:WindowHelper.UseModernWindowStyle="True">
+﻿<Window
+    x:Class="GakujoGUI.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GakujoGUI"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.modernwpf.com/2019"
+    Title="GakujoGUI"
+    Width="800"
+    Height="450"
+    ui:WindowHelper.UseModernWindowStyle="True"
+    Loaded="Window_Loaded"
+    mc:Ignorable="d">
     <TabControl>
         <TabItem Header="ログイン" IsSelected="True">
-            <ui:SimpleStackPanel Orientation="Vertical"  Margin="6" Spacing="6">
-                <TextBox Name="UserName" ui:ControlHelper.PlaceholderText="静大ID" Width="180" HorizontalAlignment="Left" />
-                <PasswordBox Name="PassWord" ui:ControlHelper.PlaceholderText="パスワード" Width="180" HorizontalAlignment="Left" />
+            <ui:SimpleStackPanel
+                Margin="6"
+                Orientation="Vertical"
+                Spacing="6">
+                <TextBox
+                    Name="UserName"
+                    Width="180"
+                    HorizontalAlignment="Left"
+                    ui:ControlHelper.PlaceholderText="静大ID" />
+                <PasswordBox
+                    Name="PassWord"
+                    Width="180"
+                    HorizontalAlignment="Left"
+                    ui:ControlHelper.PlaceholderText="パスワード" />
                 <!--<Button Name="Login" Content="ログイン" Click="Login_Click" Width="180" />-->
-                <Button Name="GetClassContacts" Content="更新" Click="GetClassContacts_Click" />
+                <Button
+                    Name="GetClassContacts"
+                    Click="GetClassContacts_Click"
+                    Content="更新" />
             </ui:SimpleStackPanel>
         </TabItem>
         <TabItem Header="授業連絡">
@@ -24,65 +42,169 @@
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" MinWidth="100" />
                 </Grid.ColumnDefinitions>
-                <DataGrid  Margin="6" Name="ClassContacts" AreRowDetailsFrozen="True" ScrollViewer.CanContentScroll="True"
-      ScrollViewer.VerticalScrollBarVisibility="Auto"
-      ScrollViewer.HorizontalScrollBarVisibility="Auto" SelectionMode="Single" AutoGenerateColumns="False" RowHeight="32" Grid.Column="0" SelectionChanged="ClassContacts_SelectionChanged" >
+                <DataGrid
+                    Name="ClassContacts"
+                    Grid.Column="0"
+                    Margin="6"
+                    AreRowDetailsFrozen="True"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    CanUserSortColumns="False"
+                    RowHeight="32"
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionChanged="ClassContacts_SelectionChanged"
+                    SelectionMode="Single">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="授業科目" Binding="{Binding Subjects}" MinWidth="100" Width="100" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="タイトル" Binding="{Binding Title}" MinWidth="280" Width="280" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="内容" Binding="{Binding Content}" MinWidth="120" MaxWidth="240" IsReadOnly="True" >
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding Subjects}"
+                            Header="授業科目"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="280"
+                            MinWidth="280"
+                            Binding="{Binding Title}"
+                            Header="タイトル"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            MinWidth="120"
+                            MaxWidth="240"
+                            Binding="{Binding Content}"
+                            Header="内容"
+                            IsReadOnly="True">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="TextBlock">
                                     <Setter Property="TextWrapping" Value="Wrap" />
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
                         </DataGridTextColumn>
-                        <DataGridTextColumn Header="連絡日時" Binding="{Binding ContactDateTime}" MinWidth="120" IsReadOnly="True"/>
+                        <DataGridTextColumn
+                            MinWidth="120"
+                            Binding="{Binding ContactDateTime}"
+                            Header="連絡日時"
+                            IsReadOnly="True" />
                     </DataGrid.Columns>
                 </DataGrid>
-                <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
+                <GridSplitter
+                    Grid.Column="1"
+                    Width="5"
+                    HorizontalAlignment="Stretch" />
                 <ui:SimpleStackPanel Grid.Column="2">
-                    <ui:SimpleStackPanel Orientation="Vertical" Margin="6" Spacing="6">
-                        <TextBox Name="ClassContactContent" TextWrapping="Wrap" IsReadOnly="True" MinHeight="160"/>
-                        <ui:SimpleStackPanel Orientation="Horizontal" Margin="6" Spacing="6">
-                            <ComboBox Name="ClassContactFiles"/>
-                            <Button Name="OpenClassContactFile" Content="ファイルを開く" Click="OpenClassContactFile_Click"/>
-                            <Button Name="OpenClassContactFolder" Content="フォルダを開く" Click="OpenClassContactFolder_Click"/>
+                    <ui:SimpleStackPanel
+                        Margin="6"
+                        Orientation="Vertical"
+                        Spacing="6">
+                        <TextBox
+                            Name="ClassContactContent"
+                            MinHeight="160"
+                            IsReadOnly="True"
+                            TextWrapping="Wrap" />
+                        <ui:SimpleStackPanel
+                            Margin="6"
+                            Orientation="Horizontal"
+                            Spacing="6">
+                            <ComboBox Name="ClassContactFiles" MaxWidth="360" />
+                            <Button
+                                Name="OpenClassContactFile"
+                                Click="OpenClassContactFile_Click"
+                                Content="ファイルを開く" />
+                            <Button
+                                Name="OpenClassContactFolder"
+                                Click="OpenClassContactFolder_Click"
+                                Content="フォルダを開く" />
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
                 </ui:SimpleStackPanel>
             </Grid>
         </TabItem>
         <TabItem Header="レポート">
-            <ui:SimpleStackPanel Orientation="Vertical"  Margin="6" Spacing="6">
-                <Button Name="GetReports" Content="更新" Click="GetReports_Click" />
-                <DataGrid Name="Reports" SelectionChanged="Reports_SelectionChanged" ItemsSource="{Binding ReportsList}"/>
+            <ui:SimpleStackPanel
+                Margin="6"
+                Orientation="Vertical"
+                Spacing="6">
+                <Button
+                    Name="GetReports"
+                    Click="GetReports_Click"
+                    Content="更新" />
+                <DataGrid
+                    Name="Reports"
+                    ItemsSource="{Binding ReportsList}"
+                    SelectionChanged="Reports_SelectionChanged" />
             </ui:SimpleStackPanel>
         </TabItem>
         <TabItem Header="小テスト">
-            <ui:SimpleStackPanel Orientation="Vertical"  Margin="6" Spacing="6">
-                <Button Name="GetQuizzes" Content="更新" Click="GetQuizzes_Click" />
-                <DataGrid Name="Quizzes" SelectionChanged="Quizzes_SelectionChanged" ItemsSource="{Binding QuizzesList}"/>
+            <ui:SimpleStackPanel
+                Margin="6"
+                Orientation="Vertical"
+                Spacing="6">
+                <Button
+                    Name="GetQuizzes"
+                    Click="GetQuizzes_Click"
+                    Content="更新" />
+                <DataGrid
+                    Name="Quizzes"
+                    ItemsSource="{Binding QuizzesList}"
+                    SelectionChanged="Quizzes_SelectionChanged" />
             </ui:SimpleStackPanel>
         </TabItem>
         <TabItem Header="授業共有ファイル">
-            <ui:SimpleStackPanel Orientation="Vertical"  Margin="6" Spacing="6">
-                <Button Name="GetClassSharedFiles" Content="更新" Click="GetClassSharedFiles_Click" />
+            <ui:SimpleStackPanel
+                Margin="6"
+                Orientation="Vertical"
+                Spacing="6">
+                <Button
+                    Name="GetClassSharedFiles"
+                    Click="GetClassSharedFiles_Click"
+                    Content="更新" />
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="100" />
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
-                    <DataGrid Name="ClassSharedFiles" Grid.Column="0" SelectionChanged="ClassSharedFiles_SelectionChanged" ItemsSource="{Binding ClassSharedFilesList}"/>
-                    <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" />
-                    <ui:SimpleStackPanel Orientation="Vertical" Margin="6" Spacing="6" Grid.Column="2">
-                        <TextBox  Name="ClassSharedFileTitle" IsReadOnly="True" Text="タイトル" />
-                        <TextBox Name="ClassSharedFileContent" TextWrapping="Wrap" IsReadOnly="True" Text="内容" MinHeight="160" />
-                        <ui:SimpleStackPanel Orientation="Horizontal" Margin="6" Spacing="6">
+                    <DataGrid
+                        Name="ClassSharedFiles"
+                        Grid.Column="0"
+                        ItemsSource="{Binding ClassSharedFilesList}"
+                        SelectionChanged="ClassSharedFiles_SelectionChanged" />
+                    <GridSplitter
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Stretch" />
+                    <ui:SimpleStackPanel
+                        Grid.Column="2"
+                        Margin="6"
+                        Orientation="Vertical"
+                        Spacing="6">
+                        <TextBox
+                            Name="ClassSharedFileTitle"
+                            IsReadOnly="True"
+                            Text="タイトル" />
+                        <TextBox
+                            Name="ClassSharedFileContent"
+                            MinHeight="160"
+                            IsReadOnly="True"
+                            Text="内容"
+                            TextWrapping="Wrap" />
+                        <ui:SimpleStackPanel
+                            Margin="6"
+                            Orientation="Horizontal"
+                            Spacing="6">
                             <ComboBox Name="ClassSharedFileFiles" />
-                            <Button Name="OpenClassSharedFile" Content="ファイルを開く" Click="OpenClassSharedFile_Click"/>
-                            <Button Name="OpenClassSharedFolder" Content="フォルダを開く" Click="OpenClassSharedFolder_Click"/>
+                            <Button
+                                Name="OpenClassSharedFile"
+                                Click="OpenClassSharedFile_Click"
+                                Content="ファイルを開く" />
+                            <Button
+                                Name="OpenClassSharedFolder"
+                                Click="OpenClassSharedFolder_Click"
+                                Content="フォルダを開く" />
                         </ui:SimpleStackPanel>
                     </ui:SimpleStackPanel>
                 </Grid>
