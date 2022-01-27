@@ -26,10 +26,10 @@ namespace GakujoGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<Report> ReportsList = new ObservableCollection<Report>();
-        public ObservableCollection<Quiz> QuizzesList = new ObservableCollection<Quiz>();
+        public List<Report> ReportsList = new List<Report>();
+        public List<Quiz> QuizzesList = new List<Quiz>();
         public List<ClassContact> ClassContactsList = new List<ClassContact> { };
-        public ObservableCollection<ClassSharedFile> ClassSharedFilesList = new ObservableCollection<ClassSharedFile> { };
+        public List<ClassSharedFile> ClassSharedFilesList = new List<ClassSharedFile> { };
 
         private string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
         public static string GetJsonPath(string value)
@@ -41,21 +41,12 @@ namespace GakujoGUI
         public MainWindow()
         {
             InitializeComponent();
-            if (File.Exists(GetJsonPath("ClassContacts")))
-            {
-                ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
-            }
-            ClassContacts.ItemsSource = ClassContactsList;
         }
 
 
-        //private void Login_Click(object sender, RoutedEventArgs e)
-        //{
-
-        //}
-
-        private void GetClassContacts_Click(object sender, RoutedEventArgs e)
+        private void Login_Click(object sender, RoutedEventArgs e)
         {
+
         }
 
         private void ClassContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -105,38 +96,15 @@ namespace GakujoGUI
             }
         }
 
-        private void GetReports_Click(object sender, RoutedEventArgs e)
-        {
-            if (File.Exists(GetJsonPath("Reports")))
-            {
-                ReportsList = new ObservableCollection<Report>(JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports"))));
-            }
-        }
 
         private void Reports_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void GetQuizzes_Click(object sender, RoutedEventArgs e)
-        {
-            if (File.Exists(GetJsonPath("Quizzes")))
-            {
-                QuizzesList = new ObservableCollection<Quiz>(JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes"))));
-            }
-        }
-
         private void Quizzes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
-        }
-
-        private void GetClassSharedFiles_Click(object sender, RoutedEventArgs e)
-        {
-            if (File.Exists(GetJsonPath("ClassSharedFiles")))
-            {
-                ClassSharedFilesList = new ObservableCollection<ClassSharedFile>(JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles"))));
-            }
         }
 
         private void ClassSharedFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -304,7 +272,25 @@ namespace GakujoGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
+            Task.Run(() =>
+            {
+                if (File.Exists(GetJsonPath("ClassContacts")))
+                {
+                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
+                }
+                if (File.Exists(GetJsonPath("Reports")))
+                {
+                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")));
+                }
+                if (File.Exists(GetJsonPath("Quizzes")))
+                {
+                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")));
+                }
+                if (File.Exists(GetJsonPath("ClassSharedFiles")))
+                {
+                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")));
+                }
+            });
         }
     }
 }
