@@ -109,21 +109,54 @@ namespace GakujoGUI
 
         private void ClassSharedFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
+            if (ClassSharedFiles.SelectedIndex != -1)
+            {
+                ClassSharedFileDescription.Text = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Description;
+                if (ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files == null)
+                {
+                    ClassSharedFileFiles.ItemsSource = null;
+                }
+                else
+                {
+                    ClassSharedFileFiles.ItemsSource = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files.Select(x => Path.GetFileName(x));
+                    ClassSharedFileFiles.SelectedIndex = 0;
+                }
+            }
         }
 
         private void OpenClassSharedFile_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ClassSharedFiles.SelectedIndex != -1)
+            {
+                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]))
+                {
+                    Process process = new Process();
+                    process.StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true };
+                    process.Start();
+                }
+            }
         }
 
         private void OpenClassSharedFolder_Click(object sender, RoutedEventArgs e)
         {
-
+            if (ClassSharedFiles.SelectedIndex != -1)
+            {
+                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]))
+                {
+                    Process process = new Process();
+                    process.StartInfo = new ProcessStartInfo("explorer.exe")
+                    {
+                        Arguments = "/e,/select,\"" + ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex] + "\"",
+                        UseShellExecute = true
+                    };
+                    process.Start();
+                }
+            }
         }
+
         public class Report
         {
-            public string Subjects;
+            public string Subjects { get; set; }
             public string Title { get; set; }
             public string Status { get; set; }
             public DateTime StartDateTime { get; set; }
@@ -290,6 +323,13 @@ namespace GakujoGUI
                 {
                     ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")));
                 }
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    ClassContacts.ItemsSource = ClassContactsList;
+                    Reports.ItemsSource = ReportsList;
+                    Quizzes.ItemsSource = QuizzesList;
+                    ClassSharedFiles.ItemsSource = ClassSharedFilesList;
+                }));
             });
         }
     }
