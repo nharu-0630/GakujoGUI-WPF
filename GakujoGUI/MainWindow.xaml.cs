@@ -60,7 +60,7 @@ namespace GakujoGUI
                 }
                 else
                 {
-                    ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files.Select(x => Path.GetFileName(x));
+                    ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
                     ClassContactFiles.SelectedIndex = 0;
                 }
             }
@@ -70,10 +70,10 @@ namespace GakujoGUI
         {
             if (ClassContactFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]))
+                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
                     Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]) { UseShellExecute = true };
+                    process.StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true };
                     process.Start();
                 }
             }
@@ -83,12 +83,12 @@ namespace GakujoGUI
         {
             if (ClassContactFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex]))
+                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
                     Process process = new Process();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
-                        Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files[ClassContactFiles.SelectedIndex] + "\"",
+                        Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
                         UseShellExecute = true
                     };
                     process.Start();
@@ -118,7 +118,7 @@ namespace GakujoGUI
                 }
                 else
                 {
-                    ClassSharedFileFiles.ItemsSource = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files.Select(x => Path.GetFileName(x));
+                    ClassSharedFileFiles.ItemsSource = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
                     ClassSharedFileFiles.SelectedIndex = 0;
                 }
             }
@@ -128,10 +128,10 @@ namespace GakujoGUI
         {
             if (ClassSharedFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
                     Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true };
+                    process.StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true };
                     process.Start();
                 }
             }
@@ -141,12 +141,12 @@ namespace GakujoGUI
         {
             if (ClassSharedFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
                     Process process = new Process();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
-                        Arguments = "/e,/select,\"" + ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files[ClassSharedFileFiles.SelectedIndex] + "\"",
+                        Arguments = "/e,/select,\"" + ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex] + "\"",
                         UseShellExecute = true
                     };
                     process.Start();
@@ -156,27 +156,27 @@ namespace GakujoGUI
 
         public class Report
         {
-            public string Subjects { get; set; }
-            public string Title { get; set; }
-            public string Status { get; set; }
+            public string? Subjects { get; set; }
+            public string? Title { get; set; }
+            public string? Status { get; set; }
             public DateTime StartDateTime { get; set; }
             public DateTime EndDateTime { get; set; }
             public DateTime SubmittedDateTime { get; set; }
-            public string ImplementationFormat { get; set; }
-            public string Operation { get; set; }
-            public string ReportId { get; set; }
-            public string SchoolYear { get; set; }
-            public string SubjectCode { get; set; }
-            public string ClassCode { get; set; }
+            public string? ImplementationFormat { get; set; }
+            public string? Operation { get; set; }
+            public string? ReportId { get; set; }
+            public string? SchoolYear { get; set; }
+            public string? SubjectCode { get; set; }
+            public string? ClassCode { get; set; }
 
             public override string ToString()
             {
-                return "[" + Status + "] " + Subjects.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
+                return "[" + Status + "] " + Subjects!.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
             }
 
             public string ToShortString()
             {
-                return Subjects.Split(' ')[0] + " " + Title;
+                return Subjects!.Split(' ')[0] + " " + Title;
             }
 
             public override bool Equals(object obj)
@@ -191,33 +191,33 @@ namespace GakujoGUI
 
             public override int GetHashCode()
             {
-                return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ ReportId.GetHashCode();
+                return SubjectCode!.GetHashCode() ^ ClassCode!.GetHashCode() ^ ReportId!.GetHashCode();
             }
         }
 
         public class Quiz
         {
-            public string Subjects { get; set; }
-            public string Title { get; set; }
-            public string Status { get; set; }
+            public string? Subjects { get; set; }
+            public string? Title { get; set; }
+            public string? Status { get; set; }
             public DateTime StartDateTime { get; set; }
             public DateTime EndDateTime { get; set; }
-            public string SubmissionStatus { get; set; }
-            public string ImplementationFormat { get; set; }
-            public string Operation { get; set; }
-            public string QuizId { get; set; }
-            public string SchoolYear { get; set; }
-            public string SubjectCode { get; set; }
-            public string ClassCode { get; set; }
+            public string? SubmissionStatus { get; set; }
+            public string? ImplementationFormat { get; set; }
+            public string? Operation { get; set; }
+            public string? QuizId { get; set; }
+            public string? SchoolYear { get; set; }
+            public string? SubjectCode { get; set; }
+            public string? ClassCode { get; set; }
 
             public override string ToString()
             {
-                return "[" + SubmissionStatus + "] " + Subjects.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
+                return "[" + SubmissionStatus + "] " + Subjects!.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
             }
 
             public string ToShortString()
             {
-                return Subjects.Split(' ')[0] + " " + Title;
+                return Subjects!.Split(' ')[0] + " " + Title;
             }
 
             public override bool Equals(object obj)
@@ -232,28 +232,28 @@ namespace GakujoGUI
 
             public override int GetHashCode()
             {
-                return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ QuizId.GetHashCode();
+                return SubjectCode!.GetHashCode() ^ ClassCode!.GetHashCode() ^ QuizId!.GetHashCode();
             }
         }
 
         public class ClassContact
         {
-            public string Subjects { get; set; }
-            public string TeacherName { get; set; }
-            public string ContactType { get; set; }
-            public string Title { get; set; }
-            public string Content { get; set; }
-            public string[] Files { get; set; }
-            public string FileLinkRelease { get; set; }
-            public string ReferenceURL { get; set; }
-            public string Severity { get; set; }
+            public string? Subjects { get; set; }
+            public string? TeacherName { get; set; }
+            public string? ContactType { get; set; }
+            public string? Title { get; set; }
+            public string? Content { get; set; }
+            public string[]? Files { get; set; }
+            public string? FileLinkRelease { get; set; }
+            public string? ReferenceURL { get; set; }
+            public string? Severity { get; set; }
             public DateTime TargetDateTime { get; set; }
             public DateTime ContactDateTime { get; set; }
-            public string WebReplyRequest { get; set; }
+            public string? WebReplyRequest { get; set; }
 
             public override string ToString()
             {
-                return Subjects.Split(' ')[0] + " " + Title + " " + ContactDateTime.ToShortDateString();
+                return Subjects!.Split(' ')[0] + " " + Title + " " + ContactDateTime.ToShortDateString();
             }
 
             public override bool Equals(object obj)
@@ -268,23 +268,23 @@ namespace GakujoGUI
 
             public override int GetHashCode()
             {
-                return Subjects.GetHashCode() ^ Title.GetHashCode() ^ ContactDateTime.GetHashCode();
+                return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ ContactDateTime!.GetHashCode();
             }
         }
 
         public class ClassSharedFile
         {
-            public string Subjects { get; set; }
-            public string Title { get; set; }
-            public string Size { get; set; }
-            public string[] Files { get; set; }
-            public string Description { get; set; }
-            public string PublicPeriod { get; set; }
+            public string? Subjects { get; set; }
+            public string? Title { get; set; }
+            public string? Size { get; set; }
+            public string[]? Files { get; set; }
+            public string? Description { get; set; }
+            public string? PublicPeriod { get; set; }
             public DateTime UpdateDateTime { get; set; }
 
             public override string ToString()
             {
-                return Subjects.Split(' ')[0] + " " + Title + " " + UpdateDateTime.ToShortDateString();
+                return Subjects!.Split(' ')[0] + " " + Title + " " + UpdateDateTime.ToShortDateString();
             }
 
             public override bool Equals(object obj)
@@ -299,7 +299,7 @@ namespace GakujoGUI
 
             public override int GetHashCode()
             {
-                return Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
+                return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ UpdateDateTime!.GetHashCode();
             }
         }
 
@@ -309,19 +309,19 @@ namespace GakujoGUI
             {
                 if (File.Exists(GetJsonPath("ClassContacts")))
                 {
-                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")));
+                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")))!;
                 }
                 if (File.Exists(GetJsonPath("Reports")))
                 {
-                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")));
+                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")))!;
                 }
                 if (File.Exists(GetJsonPath("Quizzes")))
                 {
-                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")));
+                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")))!;
                 }
                 if (File.Exists(GetJsonPath("ClassSharedFiles")))
                 {
-                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")));
+                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")))!;
                 }
                 this.Dispatcher.Invoke((Action)(() =>
                 {
