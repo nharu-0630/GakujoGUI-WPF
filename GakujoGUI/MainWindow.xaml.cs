@@ -179,7 +179,7 @@ namespace GakujoGUI
                 return Subjects!.Split(' ')[0] + " " + Title;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj == null || GetType() != obj.GetType())
                 {
@@ -220,7 +220,7 @@ namespace GakujoGUI
                 return Subjects!.Split(' ')[0] + " " + Title;
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj == null || GetType() != obj.GetType())
                 {
@@ -256,7 +256,7 @@ namespace GakujoGUI
                 return Subjects!.Split(' ')[0] + " " + Title + " " + ContactDateTime.ToShortDateString();
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj == null || GetType() != obj.GetType())
                 {
@@ -287,7 +287,7 @@ namespace GakujoGUI
                 return Subjects!.Split(' ')[0] + " " + Title + " " + UpdateDateTime.ToShortDateString();
             }
 
-            public override bool Equals(object obj)
+            public override bool Equals(object? obj)
             {
                 if (obj == null || GetType() != obj.GetType())
                 {
