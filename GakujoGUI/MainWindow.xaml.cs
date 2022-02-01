@@ -332,5 +332,10 @@ namespace GakujoGUI
                 }));
             });
         }
+
+        private void ClassTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }
