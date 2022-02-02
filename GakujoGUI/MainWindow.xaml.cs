@@ -37,14 +37,17 @@ namespace GakujoGUI
             return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
         }
 
-
         public MainWindow()
         {
             InitializeComponent();
         }
 
-
         private void Login_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ClassTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
@@ -95,7 +98,6 @@ namespace GakujoGUI
                 }
             }
         }
-
 
         private void Reports_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -152,6 +154,36 @@ namespace GakujoGUI
                     process.Start();
                 }
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                if (File.Exists(GetJsonPath("ClassContacts")))
+                {
+                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")))!;
+                }
+                if (File.Exists(GetJsonPath("Reports")))
+                {
+                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")))!;
+                }
+                if (File.Exists(GetJsonPath("Quizzes")))
+                {
+                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")))!;
+                }
+                if (File.Exists(GetJsonPath("ClassSharedFiles")))
+                {
+                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")))!;
+                }
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    ClassContacts.ItemsSource = ClassContactsList;
+                    Reports.ItemsSource = ReportsList;
+                    Quizzes.ItemsSource = QuizzesList;
+                    ClassSharedFiles.ItemsSource = ClassSharedFilesList;
+                }));
+            });
         }
 
         public class Report
@@ -301,41 +333,6 @@ namespace GakujoGUI
             {
                 return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ UpdateDateTime!.GetHashCode();
             }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                if (File.Exists(GetJsonPath("ClassContacts")))
-                {
-                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")))!;
-                }
-                if (File.Exists(GetJsonPath("Reports")))
-                {
-                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")))!;
-                }
-                if (File.Exists(GetJsonPath("Quizzes")))
-                {
-                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")))!;
-                }
-                if (File.Exists(GetJsonPath("ClassSharedFiles")))
-                {
-                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")))!;
-                }
-                this.Dispatcher.Invoke((Action)(() =>
-                {
-                    ClassContacts.ItemsSource = ClassContactsList;
-                    Reports.ItemsSource = ReportsList;
-                    Quizzes.ItemsSource = QuizzesList;
-                    ClassSharedFiles.ItemsSource = ClassSharedFilesList;
-                }));
-            });
-        }
-
-        private void ClassTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
     }
 }

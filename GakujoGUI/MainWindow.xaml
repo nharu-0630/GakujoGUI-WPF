@@ -16,12 +16,9 @@
         <TabItem Header="ログイン" IsSelected="True">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="200"
-                        MinWidth="200"
-                        MaxWidth="200" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" MinWidth="400" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ui:SimpleStackPanel
                     Grid.Column="0"
@@ -196,7 +193,7 @@
                 ScrollViewer.CanContentScroll="True"
                 ScrollViewer.HorizontalScrollBarVisibility="Auto"
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectionChanged="ClassContacts_SelectionChanged"
+                SelectionChanged="Reports_SelectionChanged"
                 SelectionMode="Single">
                 <DataGrid.Columns>
                     <DataGridTextColumn
