@@ -2,18 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel;
 
 using Newtonsoft.Json;
 using Path = System.IO.Path;
@@ -26,12 +17,11 @@ namespace GakujoGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<Report> ReportsList = new List<Report>();
-        public List<Quiz> QuizzesList = new List<Quiz>();
-        public List<ClassContact> ClassContactsList = new List<ClassContact> { };
-        public List<ClassSharedFile> ClassSharedFilesList = new List<ClassSharedFile> { };
+        public List<Report> ReportsList = new();
+        public List<Quiz> QuizzesList = new();
+        public List<ClassContact> ClassContactsList = new() { };
+        public List<ClassSharedFile> ClassSharedFilesList = new() { };
 
-        private string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
         public static string GetJsonPath(string value)
         {
             return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
@@ -75,8 +65,10 @@ namespace GakujoGUI
             {
                 if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
-                    Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true };
+                    Process process = new()
+                    {
+                        StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true }
+                    };
                     process.Start();
                 }
             }
@@ -88,11 +80,13 @@ namespace GakujoGUI
             {
                 if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
-                    Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo("explorer.exe")
+                    Process process = new()
                     {
-                        Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
-                        UseShellExecute = true
+                        StartInfo = new ProcessStartInfo("explorer.exe")
+                        {
+                            Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
+                            UseShellExecute = true
+                        }
                     };
                     process.Start();
                 }
@@ -132,8 +126,10 @@ namespace GakujoGUI
             {
                 if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
-                    Process process = new Process();
-                    process.StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true };
+                    Process process = new()
+                    {
+                        StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true }
+                    };
                     process.Start();
                 }
             }
@@ -145,7 +141,7 @@ namespace GakujoGUI
             {
                 if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
-                    Process process = new Process();
+                    Process process = new();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
                         Arguments = "/e,/select,\"" + ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex] + "\"",
