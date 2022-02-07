@@ -22,6 +22,7 @@ namespace GakujoGUI
         public List<ClassSharedFile> classSharedFiles = new() { };
         public List<SchoolSharedFile> schoolSharedFiles = new() { };
         public List<ClassResult> classResults = new() { };
+        public ClassTableRow[] classTables = new ClassTableRow[7];
 
         private CookieContainer cookieContainer = new();
         private HttpClientHandler httpClientHandler = new();
@@ -112,6 +113,10 @@ namespace GakujoGUI
             {
                 classResults = JsonConvert.DeserializeObject<List<ClassResult>>(File.ReadAllText(GetJsonPath("ClassResults")))!;
             }
+            if (File.Exists(GetJsonPath("ClassTables")))
+            {
+                classTables = JsonConvert.DeserializeObject<ClassTableRow[]>(File.ReadAllText(GetJsonPath("ClassTables")))!;
+            }
             if (File.Exists(GetJsonPath("Account")))
             {
                 account = JsonConvert.DeserializeObject<Account>(File.ReadAllText(GetJsonPath("Account")))!;
@@ -124,49 +129,55 @@ namespace GakujoGUI
         {
             try
             {
-                File.WriteAllText(GetJsonPath("Reports"), JsonConvert.SerializeObject(reports));
+                File.WriteAllText(GetJsonPath("Reports"), JsonConvert.SerializeObject(reports, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("Quizzes"), JsonConvert.SerializeObject(quizzes));
+                File.WriteAllText(GetJsonPath("Quizzes"), JsonConvert.SerializeObject(quizzes, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts));
+                File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("SchoolContacts"), JsonConvert.SerializeObject(schoolContacts));
+                File.WriteAllText(GetJsonPath("SchoolContacts"), JsonConvert.SerializeObject(schoolContacts, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles));
+                File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("SchoolSharedFiles"), JsonConvert.SerializeObject(schoolSharedFiles));
+                File.WriteAllText(GetJsonPath("SchoolSharedFiles"), JsonConvert.SerializeObject(schoolSharedFiles, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults));
+                File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults, Formatting.Indented));
             }
             catch
             { }
             try
             {
-                File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account));
+                File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented));
+            }
+            catch
+            { }
+            try
+            {
+                File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account, Formatting.Indented));
             }
             catch
             { }
@@ -383,7 +394,7 @@ namespace GakujoGUI
                 classContacts[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div/div/form/div[3]/div/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div/div/form/div[3]/div/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlAgilityPack.HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div/div/form/div[3]/div/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div/div/form/div[3]/div/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div")[i];
                     httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "") + "&no=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim() + "&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -473,7 +484,7 @@ namespace GakujoGUI
                 schoolContacts[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlAgilityPack.HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div")[i];
                     httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "") + "&no=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim() + "&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -559,7 +570,7 @@ namespace GakujoGUI
                 classSharedFiles[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]")[0].SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]")[0].SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlAgilityPack.HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]")[0].SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]")[0].SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div")[i];
                     httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "") + "&no=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim() + "&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -650,7 +661,7 @@ namespace GakujoGUI
                 schoolSharedFiles[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlAgilityPack.HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div")[i];
                     httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "") + "&no=" + htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim() + "&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -840,7 +851,7 @@ namespace GakujoGUI
             classResults.Clear();
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
             {
-                HtmlAgilityPack.HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
+                HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
                 ClassResult classResult = new();
                 classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
                 classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
@@ -863,6 +874,12 @@ namespace GakujoGUI
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
+        }
+
+        public void GetClassTables()
+        {
+            SetAcademicSystem();
+
         }
     }
 
