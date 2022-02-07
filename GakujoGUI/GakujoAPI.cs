@@ -32,6 +32,8 @@ namespace GakujoGUI
         private HttpResponseMessage httpResponse = new();
         // private readonly HtmlDocument htmlDocument = new();
 
+        public bool loginStatus = false;
+
         private readonly string cookiesPath = Path.Combine(Environment.CurrentDirectory, "Cookies");
         private readonly string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
 
@@ -245,6 +247,7 @@ namespace GakujoGUI
             account.LoginDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
+            loginStatus = true;
             return true;
         }
 
@@ -831,6 +834,7 @@ namespace GakujoGUI
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
             SaveJson();
             SaveCookies();
+            loginStatus = true;
             return true;
         }
 
@@ -915,7 +919,7 @@ namespace GakujoGUI
                     string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
                     ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
                     string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerHtml;
-                    classTableCell.ClassRoom = classRoom.Substring(classRoom.LastIndexOf("<br>") + 4).Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                    classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
 
                     switch (j)
                     {

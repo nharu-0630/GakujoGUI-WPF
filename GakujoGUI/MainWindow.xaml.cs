@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Path = System.IO.Path;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using MessageBox = ModernWpf.MessageBox;
 
 namespace GakujoGUI
 {
@@ -31,12 +32,21 @@ namespace GakujoGUI
             gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordTextBox.Password);
             Task.Run(() =>
             {
-                gakujoAPI.Login();
+                if (!gakujoAPI.Login())
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
+                    return;
+                }
                 gakujoAPI.GetClassTables();
-                Dispatcher.Invoke(new Action(() =>
+                gakujoAPI.GetClassResults();
+                Dispatcher.Invoke(() =>
                 {
                     ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables;
-                }));
+                    MessageBox.Show("自動ログインに成功しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             });
         }
 
@@ -85,14 +95,23 @@ namespace GakujoGUI
 
         private void ClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (MessageBox.Show("ログイン状態ではありません．自動ログインしますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                LoginButton_Click(sender, e);
+            }
             Task.Run(() =>
             {
-                gakujoAPI.GetClassContacts(out _);
-                Dispatcher.Invoke(new Action(() =>
+                gakujoAPI.GetClassContacts(out int diffCount);
+                Dispatcher.Invoke(() =>
                 {
                     ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
-                }));
+                    MessageBox.Show(diffCount + "件の授業連絡を新しく取得しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             });
         }
 
@@ -196,14 +215,23 @@ namespace GakujoGUI
 
         private void ReportsButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (MessageBox.Show("ログイン状態ではありません．自動ログインしますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                LoginButton_Click(sender, e);
+            }
             Task.Run(() =>
             {
-                gakujoAPI.GetReports(out _);
-                Dispatcher.Invoke(new Action(() =>
+                gakujoAPI.GetReports(out int diffCount);
+                Dispatcher.Invoke(() =>
                 {
                     ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-                }));
+                    MessageBox.Show(diffCount + "件のレポートを更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             });
         }
 
@@ -259,14 +287,23 @@ namespace GakujoGUI
 
         private void QuizzesButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (MessageBox.Show("ログイン状態ではありません．自動ログインしますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                LoginButton_Click(sender, e);
+            }
             Task.Run(() =>
             {
-                gakujoAPI.GetQuizzes(out _);
-                Dispatcher.Invoke(new Action(() =>
+                gakujoAPI.GetQuizzes(out int diffCount);
+                Dispatcher.Invoke(() =>
                 {
                     QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-                }));
+                    MessageBox.Show(diffCount + "件の小テストを更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             });
         }
 
@@ -312,14 +349,23 @@ namespace GakujoGUI
 
         private void ClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (MessageBox.Show("ログイン状態ではありません．自動ログインしますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                LoginButton_Click(sender, e);
+            }
             Task.Run(() =>
             {
-                gakujoAPI.GetClassSharedFiles(out _);
-                Dispatcher.Invoke(new Action(() =>
+                gakujoAPI.GetClassSharedFiles(out int diffCount);
+                Dispatcher.Invoke(() =>
                 {
                     ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
-                }));
+                    MessageBox.Show(diffCount + "件の授業共有ファイルを新しく取得しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
             });
         }
 
