@@ -62,7 +62,9 @@ namespace GakujoGUI
         {
             using Stream stream = File.Create(cookiesPath);
             BinaryFormatter binaryFormatter = new();
+#pragma warning disable SYSLIB0011 // 型またはメンバーが旧型式です
             binaryFormatter.Serialize(stream, cookieContainer);
+#pragma warning restore SYSLIB0011 // 型またはメンバーが旧型式です
         }
 
         private bool LoadCookies()
@@ -72,7 +74,9 @@ namespace GakujoGUI
                 using (Stream stream = File.Open(cookiesPath, FileMode.Open))
                 {
                     BinaryFormatter binaryFormatter = new();
+#pragma warning disable SYSLIB0011 // 型またはメンバーが旧型式です
                     cookieContainer = (CookieContainer)binaryFormatter.Deserialize(stream);
+#pragma warning restore SYSLIB0011 // 型またはメンバーが旧型式です
                 }
                 httpClientHandler = new HttpClientHandler
                 {
