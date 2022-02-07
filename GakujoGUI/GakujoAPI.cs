@@ -877,7 +877,6 @@ namespace GakujoGUI
 
         public DateTime LoginDateTime { get; set; }
         public DateTime ReportDateTime { get; set; }
-
         public DateTime QuizDateTime { get; set; }
         public DateTime ClassContactDateTime { get; set; }
         public DateTime SchoolContactDateTime { get; set; }
@@ -1188,5 +1187,26 @@ namespace GakujoGUI
         {
             return Subjects.GetHashCode() ^ AcquisitionYear.GetHashCode();
         }
+    }
+
+    public class ClassTableRow
+    {
+        public ClassTableCell Monday { get; set; } = new ClassTableCell();
+        public ClassTableCell Tuesday { get; set; } = new ClassTableCell();
+        public ClassTableCell Wednesday { get; set; } = new ClassTableCell();
+        public ClassTableCell Thursday { get; set; } = new ClassTableCell();
+        public ClassTableCell Friday { get; set; } = new ClassTableCell();
+    }
+
+    public class ClassTableCell
+    {
+        public string SubjectsName { get; set; } = "";
+        public string SubjectsId { get; set; } = "";
+        public string TeacherName { get; set; } = "";
+        public string SubjectsSection { get; set; } = "";
+        public string SelectionSection { get; set; } = "";
+        public int SchoolCredit { get; set; }
+        public string ClassRoom { get; set; } = "";
+        public string SyllabusURL { get; set; } = "";
     }
 }

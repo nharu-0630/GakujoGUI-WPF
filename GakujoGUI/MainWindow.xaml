@@ -372,7 +372,8 @@
                     <Button
                         Name="ClassSharedFilesButton"
                         Margin="6"
-                        Content="更新" Click="ClassSharedFilesButton_Click" />
+                        Click="ClassSharedFilesButton_Click"
+                        Content="更新" />
                     <Label
                         Name="ClassSharedFilesDateTimeLabel"
                         Margin="6"
