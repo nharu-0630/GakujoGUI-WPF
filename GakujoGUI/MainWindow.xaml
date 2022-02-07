@@ -17,7 +17,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="180" />
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBox
@@ -65,27 +65,27 @@
                     SelectionUnit="Cell">
                     <DataGrid.Columns>
                         <DataGridTextColumn
-                            Width="100"
+                            Width="*"
                             Binding="{Binding Monday}"
                             Header="月曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="100"
+                            Width="*"
                             Binding="{Binding Tuesday}"
                             Header="火曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="100"
+                            Width="*"
                             Binding="{Binding Wednesday}"
                             Header="水曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="100"
+                            Width="*"
                             Binding="{Binding Thursday}"
                             Header="木曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="100"
+                            Width="*"
                             Binding="{Binding Friday}"
                             Header="金曜日"
                             IsReadOnly="True" />
