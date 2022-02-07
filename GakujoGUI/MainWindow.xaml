@@ -36,9 +36,9 @@
                         Click="LoginButton_Click"
                         Content="ログイン" />
                     <Label
-                        Name="LastLoginLabel"
+                        Name="LoginDateTimeLabel"
                         Margin="6"
-                        Content="最終ログイン" />
+                        Content="最終更新" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Column="1"
@@ -96,9 +96,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Margin="6" Content="更新" />
+                    <Button
+                        Name="ClassContactsButton"
+                        Margin="6"
+                        Click="ClassContactsButton_Click"
+                        Content="更新" />
                     <Label
-                        Name="LastClassContactsLabel"
+                        Name="ClassContactsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -209,9 +213,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Margin="6" Content="更新" />
+                    <Button
+                        Name="ReportsButton"
+                        Margin="6"
+                        Click="ReportsButton_Click"
+                        Content="更新" />
                     <Label
-                        Name="LastReportsContactsLabel"
+                        Name="ReportsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -280,9 +288,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Margin="6" Content="更新" />
+                    <Button
+                        Name="QuizzesButton"
+                        Margin="6"
+                        Click="QuizzesButton_Click"
+                        Content="更新" />
                     <Label
-                        Name="LastQuizzesLabel"
+                        Name="QuizzesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -357,9 +369,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Margin="6" Content="更新" />
+                    <Button
+                        Name="ClassSharedFilesButton"
+                        Margin="6"
+                        Content="更新" Click="ClassSharedFilesButton_Click" />
                     <Label
-                        Name="LastClassSharedFilesLabel"
+                        Name="ClassSharedFilesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />

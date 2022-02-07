@@ -229,6 +229,7 @@ namespace GakujoGUI
                 account.StudentName = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/div/div/div/ul[2]/li/a/span/span")[0].InnerText;
                 account.StudentName = account.StudentName[0..^2];
             }
+            account.LoginDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
             return true;
@@ -268,6 +269,7 @@ namespace GakujoGUI
                 reports.Add(report);
             }
             diffCount = reports.Count - diffCount;
+            account.ReportDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -303,6 +305,7 @@ namespace GakujoGUI
                 quizzes.Add(quiz);
             }
             diffCount = quizzes.Count - diffCount;
+            account.QuizDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -346,6 +349,7 @@ namespace GakujoGUI
             {
                 GetClassContact(i);
             }
+            account.ClassContactDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -436,6 +440,7 @@ namespace GakujoGUI
             {
                 GetSchoolContact(i);
             }
+            account.SchoolContactDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -526,6 +531,7 @@ namespace GakujoGUI
             {
                 GetClassSharedFile(i);
             }
+            account.ClassSharedFileDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -616,6 +622,7 @@ namespace GakujoGUI
             {
                 GetSchoolSharedFile(i);
             }
+            account.SchoolSharedFileDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -662,6 +669,7 @@ namespace GakujoGUI
                     schoolSharedFiles[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
                 }
             }
+            account.SchoolSharedFileDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -852,6 +860,7 @@ namespace GakujoGUI
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
                 classResults.Add(classResult);
             }
+            account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
@@ -860,11 +869,21 @@ namespace GakujoGUI
 
     public class Account
     {
-        public string UserId = "";
-        public string PassWord = "";
-        public string StudentName = "";
-        public string StudentCode = "";
-        public string ApacheToken = "";
+        public string UserId { get; set; } = "";
+        public string PassWord { get; set; } = "";
+        public string StudentName { get; set; } = "";
+        public string StudentCode { get; set; } = "";
+        public string ApacheToken { get; set; } = "";
+
+        public DateTime LoginDateTime { get; set; }
+        public DateTime ReportDateTime { get; set; }
+
+        public DateTime QuizDateTime { get; set; }
+        public DateTime ClassContactDateTime { get; set; }
+        public DateTime SchoolContactDateTime { get; set; }
+        public DateTime ClassSharedFileDateTime { get; set; }
+        public DateTime SchoolSharedFileDateTime { get; set; }
+        public DateTime ClassResultDateTime { get; set; }
     }
 
     // : IComparable

@@ -45,7 +45,7 @@ namespace GakujoGUI
             if (ClassContactsDataGrid.SelectedIndex != -1)
             {
                 ClassContactContentTextBox.Text = gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Content;
-                if (gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files == null)
+                if (gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files.Length == 0)
                 {
                     ClassContactFilesComboBox.ItemsSource = null;
                     ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
@@ -108,7 +108,7 @@ namespace GakujoGUI
             if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
                 ClassSharedFileDescriptionTextBox.Text = gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Description;
-                if (gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files == null)
+                if (gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files.Length == 0)
                 {
                     ClassSharedFileFilesComboBox.ItemsSource = null;
                 }
@@ -156,10 +156,14 @@ namespace GakujoGUI
         {
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordTextBox.Password = gakujoAPI.account.PassWord;
-
+            LoginDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+            ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+            QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+            ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
         }
 
@@ -310,6 +314,34 @@ namespace GakujoGUI
             {
                 return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ UpdateDateTime!.GetHashCode();
             }
+        }
+
+        private void ClassContactsButton_Click(object sender, RoutedEventArgs e)
+        {
+            gakujoAPI.GetClassContacts(out _);
+            ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+        }
+
+        private void ReportsButton_Click(object sender, RoutedEventArgs e)
+        {
+            gakujoAPI.GetReports(out _);
+            ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+        }
+
+        private void QuizzesButton_Click(object sender, RoutedEventArgs e)
+        {
+            gakujoAPI.GetQuizzes(out _);
+            QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+        }
+
+        private void ClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            gakujoAPI.GetClassSharedFiles(out _);
+            ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
         }
     }
 }
