@@ -90,212 +90,125 @@
         </TabItem>
         <TabItem Header="授業連絡">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                </Grid.ColumnDefinitions>
-                <DataGrid
-                    Name="ClassContacts"
-                    Grid.Column="0"
-                    Margin="6"
-                    AreRowDetailsFrozen="True"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserResizeRows="False"
-                    CanUserSortColumns="False"
-                    RowHeight="32"
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ClassContacts_SelectionChanged"
-                    SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding Subjects}"
-                            Header="授業科目"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="280"
-                            MinWidth="280"
-                            Binding="{Binding Title}"
-                            Header="タイトル"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="240"
-                            MinWidth="120"
-                            MaxWidth="240"
-                            Binding="{Binding Content}"
-                            Header="内容"
-                            IsReadOnly="True">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
-                        <DataGridTextColumn
-                            Width="120"
-                            MinWidth="120"
-                            Binding="{Binding ContactDateTime}"
-                            Header="連絡日時"
-                            IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button Margin="6" Content="更新" />
+                </StackPanel>
                 <GridSplitter
-                    Grid.Column="1"
+                    Grid.Row="1"
                     Width="5"
-                    HorizontalAlignment="Stretch" />
-                <ui:SimpleStackPanel Grid.Column="2">
-                    <ui:SimpleStackPanel
+                    VerticalAlignment="Stretch" />
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                    </Grid.ColumnDefinitions>
+                    <DataGrid
+                        Name="ClassContacts"
+                        Grid.Column="0"
                         Margin="6"
-                        Orientation="Vertical"
-                        Spacing="6">
-                        <TextBox
-                            Name="ClassContactContent"
-                            MinHeight="160"
-                            IsReadOnly="True"
-                            TextWrapping="Wrap" />
-                        <ui:SimpleStackPanel
-                            Margin="6"
-                            Orientation="Horizontal"
-                            Spacing="6">
-                            <ComboBox Name="ClassContactFiles" MaxWidth="360" />
-                            <Button
-                                Name="OpenClassContactFile"
-                                Click="OpenClassContactFile_Click"
-                                Content="ファイルを開く" />
-                            <Button
-                                Name="OpenClassContactFolder"
-                                Click="OpenClassContactFolder_Click"
-                                Content="フォルダを開く" />
-                        </ui:SimpleStackPanel>
-                    </ui:SimpleStackPanel>
-                </ui:SimpleStackPanel>
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        RowHeight="32"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionChanged="ClassContacts_SelectionChanged"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding Subjects}"
+                                Header="授業科目"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="280"
+                                MinWidth="280"
+                                Binding="{Binding Title}"
+                                Header="タイトル"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="240"
+                                MinWidth="120"
+                                MaxWidth="240"
+                                Binding="{Binding Content}"
+                                Header="内容"
+                                IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="120"
+                                MinWidth="120"
+                                Binding="{Binding ContactDateTime}"
+                                Header="連絡日時"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <GridSplitter
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Stretch" />
+                    <StackPanel Grid.Column="2">
+                        <StackPanel Margin="6" Orientation="Vertical">
+                            <TextBox
+                                Name="ClassContactContent"
+                                MinHeight="160"
+                                IsReadOnly="True"
+                                Text="内容"
+                                TextWrapping="Wrap" />
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox
+                                    Name="ClassContactFiles"
+                                    MaxWidth="360"
+                                    Margin="6" />
+                                <Button
+                                    Name="OpenClassContactFile"
+                                    Margin="6"
+                                    Click="OpenClassContactFile_Click"
+                                    Content="ファイルを開く" />
+                                <Button
+                                    Name="OpenClassContactFolder"
+                                    Margin="6"
+                                    Click="OpenClassContactFolder_Click"
+                                    Content="フォルダを開く" />
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </TabItem>
         <TabItem Header="レポート">
-            <DataGrid
-                Name="Reports"
-                Margin="6"
-                AreRowDetailsFrozen="True"
-                AutoGenerateColumns="False"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserReorderColumns="False"
-                CanUserResizeRows="False"
-                CanUserSortColumns="False"
-                RowHeight="32"
-                ScrollViewer.CanContentScroll="True"
-                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectionChanged="Reports_SelectionChanged"
-                SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="100"
-                        MinWidth="100"
-                        Binding="{Binding Subjects}"
-                        Header="授業科目"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="280"
-                        MinWidth="280"
-                        Binding="{Binding Title}"
-                        Header="タイトル"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="100"
-                        MinWidth="100"
-                        Binding="{Binding Status}"
-                        Header="状態"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="120"
-                        MinWidth="120"
-                        Binding="{Binding StartDateTime}"
-                        Header="提出期間"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="120"
-                        MinWidth="120"
-                        Binding="{Binding EndDateTime}"
-                        Header="提出期間"
-                        IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </TabItem>
-        <TabItem Header="小テスト">
-            <DataGrid
-                Name="Quizzes"
-                Margin="6"
-                AreRowDetailsFrozen="True"
-                AutoGenerateColumns="False"
-                CanUserAddRows="False"
-                CanUserDeleteRows="False"
-                CanUserReorderColumns="False"
-                CanUserResizeRows="False"
-                CanUserSortColumns="False"
-                RowHeight="32"
-                ScrollViewer.CanContentScroll="True"
-                ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                ScrollViewer.VerticalScrollBarVisibility="Auto"
-                SelectionChanged="Quizzes_SelectionChanged"
-                SelectionMode="Single">
-                <DataGrid.Columns>
-                    <DataGridTextColumn
-                        Width="100"
-                        MinWidth="100"
-                        Binding="{Binding Subjects}"
-                        Header="授業科目"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="280"
-                        MinWidth="280"
-                        Binding="{Binding Title}"
-                        Header="タイトル"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="100"
-                        MinWidth="100"
-                        Binding="{Binding Status}"
-                        Header="状態"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="120"
-                        MinWidth="120"
-                        Binding="{Binding SubmissionStatus}"
-                        Header="提出状況"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="120"
-                        MinWidth="120"
-                        Binding="{Binding StartDateTime}"
-                        Header="提出期間"
-                        IsReadOnly="True" />
-                    <DataGridTextColumn
-                        Width="120"
-                        MinWidth="120"
-                        Binding="{Binding EndDateTime}"
-                        Header="提出期間"
-                        IsReadOnly="True" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </TabItem>
-        <TabItem Header="授業共有ファイル">
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button Margin="6" Content="更新" />
+                </StackPanel>
+                <GridSplitter
+                    Grid.Row="1"
+                    Width="5"
+                    VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="ClassSharedFiles"
-                    Grid.Column="0"
+                    Name="Reports"
+                    Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
                     AutoGenerateColumns="False"
@@ -308,7 +221,7 @@
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ClassSharedFiles_SelectionChanged"
+                    SelectionChanged="Reports_SelectionChanged"
                     SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn
@@ -324,56 +237,199 @@
                             Header="タイトル"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="240"
-                            MinWidth="120"
-                            MaxWidth="240"
-                            Binding="{Binding Description}"
-                            Header="ファイル説明"
-                            IsReadOnly="True">
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="TextBlock">
-                                    <Setter Property="TextWrapping" Value="Wrap" />
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                        </DataGridTextColumn>
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding Status}"
+                            Header="状態"
+                            IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="120"
                             MinWidth="120"
-                            Binding="{Binding UpdateDateTime}"
-                            Header="更新日時"
+                            Binding="{Binding StartDateTime}"
+                            Header="提出期間"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="120"
+                            MinWidth="120"
+                            Binding="{Binding EndDateTime}"
+                            Header="提出期間"
                             IsReadOnly="True" />
                     </DataGrid.Columns>
                 </DataGrid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="小テスト">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button Margin="6" Content="更新" />
+                </StackPanel>
                 <GridSplitter
-                    Grid.Column="1"
+                    Grid.Row="1"
                     Width="5"
-                    HorizontalAlignment="Stretch" />
-                <ui:SimpleStackPanel
-                    Grid.Column="2"
+                    VerticalAlignment="Stretch" />
+                <DataGrid
+                    Name="Quizzes"
+                    Grid.Row="2"
                     Margin="6"
-                    Orientation="Vertical"
-                    Spacing="6">
-                    <TextBox
-                        Name="ClassSharedFileDescription"
-                        MinHeight="160"
-                        IsReadOnly="True"
-                        Text="ファイル説明"
-                        TextWrapping="Wrap" />
-                    <ui:SimpleStackPanel
+                    AreRowDetailsFrozen="True"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    CanUserSortColumns="False"
+                    RowHeight="32"
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionChanged="Quizzes_SelectionChanged"
+                    SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding Subjects}"
+                            Header="授業科目"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="280"
+                            MinWidth="280"
+                            Binding="{Binding Title}"
+                            Header="タイトル"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding Status}"
+                            Header="状態"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="120"
+                            MinWidth="120"
+                            Binding="{Binding SubmissionStatus}"
+                            Header="提出状況"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="120"
+                            MinWidth="120"
+                            Binding="{Binding StartDateTime}"
+                            Header="提出期間"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="120"
+                            MinWidth="120"
+                            Binding="{Binding EndDateTime}"
+                            Header="提出期間"
+                            IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
+        <TabItem Header="授業共有ファイル">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button Margin="6" Content="更新" />
+                </StackPanel>
+                <GridSplitter
+                    Grid.Row="1"
+                    Width="5"
+                    VerticalAlignment="Stretch" />
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                    </Grid.ColumnDefinitions>
+                    <DataGrid
+                        Name="ClassSharedFiles"
+                        Grid.Column="0"
                         Margin="6"
-                        Orientation="Horizontal"
-                        Spacing="6">
-                        <ComboBox Name="ClassSharedFileFiles" />
-                        <Button
-                            Name="OpenClassSharedFile"
-                            Click="OpenClassSharedFile_Click"
-                            Content="ファイルを開く" />
-                        <Button
-                            Name="OpenClassSharedFolder"
-                            Click="OpenClassSharedFolder_Click"
-                            Content="フォルダを開く" />
-                    </ui:SimpleStackPanel>
-                </ui:SimpleStackPanel>
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        RowHeight="32"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionChanged="ClassSharedFiles_SelectionChanged"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding Subjects}"
+                                Header="授業科目"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="280"
+                                MinWidth="280"
+                                Binding="{Binding Title}"
+                                Header="タイトル"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="240"
+                                MinWidth="120"
+                                MaxWidth="240"
+                                Binding="{Binding Description}"
+                                Header="ファイル説明"
+                                IsReadOnly="True">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn
+                                Width="120"
+                                MinWidth="120"
+                                Binding="{Binding UpdateDateTime}"
+                                Header="更新日時"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <GridSplitter
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Stretch" />
+                    <StackPanel
+                        Grid.Column="2"
+                        Margin="6"
+                        Orientation="Vertical">
+                        <TextBox
+                            Name="ClassSharedFileDescription"
+                            MinHeight="160"
+                            IsReadOnly="True"
+                            Text="ファイル説明"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal">
+                            <ComboBox Name="ClassSharedFileFiles" Margin="6" />
+                            <Button
+                                Name="OpenClassSharedFile"
+                                Margin="6"
+                                Click="OpenClassSharedFile_Click"
+                                Content="ファイルを開く" />
+                            <Button
+                                Name="OpenClassSharedFolder"
+                                Margin="6"
+                                Click="OpenClassSharedFolder_Click"
+                                Content="フォルダを開く" />
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
             </Grid>
         </TabItem>
     </TabControl>
