@@ -66,22 +66,27 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn
                             Width="100"
+                            Binding="{Binding Monday}"
                             Header="月曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="100"
+                            Binding="{Binding Tuesday}"
                             Header="火曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="100"
+                            Binding="{Binding Wednesday}"
                             Header="水曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="100"
+                            Binding="{Binding Thursday}"
                             Header="木曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="100"
+                            Binding="{Binding Friday}"
                             Header="金曜日"
                             IsReadOnly="True" />
                     </DataGrid.Columns>
