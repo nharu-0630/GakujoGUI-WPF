@@ -6,8 +6,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="GakujoGUI"
-    Width="800"
-    Height="450"
+    Width="900"
+    Height="600"
     ui:WindowHelper.UseModernWindowStyle="True"
     Loaded="Window_Loaded"
     mc:Ignorable="d">
@@ -152,6 +152,7 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
+                            <!--
                             <DataGridTextColumn
                                 Width="240"
                                 MinWidth="120"
@@ -165,6 +166,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            -->
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
@@ -425,6 +427,7 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
+                            <!--
                             <DataGridTextColumn
                                 Width="240"
                                 MinWidth="120"
@@ -438,6 +441,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+                            -->
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
