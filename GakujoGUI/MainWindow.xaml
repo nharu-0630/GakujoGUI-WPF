@@ -97,6 +97,11 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Margin="6" Content="更新" />
+                    <Label
+                        Name="LastClassContactsLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
@@ -205,6 +210,11 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Margin="6" Content="更新" />
+                    <Label
+                        Name="LastReportsContactsLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
@@ -271,6 +281,11 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Margin="6" Content="更新" />
+                    <Label
+                        Name="LastQuizzesLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
@@ -343,6 +358,11 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Margin="6" Content="更新" />
+                    <Label
+                        Name="LastClassSharedFilesLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
