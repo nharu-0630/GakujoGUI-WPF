@@ -44,6 +44,7 @@ namespace GakujoGUI
 
         public GakujoAPI()
         {
+            LoadCookies();
             LoadJson();
         }
 
@@ -53,14 +54,14 @@ namespace GakujoGUI
             SaveJson();
         }
 
-        public void SaveCookies()
+        private void SaveCookies()
         {
             using Stream stream = File.Create(cookiesPath);
             BinaryFormatter binaryFormatter = new();
             binaryFormatter.Serialize(stream, cookieContainer);
         }
 
-        public bool LoadCookies()
+        private bool LoadCookies()
         {
             if (File.Exists(cookiesPath))
             {
@@ -81,7 +82,7 @@ namespace GakujoGUI
             return false;
         }
 
-        public bool LoadJson()
+        private bool LoadJson()
         {
             if (File.Exists(GetJsonPath("Reports")))
             {
@@ -119,7 +120,7 @@ namespace GakujoGUI
             return false;
         }
 
-        public void SaveJson()
+        private void SaveJson()
         {
             try
             {
@@ -776,7 +777,7 @@ namespace GakujoGUI
         //    return true;
         //}
 
-        public bool CheckConnection()
+        private bool CheckConnection()
         {
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -801,7 +802,7 @@ namespace GakujoGUI
             return true;
         }
 
-        public bool SetAcademicSystem()
+        private bool SetAcademicSystem()
         {
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
