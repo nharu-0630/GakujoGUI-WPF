@@ -26,7 +26,7 @@
                     Orientation="Vertical"
                     Spacing="6">
                     <TextBox
-                        Name="UserName"
+                        Name="UserId"
                         Width="180"
                         HorizontalAlignment="Left"
                         ui:ControlHelper.PlaceholderText="静大ID" />

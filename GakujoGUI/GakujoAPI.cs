@@ -10,12 +10,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 
-namespace GakujoCLI
+namespace GakujoGUI
 {
     internal class GakujoAPI
     {
-        private CookieContainer cookieContainer = new();
-        private Account account = new();
+        public Account account = new();
         public List<Report> reports = new();
         public List<Quiz> quizzes = new();
         public List<ClassContact> classContacts = new() { };
@@ -24,6 +23,7 @@ namespace GakujoCLI
         public List<SchoolSharedFile> schoolSharedFiles = new() { };
         public List<ClassResult> classResults = new() { };
 
+        private CookieContainer cookieContainer = new();
         private HttpClientHandler httpClientHandler = new();
         private HttpClient httpClient = new();
         private HttpRequestMessage httpRequestMessage = new();
@@ -40,6 +40,11 @@ namespace GakujoCLI
         public static string GetJsonPath(string value)
         {
             return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
+        }
+
+        public GakujoAPI()
+        {
+            LoadJson();
         }
 
         public void SetAccount(string userId, string passWord)

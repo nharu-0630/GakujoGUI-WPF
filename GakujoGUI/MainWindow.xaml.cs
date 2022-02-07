@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-
-using Newtonsoft.Json;
 using Path = System.IO.Path;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace GakujoGUI
 {
@@ -17,10 +14,7 @@ namespace GakujoGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        public List<Report> ReportsList = new();
-        public List<Quiz> QuizzesList = new();
-        public List<ClassContact> ClassContactsList = new() { };
-        public List<ClassSharedFile> ClassSharedFilesList = new() { };
+        private readonly GakujoAPI gakujoAPI = new();
 
         public static string GetJsonPath(string value)
         {
@@ -34,7 +28,11 @@ namespace GakujoGUI
 
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-
+            gakujoAPI.SetAccount(UserId.Text, PassWord.Password);
+            Task.Run(() =>
+            {
+                gakujoAPI.Login();
+            });
         }
 
         private void ClassTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -46,14 +44,14 @@ namespace GakujoGUI
         {
             if (ClassContacts.SelectedIndex != -1)
             {
-                ClassContactContent.Text = ClassContactsList[ClassContacts.SelectedIndex].Content;
-                if (ClassContactsList[ClassContacts.SelectedIndex].Files == null)
+                ClassContactContent.Text = gakujoAPI.classContacts[ClassContacts.SelectedIndex].Content;
+                if (gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files == null)
                 {
                     ClassContactFiles.ItemsSource = null;
                 }
                 else
                 {
-                    ClassContactFiles.ItemsSource = ClassContactsList[ClassContacts.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassContactFiles.ItemsSource = gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
                     ClassContactFiles.SelectedIndex = 0;
                 }
             }
@@ -63,11 +61,11 @@ namespace GakujoGUI
         {
             if (ClassContactFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
@@ -78,13 +76,13 @@ namespace GakujoGUI
         {
             if (ClassContactFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
                 {
                     Process process = new()
                     {
                         StartInfo = new ProcessStartInfo("explorer.exe")
                         {
-                            Arguments = "/e,/select,\"" + ClassContactsList[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
+                            Arguments = "/e,/select,\"" + gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
                             UseShellExecute = true
                         }
                     };
@@ -107,14 +105,14 @@ namespace GakujoGUI
         {
             if (ClassSharedFiles.SelectedIndex != -1)
             {
-                ClassSharedFileDescription.Text = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Description;
-                if (ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files == null)
+                ClassSharedFileDescription.Text = gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Description;
+                if (gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files == null)
                 {
                     ClassSharedFileFiles.ItemsSource = null;
                 }
                 else
                 {
-                    ClassSharedFileFiles.ItemsSource = ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassSharedFileFiles.ItemsSource = gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
                     ClassSharedFileFiles.SelectedIndex = 0;
                 }
             }
@@ -124,11 +122,11 @@ namespace GakujoGUI
         {
             if (ClassSharedFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
@@ -139,12 +137,12 @@ namespace GakujoGUI
         {
             if (ClassSharedFiles.SelectedIndex != -1)
             {
-                if (File.Exists(ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
                 {
                     Process process = new();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
-                        Arguments = "/e,/select,\"" + ClassSharedFilesList[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex] + "\"",
+                        Arguments = "/e,/select,\"" + gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex] + "\"",
                         UseShellExecute = true
                     };
                     process.Start();
@@ -154,32 +152,13 @@ namespace GakujoGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Task.Run(() =>
-            {
-                if (File.Exists(GetJsonPath("ClassContacts")))
-                {
-                    ClassContactsList = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")))!;
-                }
-                if (File.Exists(GetJsonPath("Reports")))
-                {
-                    ReportsList = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports")))!;
-                }
-                if (File.Exists(GetJsonPath("Quizzes")))
-                {
-                    QuizzesList = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes")))!;
-                }
-                if (File.Exists(GetJsonPath("ClassSharedFiles")))
-                {
-                    ClassSharedFilesList = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")))!;
-                }
-                this.Dispatcher.Invoke((Action)(() =>
-                {
-                    ClassContacts.ItemsSource = ClassContactsList;
-                    Reports.ItemsSource = ReportsList;
-                    Quizzes.ItemsSource = QuizzesList;
-                    ClassSharedFiles.ItemsSource = ClassSharedFilesList;
-                }));
-            });
+            UserId.Text = gakujoAPI.account.UserId;
+            PassWord.Password = gakujoAPI.account.PassWord;
+
+            ClassContacts.ItemsSource = gakujoAPI.classContacts;
+            Reports.ItemsSource = gakujoAPI.reports;
+            Quizzes.ItemsSource = gakujoAPI.quizzes;
+            ClassSharedFiles.ItemsSource = gakujoAPI.classSharedFiles;
         }
 
         public class Report
