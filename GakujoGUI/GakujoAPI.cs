@@ -914,7 +914,9 @@ namespace GakujoGUI
                     string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                     string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
                     ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                    classTableCell.ClassRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerText.Split('\n')[3].Trim('　').Trim(' ');
+                    string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerHtml;
+                    classTableCell.ClassRoom = classRoom.Substring(classRoom.LastIndexOf("<br>") + 4).Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+
                     switch (j)
                     {
                         case 0:
@@ -1324,6 +1326,14 @@ namespace GakujoGUI
 
         public override string ToString()
         {
+            if (SubjectsId == "")
+            {
+                return "";
+            }
+            if (ClassRoom == "")
+            {
+                return SubjectsName + " (" + ClassName + ")\n" + TeacherName;
+            }
             return SubjectsName + " (" + ClassName + ")\n" + TeacherName + "\n" + ClassRoom;
         }
 
