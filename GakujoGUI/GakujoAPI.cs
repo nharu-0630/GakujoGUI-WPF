@@ -9,6 +9,7 @@ using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using System.Diagnostics;
 
 namespace GakujoGUI
 {
@@ -906,8 +907,12 @@ namespace GakujoGUI
                 classTables[i] = new ClassTableRow();
                 for (int j = 0; j < 5; j++)
                 {
-                    string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "");
-                    string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tbody/tr/td/table/tbody/tr[2]/td[2]/table/tbody/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "");
+                    if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a") == null)
+                    {
+                        continue;
+                    }
+                    string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "");
+                    string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "");
                     ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
                     switch (j)
                     {
