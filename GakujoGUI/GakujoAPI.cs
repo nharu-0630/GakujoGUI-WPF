@@ -911,9 +911,10 @@ namespace GakujoGUI
                     {
                         continue;
                     }
-                    string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "");
-                    string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "");
+                    string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                    string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
                     ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                    classTableCell.ClassRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerText.Split('\n')[3].Trim('　').Trim(' ');
                     switch (j)
                     {
                         case 0:
@@ -946,13 +947,13 @@ namespace GakujoGUI
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            classTableCell.SubjectsName = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[1]/td[2]").InnerText;
-            classTableCell.SubjectsId = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[2]/td[2]").InnerText;
-            classTableCell.ClassRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[3]/td[2]").InnerText;
-            classTableCell.TeacherName = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[4]/td[2]").InnerText;
-            classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[5]/td[2]").InnerText.Replace("\n", "").Replace("\t", "");
-            classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[6]/td[2]").InnerText;
-            classTableCell.SchoolCredit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tbody/tr/td/table/tbody/tr[7]/td[2]").InnerText.Replace("単位", ""));
+            classTableCell.SubjectsName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目名\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.SubjectsId = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目番号\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.ClassName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"クラス名\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.TeacherName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.SchoolCredit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
             return classTableCell;
         }
     }
@@ -1317,12 +1318,13 @@ namespace GakujoGUI
         public string SubjectsSection { get; set; } = "";
         public string SelectionSection { get; set; } = "";
         public int SchoolCredit { get; set; }
+        public string ClassName { get; set; } = "";
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";
 
         public override string ToString()
         {
-            return SubjectsName + " (" + ClassRoom + ") " + TeacherName;
+            return SubjectsName + " (" + ClassName + ")\n" + TeacherName + "\n" + ClassRoom;
         }
 
         public override bool Equals(object? obj)

@@ -35,12 +35,12 @@ namespace GakujoGUI
                 gakujoAPI.GetClassTables();
                 Dispatcher.Invoke(new Action(() =>
                 {
-                    ClassTableDataGrid.ItemsSource = gakujoAPI.classTables;
+                    ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables;
                 }));
             });
         }
 
-        private void ClassTableDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClassTablesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
@@ -379,6 +379,7 @@ namespace GakujoGUI
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordTextBox.Password = gakujoAPI.account.PassWord;
             LoginDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables.Take(5);
             ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
             ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");

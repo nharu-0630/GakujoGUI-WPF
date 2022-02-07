@@ -45,7 +45,7 @@
                     Width="5"
                     HorizontalAlignment="Stretch" />
                 <DataGrid
-                    Name="ClassTableDataGrid"
+                    Name="ClassTablesDataGrid"
                     Grid.Column="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -56,11 +56,11 @@
                     CanUserResizeColumns="False"
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
-                    RowHeight="32"
+                    RowHeight="96"
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ClassTableDataGrid_SelectionChanged"
+                    SelectionChanged="ClassTablesDataGrid_SelectionChanged"
                     SelectionMode="Single"
                     SelectionUnit="Cell">
                     <DataGrid.Columns>
