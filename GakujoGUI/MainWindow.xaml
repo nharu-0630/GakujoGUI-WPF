@@ -3,7 +3,6 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:GakujoGUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     Title="GakujoGUI"
@@ -16,37 +15,37 @@
         <TabItem Header="ログイン" IsSelected="True">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" MinWidth="180" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
-                <ui:SimpleStackPanel
-                    Grid.Column="0"
-                    Margin="6"
-                    Orientation="Vertical"
-                    Spacing="6">
+                <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBox
-                        Name="UserId"
-                        Width="180"
-                        HorizontalAlignment="Left"
+                        Name="UserIdTextBox"
+                        Width="Auto"
+                        Margin="6"
                         ui:ControlHelper.PlaceholderText="静大ID" />
                     <PasswordBox
-                        Name="PassWord"
-                        Width="180"
-                        HorizontalAlignment="Left"
+                        Name="PassWordTextBox"
+                        Width="Auto"
+                        Margin="6"
                         ui:ControlHelper.PlaceholderText="パスワード" />
                     <Button
-                        Name="Login"
-                        Width="180"
-                        Click="Login_Click"
+                        Name="LoginButton"
+                        Margin="6"
+                        Click="LoginButton_Click"
                         Content="ログイン" />
-                </ui:SimpleStackPanel>
+                    <Label
+                        Name="LastLoginLabel"
+                        Margin="6"
+                        Content="最終ログイン" />
+                </StackPanel>
                 <GridSplitter
                     Grid.Column="1"
                     Width="5"
                     HorizontalAlignment="Stretch" />
                 <DataGrid
-                    Name="ClassTable"
+                    Name="ClassTableDataGrid"
                     Grid.Column="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -61,27 +60,28 @@
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ClassTable_SelectionChanged"
-                    SelectionMode="Single">
+                    SelectionChanged="ClassTableDataGrid_SelectionChanged"
+                    SelectionMode="Single"
+                    SelectionUnit="Cell">
                     <DataGrid.Columns>
                         <DataGridTextColumn
-                            Width="80"
+                            Width="100"
                             Header="月曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="80"
+                            Width="100"
                             Header="火曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="80"
+                            Width="100"
                             Header="水曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="80"
+                            Width="100"
                             Header="木曜日"
                             IsReadOnly="True" />
                         <DataGridTextColumn
-                            Width="80"
+                            Width="100"
                             Header="金曜日"
                             IsReadOnly="True" />
                     </DataGrid.Columns>
@@ -109,7 +109,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        Name="ClassContacts"
+                        Name="ClassContactsDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -123,7 +123,7 @@
                         ScrollViewer.CanContentScroll="True"
                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="ClassContacts_SelectionChanged"
+                        SelectionChanged="ClassContactsDataGrid_SelectionChanged"
                         SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn
@@ -154,7 +154,7 @@
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
-                                Binding="{Binding ContactDateTime}"
+                                Binding="{Binding ContactDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                                 Header="連絡日時"
                                 IsReadOnly="True" />
                         </DataGrid.Columns>
@@ -164,27 +164,31 @@
                         Width="5"
                         HorizontalAlignment="Stretch" />
                     <StackPanel Grid.Column="2">
-                        <StackPanel Margin="6" Orientation="Vertical">
+                        <StackPanel Orientation="Vertical">
                             <TextBox
-                                Name="ClassContactContent"
+                                Name="ClassContactContentTextBox"
                                 MinHeight="160"
+                                Margin="6"
                                 IsReadOnly="True"
                                 Text="内容"
                                 TextWrapping="Wrap" />
-                            <StackPanel Orientation="Horizontal">
+                            <StackPanel
+                                Name="ClassContactFilesStackPanel"
+                                Orientation="Horizontal"
+                                Visibility="Hidden">
                                 <ComboBox
-                                    Name="ClassContactFiles"
+                                    Name="ClassContactFilesComboBox"
                                     MaxWidth="360"
                                     Margin="6" />
                                 <Button
-                                    Name="OpenClassContactFile"
+                                    Name="OpenClassContactFileButton"
                                     Margin="6"
-                                    Click="OpenClassContactFile_Click"
+                                    Click="OpenClassContactFileButton_Click"
                                     Content="ファイルを開く" />
                                 <Button
-                                    Name="OpenClassContactFolder"
+                                    Name="OpenClassContactFolderButton"
                                     Margin="6"
-                                    Click="OpenClassContactFolder_Click"
+                                    Click="OpenClassContactFolderButton_Click"
                                     Content="フォルダを開く" />
                             </StackPanel>
                         </StackPanel>
@@ -207,7 +211,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="Reports"
+                    Name="ReportsDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -221,7 +225,7 @@
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="Reports_SelectionChanged"
+                    SelectionChanged="ReportsDataGrid_SelectionChanged"
                     SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn
@@ -245,13 +249,13 @@
                         <DataGridTextColumn
                             Width="120"
                             MinWidth="120"
-                            Binding="{Binding StartDateTime}"
+                            Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                             Header="提出期間"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="120"
                             MinWidth="120"
-                            Binding="{Binding EndDateTime}"
+                            Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                             Header="提出期間"
                             IsReadOnly="True" />
                     </DataGrid.Columns>
@@ -273,7 +277,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="Quizzes"
+                    Name="QuizzesDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -287,7 +291,7 @@
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="Quizzes_SelectionChanged"
+                    SelectionChanged="QuizzesDataGrid_SelectionChanged"
                     SelectionMode="Single">
                     <DataGrid.Columns>
                         <DataGridTextColumn
@@ -317,13 +321,13 @@
                         <DataGridTextColumn
                             Width="120"
                             MinWidth="120"
-                            Binding="{Binding StartDateTime}"
+                            Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                             Header="提出期間"
                             IsReadOnly="True" />
                         <DataGridTextColumn
                             Width="120"
                             MinWidth="120"
-                            Binding="{Binding EndDateTime}"
+                            Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                             Header="提出期間"
                             IsReadOnly="True" />
                     </DataGrid.Columns>
@@ -351,7 +355,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        Name="ClassSharedFiles"
+                        Name="ClassSharedFilesDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -365,7 +369,7 @@
                         ScrollViewer.CanContentScroll="True"
                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
                         ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="ClassSharedFiles_SelectionChanged"
+                        SelectionChanged="ClassSharedFilesDataGrid_SelectionChanged"
                         SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn
@@ -396,7 +400,7 @@
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
-                                Binding="{Binding UpdateDateTime}"
+                                Binding="{Binding UpdateDateTime, StringFormat=yyyy/MM/dd HH:mm}"
                                 Header="更新日時"
                                 IsReadOnly="True" />
                         </DataGrid.Columns>
@@ -405,27 +409,25 @@
                         Grid.Column="1"
                         Width="5"
                         HorizontalAlignment="Stretch" />
-                    <StackPanel
-                        Grid.Column="2"
-                        Margin="6"
-                        Orientation="Vertical">
+                    <StackPanel Grid.Column="2" Orientation="Vertical">
                         <TextBox
-                            Name="ClassSharedFileDescription"
+                            Name="ClassSharedFileDescriptionTextBox"
                             MinHeight="160"
+                            Margin="6"
                             IsReadOnly="True"
                             Text="ファイル説明"
                             TextWrapping="Wrap" />
                         <StackPanel Orientation="Horizontal">
-                            <ComboBox Name="ClassSharedFileFiles" Margin="6" />
+                            <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
                             <Button
-                                Name="OpenClassSharedFile"
+                                Name="OpenClassSharedFileButton"
                                 Margin="6"
-                                Click="OpenClassSharedFile_Click"
+                                Click="OpenClassSharedFileButton_Click"
                                 Content="ファイルを開く" />
                             <Button
-                                Name="OpenClassSharedFolder"
+                                Name="OpenClassSharedFolderButton"
                                 Margin="6"
-                                Click="OpenClassSharedFolder_Click"
+                                Click="OpenClassSharedFolderButton_Click"
                                 Content="フォルダを開く" />
                         </StackPanel>
                     </StackPanel>

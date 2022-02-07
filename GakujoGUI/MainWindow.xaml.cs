@@ -26,63 +26,65 @@ namespace GakujoGUI
             InitializeComponent();
         }
 
-        private void Login_Click(object sender, RoutedEventArgs e)
+        private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            gakujoAPI.SetAccount(UserId.Text, PassWord.Password);
+            gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordTextBox.Password);
             Task.Run(() =>
             {
                 gakujoAPI.Login();
             });
         }
 
-        private void ClassTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClassTableDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void ClassContacts_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClassContactsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ClassContacts.SelectedIndex != -1)
+            if (ClassContactsDataGrid.SelectedIndex != -1)
             {
-                ClassContactContent.Text = gakujoAPI.classContacts[ClassContacts.SelectedIndex].Content;
-                if (gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files == null)
+                ClassContactContentTextBox.Text = gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Content;
+                if (gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files == null)
                 {
-                    ClassContactFiles.ItemsSource = null;
+                    ClassContactFilesComboBox.ItemsSource = null;
+                    ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
                 }
                 else
                 {
-                    ClassContactFiles.ItemsSource = gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
-                    ClassContactFiles.SelectedIndex = 0;
+                    ClassContactFilesComboBox.ItemsSource = gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassContactFilesComboBox.SelectedIndex = 0;
+                    ClassContactFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
         }
 
-        private void OpenClassContactFile_Click(object sender, RoutedEventArgs e)
+        private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassContactFiles.SelectedIndex != -1)
+            if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
             }
         }
 
-        private void OpenClassContactFolder_Click(object sender, RoutedEventArgs e)
+        private void OpenClassContactFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassContactFiles.SelectedIndex != -1)
+            if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
                         StartInfo = new ProcessStartInfo("explorer.exe")
                         {
-                            Arguments = "/e,/select,\"" + gakujoAPI.classContacts[ClassContacts.SelectedIndex].Files![ClassContactFiles.SelectedIndex] + "\"",
+                            Arguments = "/e,/select,\"" + gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex] + "\"",
                             UseShellExecute = true
                         }
                     };
@@ -91,58 +93,58 @@ namespace GakujoGUI
             }
         }
 
-        private void Reports_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ReportsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void Quizzes_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void QuizzesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void ClassSharedFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClassSharedFilesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ClassSharedFiles.SelectedIndex != -1)
+            if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
-                ClassSharedFileDescription.Text = gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Description;
-                if (gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files == null)
+                ClassSharedFileDescriptionTextBox.Text = gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Description;
+                if (gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files == null)
                 {
-                    ClassSharedFileFiles.ItemsSource = null;
+                    ClassSharedFileFilesComboBox.ItemsSource = null;
                 }
                 else
                 {
-                    ClassSharedFileFiles.ItemsSource = gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
-                    ClassSharedFileFiles.SelectedIndex = 0;
+                    ClassSharedFileFilesComboBox.ItemsSource = gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassSharedFileFilesComboBox.SelectedIndex = 0;
                 }
             }
         }
 
-        private void OpenClassSharedFile_Click(object sender, RoutedEventArgs e)
+        private void OpenClassSharedFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassSharedFiles.SelectedIndex != -1)
+            if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
             }
         }
 
-        private void OpenClassSharedFolder_Click(object sender, RoutedEventArgs e)
+        private void OpenClassSharedFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassSharedFiles.SelectedIndex != -1)
+            if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex]))
+                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
                     Process process = new();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
-                        Arguments = "/e,/select,\"" + gakujoAPI.classSharedFiles[ClassSharedFiles.SelectedIndex].Files![ClassSharedFileFiles.SelectedIndex] + "\"",
+                        Arguments = "/e,/select,\"" + gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex] + "\"",
                         UseShellExecute = true
                     };
                     process.Start();
@@ -152,13 +154,13 @@ namespace GakujoGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            UserId.Text = gakujoAPI.account.UserId;
-            PassWord.Password = gakujoAPI.account.PassWord;
+            UserIdTextBox.Text = gakujoAPI.account.UserId;
+            PassWordTextBox.Password = gakujoAPI.account.PassWord;
 
-            ClassContacts.ItemsSource = gakujoAPI.classContacts;
-            Reports.ItemsSource = gakujoAPI.reports;
-            Quizzes.ItemsSource = gakujoAPI.quizzes;
-            ClassSharedFiles.ItemsSource = gakujoAPI.classSharedFiles;
+            ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+            ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+            QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+            ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
         }
 
         public class Report
