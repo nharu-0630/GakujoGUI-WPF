@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Documents;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
 
@@ -127,11 +128,10 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
-                    Process process = new()
+                    Process.Start(new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex])
                     {
-                        StartInfo = new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true }
-                    };
-                    process.Start();
+                        UseShellExecute = true
+                    });
                 }
             }
         }
@@ -142,15 +142,11 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
-                    Process process = new()
+                    Process.Start(new ProcessStartInfo("explorer.exe")
                     {
-                        StartInfo = new ProcessStartInfo("explorer.exe")
-                        {
-                            Arguments = "/e,/select,\"" + ((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex] + "\"",
-                            UseShellExecute = true
-                        }
-                    };
-                    process.Start();
+                        Arguments = "/e,/select,\"" + ((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex] + "\"",
+                        UseShellExecute = true
+                    });
                 }
             }
         }
@@ -267,11 +263,10 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
-                    Process process = new()
+                    Process.Start(new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex])
                     {
-                        StartInfo = new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true }
-                    };
-                    process.Start();
+                        UseShellExecute = true
+                    });
                 }
             }
         }
@@ -282,13 +277,11 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
-                    Process process = new();
-                    process.StartInfo = new ProcessStartInfo("explorer.exe")
+                    Process.Start(new ProcessStartInfo("explorer.exe")
                     {
                         Arguments = "/e,/select,\"" + ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex] + "\"",
                         UseShellExecute = true
-                    };
-                    process.Start();
+                    });
                 }
             }
         }
