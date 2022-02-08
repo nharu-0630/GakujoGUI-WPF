@@ -1,15 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using Path = System.IO.Path;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using MessageBox = ModernWpf.MessageBox;
-using System.ComponentModel;
 using System.Windows.Data;
-using System.Collections.Generic;
+using MessageBox = ModernWpf.MessageBox;
+using Path = System.IO.Path;
 
 namespace GakujoGUI
 {
@@ -48,36 +48,11 @@ namespace GakujoGUI
             });
         }
 
-        private void ClassTablesDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
-        {
-            bool enable = false;
-            switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
-            {
-                case 0:
-                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName != "";
-                    break;
-                case 1:
-                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName != "";
-                    break;
-                case 2:
-                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName != "";
-                    break;
-                case 3:
-                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName != "";
-                    break;
-                case 4:
-                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName != "";
-                    break;
-            }
-
-
-        }
-
         #region 授業連絡
 
         private void ClassContactsSearchAutoSuggestBox_QuerySubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            ICollectionView collectionView = (new CollectionViewSource() { Source = gakujoAPI.classContacts }).View;
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
             collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
             ClassContactsDataGrid.ItemsSource = collectionView;
         }
@@ -338,7 +313,7 @@ namespace GakujoGUI
 
         private void ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            ICollectionView collectionView = (new CollectionViewSource() { Source = gakujoAPI.classSharedFiles }).View;
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classSharedFiles }.View;
             collectionView.Filter = new Predicate<object>(item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchAutoSuggestBox.Text));
             ClassSharedFilesDataGrid.ItemsSource = collectionView;
         }
@@ -366,5 +341,43 @@ namespace GakujoGUI
             }
         }
 
+        private void ClassTablesDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender == null)
+            {
+                return;
+            }
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            {
+                string suggestText = "";
+                switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+                {
+                    case 0:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
+                        break;
+                    case 1:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
+                        break;
+                    case 2:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
+                        break;
+                    case 3:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
+                        break;
+                    case 4:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
+                        break;
+                }
+                if (suggestText != "")
+                {
+                    ClassContactsSearchAutoSuggestBox.Text = suggestText;
+                    ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
+                    collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
+                    ClassContactsDataGrid.ItemsSource = collectionView;
+                    e.Handled = true;
+                    ClassContactsTabItem.IsSelected = true;
+                }
+            }
+        }
     }
 }

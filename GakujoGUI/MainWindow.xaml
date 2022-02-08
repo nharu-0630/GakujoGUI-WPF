@@ -12,7 +12,10 @@
     Loaded="Window_Loaded"
     mc:Ignorable="d">
     <TabControl>
-        <TabItem Header="ログイン" IsSelected="True">
+        <TabItem
+            Name="LoginTabItem"
+            Header="ログイン"
+            IsSelected="True">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="180" />
@@ -57,11 +60,11 @@
                     CanUserResizeColumns="False"
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
+                    MouseDoubleClick="ClassTablesDataGrid_MouseDoubleClick"
                     RowHeight="96"
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectedCellsChanged="ClassTablesDataGrid_SelectedCellsChanged"
                     SelectionMode="Single"
                     SelectionUnit="Cell">
                     <DataGrid.Columns>
@@ -94,7 +97,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Header="授業連絡">
+        <TabItem Name="ClassContactsTabItem" Header="授業連絡">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -222,7 +225,7 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem Header="レポート">
+        <TabItem Name="ReportsTabItem" Header="レポート">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -298,7 +301,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Header="小テスト">
+        <TabItem Name="QuizzesTabItem" Header="小テスト">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -380,7 +383,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Header="授業共有ファイル">
+        <TabItem Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
