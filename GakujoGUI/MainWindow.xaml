@@ -61,7 +61,7 @@
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ClassTablesDataGrid_SelectionChanged"
+                    SelectedCellsChanged="ClassTablesDataGrid_SelectedCellsChanged"
                     SelectionMode="Single"
                     SelectionUnit="Cell">
                     <DataGrid.Columns>

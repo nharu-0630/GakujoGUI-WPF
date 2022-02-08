@@ -48,8 +48,28 @@ namespace GakujoGUI
             });
         }
 
-        private void ClassTablesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ClassTablesDataGrid_SelectedCellsChanged(object sender, SelectedCellsChangedEventArgs e)
         {
+            bool enable = false;
+            switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+            {
+                case 0:
+                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName != "";
+                    break;
+                case 1:
+                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName != "";
+                    break;
+                case 2:
+                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName != "";
+                    break;
+                case 3:
+                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName != "";
+                    break;
+                case 4:
+                    enable = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName != "";
+                    break;
+            }
+
 
         }
 
@@ -71,7 +91,7 @@ namespace GakujoGUI
         {
             if (args.Reason == ModernWpf.Controls.AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                List<String> suitableItems = new();
+                List<string> suitableItems = new();
                 string[] splitText = sender.Text.Split(" ");
                 foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
                 {
@@ -345,5 +365,6 @@ namespace GakujoGUI
                 sender.ItemsSource = suitableItems.Distinct();
             }
         }
+
     }
 }
