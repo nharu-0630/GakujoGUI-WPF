@@ -203,7 +203,7 @@
                                 Visibility="Collapsed" />
                             <TextBlock
                                 xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                Margin="6"
+                                Margin="12"
                                 Text="{Binding ElementName=ClassContactContentTextBox, Path=Text}"
                                 TextWrapping="Wrap">
                                 <link:HyperlinkTextBlock.Inline>
@@ -498,7 +498,7 @@
                                 Visibility="Collapsed" />
                             <TextBlock
                                 xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                Margin="6"
+                                Margin="12"
                                 Text="{Binding ElementName=ClassSharedFileDescriptionTextBox, Path=Text}"
                                 TextWrapping="Wrap">
                                 <link:HyperlinkTextBlock.Inline>
