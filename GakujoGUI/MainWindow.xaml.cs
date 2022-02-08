@@ -7,6 +7,9 @@ using Path = System.IO.Path;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using MessageBox = ModernWpf.MessageBox;
+using System.ComponentModel;
+using System.Windows.Data;
+using System.Collections.Generic;
 
 namespace GakujoGUI
 {
@@ -16,11 +19,6 @@ namespace GakujoGUI
     public partial class MainWindow : Window
     {
         private readonly GakujoAPI gakujoAPI = new();
-
-        public static string GetJsonPath(string value)
-        {
-            return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
-        }
 
         public MainWindow()
         {
@@ -57,43 +55,38 @@ namespace GakujoGUI
 
         #region 授業連絡
 
-        public class ClassContact
+        private void ClassContactsSearchAutoSuggestBox_QuerySubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            public string? Subjects { get; set; }
-            public string? TeacherName { get; set; }
-            public string? ContactType { get; set; }
-            public string? Title { get; set; }
-            public string? Content { get; set; }
-            public string[]? Files { get; set; }
-            public string? FileLinkRelease { get; set; }
-            public string? ReferenceURL { get; set; }
-            public string? Severity { get; set; }
-            public DateTime TargetDateTime { get; set; }
-            public DateTime ContactDateTime { get; set; }
-            public string? WebReplyRequest { get; set; }
 
-            public override string ToString()
-            {
-                return Subjects!.Split(' ')[0] + " " + Title + " " + ContactDateTime.ToShortDateString();
-            }
+            ICollectionView collectionView = (new CollectionViewSource() { Source = gakujoAPI.classContacts }).View;
+            collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
+            ClassContactsDataGrid.ItemsSource = collectionView;
+        }
 
-            public override bool Equals(object? obj)
+        private void ClassContactsSearchAutoSuggestBox_SuggestionChosen(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            ClassContactsSearchAutoSuggestBox.Text = args.SelectedItem.ToString();
+        }
+
+        private void ClassContactsSearchAutoSuggestBox_TextChanged(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == ModernWpf.Controls.AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                if (obj == null || GetType() != obj.GetType())
+                List<String> suitableItems = new List<string>();
+                string[] splitText = sender.Text.Split(" ");
+                foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
                 {
-                    return false;
+                    if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
                 }
-                ClassContact objClassContact = (ClassContact)obj;
-                return Subjects == objClassContact.Subjects && Title == objClassContact.Title && ContactDateTime == objClassContact.ContactDateTime;
-            }
-
-            public override int GetHashCode()
-            {
-                return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ ContactDateTime!.GetHashCode();
+                sender.ItemsSource = suitableItems.Distinct();
             }
         }
 
-        private void ClassContactsButton_Click(object sender, RoutedEventArgs e)
+        private void ClassContactsLoadButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -119,47 +112,47 @@ namespace GakujoGUI
         {
             if (ClassContactsDataGrid.SelectedIndex != -1)
             {
-                ClassContactContentTextBox.Text = gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Content;
-                if (gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files.Length == 0)
+                ClassContactContentTextBox.Text = ((ClassContact)ClassContactsDataGrid.SelectedItem).Content;
+                if (((ClassContact)ClassContactsDataGrid.SelectedItem).Files.Length == 0)
                 {
                     ClassContactFilesComboBox.ItemsSource = null;
                     ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
                 }
                 else
                 {
-                    ClassContactFilesComboBox.ItemsSource = gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassContactFilesComboBox.ItemsSource = ((ClassContact)ClassContactsDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
                     ClassContactFilesComboBox.SelectedIndex = 0;
                     ClassContactFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
         }
 
-        private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
+        private void ClassContactOpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]))
+                if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
             }
         }
 
-        private void OpenClassContactFolderButton_Click(object sender, RoutedEventArgs e)
+        private void ClassContactOpenFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex]))
+                if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
                         StartInfo = new ProcessStartInfo("explorer.exe")
                         {
-                            Arguments = "/e,/select,\"" + gakujoAPI.classContacts[ClassContactsDataGrid.SelectedIndex].Files![ClassContactFilesComboBox.SelectedIndex] + "\"",
+                            Arguments = "/e,/select,\"" + ((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex] + "\"",
                             UseShellExecute = true
                         }
                     };
@@ -171,47 +164,6 @@ namespace GakujoGUI
         #endregion
 
         #region レポート
-
-        public class Report
-        {
-            public string? Subjects { get; set; }
-            public string? Title { get; set; }
-            public string? Status { get; set; }
-            public DateTime StartDateTime { get; set; }
-            public DateTime EndDateTime { get; set; }
-            public DateTime SubmittedDateTime { get; set; }
-            public string? ImplementationFormat { get; set; }
-            public string? Operation { get; set; }
-            public string? ReportId { get; set; }
-            public string? SchoolYear { get; set; }
-            public string? SubjectCode { get; set; }
-            public string? ClassCode { get; set; }
-
-            public override string ToString()
-            {
-                return "[" + Status + "] " + Subjects!.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
-            }
-
-            public string ToShortString()
-            {
-                return Subjects!.Split(' ')[0] + " " + Title;
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj == null || GetType() != obj.GetType())
-                {
-                    return false;
-                }
-                Report objReport = (Report)obj;
-                return SubjectCode == objReport.SubjectCode && ClassCode == objReport.ClassCode && ReportId == objReport.ReportId;
-            }
-
-            public override int GetHashCode()
-            {
-                return SubjectCode!.GetHashCode() ^ ClassCode!.GetHashCode() ^ ReportId!.GetHashCode();
-            }
-        }
 
         private void ReportsButton_Click(object sender, RoutedEventArgs e)
         {
@@ -244,47 +196,6 @@ namespace GakujoGUI
 
         #region 小テスト
 
-        public class Quiz
-        {
-            public string? Subjects { get; set; }
-            public string? Title { get; set; }
-            public string? Status { get; set; }
-            public DateTime StartDateTime { get; set; }
-            public DateTime EndDateTime { get; set; }
-            public string? SubmissionStatus { get; set; }
-            public string? ImplementationFormat { get; set; }
-            public string? Operation { get; set; }
-            public string? QuizId { get; set; }
-            public string? SchoolYear { get; set; }
-            public string? SubjectCode { get; set; }
-            public string? ClassCode { get; set; }
-
-            public override string ToString()
-            {
-                return "[" + SubmissionStatus + "] " + Subjects!.Split(' ')[0] + " " + Title + " -> " + EndDateTime.ToString();
-            }
-
-            public string ToShortString()
-            {
-                return Subjects!.Split(' ')[0] + " " + Title;
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj == null || GetType() != obj.GetType())
-                {
-                    return false;
-                }
-                Quiz objQuiz = (Quiz)obj;
-                return SubjectCode == objQuiz.SubjectCode && ClassCode == objQuiz.ClassCode && QuizId == objQuiz.QuizId;
-            }
-
-            public override int GetHashCode()
-            {
-                return SubjectCode!.GetHashCode() ^ ClassCode!.GetHashCode() ^ QuizId!.GetHashCode();
-            }
-        }
-
         private void QuizzesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
@@ -316,38 +227,19 @@ namespace GakujoGUI
 
         #region 授業共有ファイル
 
-        public class ClassSharedFile
+        private void ClassSharedFilesSearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            public string? Subjects { get; set; }
-            public string? Title { get; set; }
-            public string? Size { get; set; }
-            public string[]? Files { get; set; }
-            public string? Description { get; set; }
-            public string? PublicPeriod { get; set; }
-            public DateTime UpdateDateTime { get; set; }
 
-            public override string ToString()
-            {
-                return Subjects!.Split(' ')[0] + " " + Title + " " + UpdateDateTime.ToShortDateString();
-            }
-
-            public override bool Equals(object? obj)
-            {
-                if (obj == null || GetType() != obj.GetType())
-                {
-                    return false;
-                }
-                ClassSharedFile objClassSharedFile = (ClassSharedFile)obj;
-                return Subjects == objClassSharedFile.Subjects && Title == objClassSharedFile.Title && UpdateDateTime == objClassSharedFile.UpdateDateTime;
-            }
-
-            public override int GetHashCode()
-            {
-                return Subjects!.GetHashCode() ^ Title!.GetHashCode() ^ UpdateDateTime!.GetHashCode();
-            }
         }
 
-        private void ClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
+        private void ClassSharedFilesSearchButton_Click(object sender, RoutedEventArgs e)
+        {
+            ICollectionView collectionView = (new CollectionViewSource() { Source = gakujoAPI.classSharedFiles }).View;
+            collectionView.Filter = new Predicate<object>(item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchTextBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchTextBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchTextBox.Text));
+            ClassSharedFilesDataGrid.ItemsSource = collectionView;
+        }
+
+        private void ClassSharedFilesLoadButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -373,44 +265,44 @@ namespace GakujoGUI
         {
             if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
-                ClassSharedFileDescriptionTextBox.Text = gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Description;
-                if (gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files.Length == 0)
+                ClassSharedFileDescriptionTextBox.Text = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description;
+                if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files.Length == 0)
                 {
                     ClassSharedFileFilesComboBox.ItemsSource = null;
                 }
                 else
                 {
-                    ClassSharedFileFilesComboBox.ItemsSource = gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files!.Select(x => Path.GetFileName(x));
+                    ClassSharedFileFilesComboBox.ItemsSource = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
                     ClassSharedFileFilesComboBox.SelectedIndex = 0;
                 }
             }
         }
 
-        private void OpenClassSharedFileButton_Click(object sender, RoutedEventArgs e)
+        private void ClassSharedOpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]))
+                if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
                     Process process = new()
                     {
-                        StartInfo = new ProcessStartInfo(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true }
+                        StartInfo = new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true }
                     };
                     process.Start();
                 }
             }
         }
 
-        private void OpenClassSharedFolderButton_Click(object sender, RoutedEventArgs e)
+        private void ClassSharedOpenFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
-                if (File.Exists(gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex]))
+                if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
                     Process process = new();
                     process.StartInfo = new ProcessStartInfo("explorer.exe")
                     {
-                        Arguments = "/e,/select,\"" + gakujoAPI.classSharedFiles[ClassSharedFilesDataGrid.SelectedIndex].Files![ClassSharedFileFilesComboBox.SelectedIndex] + "\"",
+                        Arguments = "/e,/select,\"" + ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex] + "\"",
                         UseShellExecute = true
                     };
                     process.Start();

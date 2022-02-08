@@ -33,8 +33,9 @@
                     <Button
                         Name="LoginButton"
                         Margin="6"
-                        Click="LoginButton_Click"
-                        Content="ログイン" />
+                        Click="LoginButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" />
+                    </Button>
                     <Label
                         Name="LoginDateTimeLabel"
                         Margin="6"
@@ -101,11 +102,20 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button
-                        Name="ClassContactsButton"
+                    <ui:AutoSuggestBox
+                        Name="ClassContactsSearchAutoSuggestBox"
+                        MinWidth="300"
                         Margin="6"
-                        Click="ClassContactsButton_Click"
-                        Content="更新" />
+                        QueryIcon="Find"
+                        QuerySubmitted="ClassContactsSearchAutoSuggestBox_QuerySubmitted"
+                        SuggestionChosen="ClassContactsSearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="ClassContactsSearchAutoSuggestBox_TextChanged" />
+                    <Button
+                        Name="ClassContactsLoadButton"
+                        Margin="6"
+                        Click="ClassContactsLoadButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                    </Button>
                     <Label
                         Name="ClassContactsDateTimeLabel"
                         Margin="6"
@@ -197,14 +207,14 @@
                                     MaxWidth="360"
                                     Margin="6" />
                                 <Button
-                                    Name="OpenClassContactFileButton"
+                                    Name="ClassContactOpenFileButton"
                                     Margin="6"
-                                    Click="OpenClassContactFileButton_Click"
+                                    Click="ClassContactOpenFileButton_Click"
                                     Content="ファイルを開く" />
                                 <Button
-                                    Name="OpenClassContactFolderButton"
+                                    Name="ClassContactOpenFolderButton"
                                     Margin="6"
-                                    Click="OpenClassContactFolderButton_Click"
+                                    Click="ClassContactOpenFolderButton_Click"
                                     Content="フォルダを開く" />
                             </StackPanel>
                         </StackPanel>
@@ -223,8 +233,9 @@
                     <Button
                         Name="ReportsButton"
                         Margin="6"
-                        Click="ReportsButton_Click"
-                        Content="更新" />
+                        Click="ReportsButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                    </Button>
                     <Label
                         Name="ReportsDateTimeLabel"
                         Margin="6"
@@ -298,8 +309,9 @@
                     <Button
                         Name="QuizzesButton"
                         Margin="6"
-                        Click="QuizzesButton_Click"
-                        Content="更新" />
+                        Click="QuizzesButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                    </Button>
                     <Label
                         Name="QuizzesDateTimeLabel"
                         Margin="6"
@@ -376,11 +388,23 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button
-                        Name="ClassSharedFilesButton"
+                    <TextBox
+                        Name="ClassSharedFilesSearchTextBox"
+                        MinWidth="300"
                         Margin="6"
-                        Click="ClassSharedFilesButton_Click"
-                        Content="更新" />
+                        TextChanged="ClassSharedFilesSearchTextBox_TextChanged" />
+                    <Button
+                        Name="ClassSharedFilesSearchButton"
+                        Margin="6"
+                        Click="ClassSharedFilesSearchButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE721;" />
+                    </Button>
+                    <Button
+                        Name="ClassSharedFilesLoadButton"
+                        Margin="6"
+                        Click="ClassSharedFilesLoadButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                    </Button>
                     <Label
                         Name="ClassSharedFilesDateTimeLabel"
                         Margin="6"
@@ -465,14 +489,14 @@
                         <StackPanel Orientation="Horizontal">
                             <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
                             <Button
-                                Name="OpenClassSharedFileButton"
+                                Name="ClassSharedOpenFileButton"
                                 Margin="6"
-                                Click="OpenClassSharedFileButton_Click"
+                                Click="ClassSharedOpenFileButton_Click"
                                 Content="ファイルを開く" />
                             <Button
-                                Name="OpenClassSharedFolderButton"
+                                Name="ClassSharedOpenFolderButton"
                                 Margin="6"
-                                Click="OpenClassSharedFolderButton_Click"
+                                Click="ClassSharedOpenFolderButton_Click"
                                 Content="フォルダを開く" />
                         </StackPanel>
                     </StackPanel>
