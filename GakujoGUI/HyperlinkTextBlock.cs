@@ -36,9 +36,10 @@ namespace HyperlinkTextBlock
         private static void OnInlinePropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             TextBlock textBlock = (dependencyObject as TextBlock)!;
-            string? message = e.NewValue as string;
-            if (textBlock == null || message == null)
+            if (textBlock == null || e.NewValue is not string message)
+            {
                 return;
+            }
             message = message.TrimEnd('\n').TrimEnd('\r');
             List<int> newLine = new();
             int i = 0;
@@ -148,8 +149,7 @@ namespace HyperlinkTextBlock
 
         private static new void MouseEnter(object sender, MouseEventArgs e)
         {
-            Hyperlink? hyperlink = sender as Hyperlink;
-            if (hyperlink == null)
+            if (sender is not Hyperlink hyperlink)
             {
                 return;
             }
@@ -158,9 +158,7 @@ namespace HyperlinkTextBlock
 
         private static new void MouseLeave(object sender, MouseEventArgs e)
         {
-            Hyperlink? hyperlink = sender as Hyperlink;
-            TextBlock? textBlock = hyperlink!.Parent as TextBlock;
-            if (hyperlink == null || textBlock == null)
+            if (sender is not Hyperlink hyperlink || hyperlink!.Parent is not TextBlock textBlock)
             {
                 return;
             }
