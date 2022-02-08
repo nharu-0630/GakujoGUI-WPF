@@ -388,17 +388,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <TextBox
-                        Name="ClassSharedFilesSearchTextBox"
+                    <ui:AutoSuggestBox
+                        Name="ClassSharedFilesSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
-                        TextChanged="ClassSharedFilesSearchTextBox_TextChanged" />
-                    <Button
-                        Name="ClassSharedFilesSearchButton"
-                        Margin="6"
-                        Click="ClassSharedFilesSearchButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE721;" />
-                    </Button>
+                        QueryIcon="Find"
+                        QuerySubmitted="ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted"
+                        SuggestionChosen="ClassSharedFilesSearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="ClassSharedFilesSearchAutoSuggestBox_TextChanged" />
                     <Button
                         Name="ClassSharedFilesLoadButton"
                         Margin="6"

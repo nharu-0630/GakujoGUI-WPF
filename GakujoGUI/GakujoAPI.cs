@@ -699,7 +699,6 @@ namespace GakujoGUI
                     schoolSharedFiles[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
                 }
             }
-            account.SchoolSharedFileDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
         }
