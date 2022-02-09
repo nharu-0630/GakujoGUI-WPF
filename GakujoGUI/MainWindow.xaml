@@ -10,9 +10,10 @@
     Width="900"
     Height="600"
     ui:WindowHelper.UseModernWindowStyle="True"
+    Deactivated="Window_Deactivated"
     Loaded="Window_Loaded"
     SizeChanged="Window_SizeChanged"
-    mc:Ignorable="d" Deactivated="Window_Deactivated">
+    mc:Ignorable="d">
     <Window.Resources>
         <ContextMenu x:Key="ContextMenu">
             <MenuItem
