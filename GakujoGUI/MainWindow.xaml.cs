@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
+using Hardcodet.Wpf.TaskbarNotification;
 
 namespace GakujoGUI
 {
@@ -319,6 +319,7 @@ namespace GakujoGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordTextBox.Password = gakujoAPI.account.PassWord;
             LoginDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
