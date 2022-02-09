@@ -395,5 +395,40 @@ namespace GakujoGUI
                 });
             });
         }
+
+
+        private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowInTaskbar = true;
+            TaskBarIcon.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            SystemCommands.RestoreWindow(this);
+        }
+
+        private void LoadMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+
+        }
+
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Minimized)
+            {
+                ShowInTaskbar = false;
+                TaskBarIcon.Visibility = Visibility.Visible;
+                Visibility = Visibility.Hidden;
+                Hide();
+            }
+        }
     }
 }

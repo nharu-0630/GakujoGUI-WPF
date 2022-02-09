@@ -11,12 +11,22 @@
     Height="600"
     ui:WindowHelper.UseModernWindowStyle="True"
     Loaded="Window_Loaded"
-    mc:Ignorable="d">
+    SizeChanged="Window_SizeChanged"
+    mc:Ignorable="d" Deactivated="Window_Deactivated">
     <Window.Resources>
         <ContextMenu x:Key="ContextMenu">
-            <MenuItem Header="表示" />
-            <MenuItem Header="更新" />
-            <MenuItem Header="終了" />
+            <MenuItem
+                Name="OpenMenuItem"
+                Click="OpenMenuItem_Click"
+                Header="表示" />
+            <MenuItem
+                Name="LoadMenuItem"
+                Click="LoadMenuItem_Click"
+                Header="更新" />
+            <MenuItem
+                Name="CloseMenuItem"
+                Click="CloseMenuItem_Click"
+                Header="終了" />
         </ContextMenu>
     </Window.Resources>
     <Window.DataContext>
@@ -24,8 +34,7 @@
             x:Name="TaskBarIcon"
             ContextMenu="{StaticResource ContextMenu}"
             PopupActivation="All"
-            ToolTipText="GakujoGUI"
-            Visibility="Visible" />
+            ToolTipText="GakujoGUI" />
     </Window.DataContext>
     <TabControl>
         <TabItem
