@@ -35,7 +35,8 @@
             x:Name="TaskBarIcon"
             ContextMenu="{StaticResource ContextMenu}"
             PopupActivation="All"
-            ToolTipText="GakujoGUI" />
+            ToolTipText="GakujoGUI"
+            Visibility="Hidden" />
     </Window.DataContext>
     <TabControl>
         <TabItem
@@ -63,7 +64,17 @@
                         Name="LoginButton"
                         Margin="6"
                         Click="LoginButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72A;" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="LoginButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72A;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="LoginButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="LoginDateTimeLabel"
@@ -143,7 +154,17 @@
                         Name="ClassContactsLoadButton"
                         Margin="6"
                         Click="ClassContactsLoadButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="ClassContactsLoadButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="ClassContactsLoadButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="ClassContactsDateTimeLabel"
@@ -258,10 +279,20 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="ReportsButton"
+                        Name="ReportsLoadButton"
                         Margin="6"
-                        Click="ReportsButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                        Click="ReportsLoadButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="ReportsLoadButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="ReportsLoadButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="ReportsDateTimeLabel"
@@ -334,10 +365,20 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="QuizzesButton"
+                        Name="QuizzesLoadButton"
                         Margin="6"
-                        Click="QuizzesButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                        Click="QuizzesLoadButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="QuizzesLoadButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="QuizzesLoadButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="QuizzesDateTimeLabel"
@@ -427,7 +468,17 @@
                         Name="ClassSharedFilesLoadButton"
                         Margin="6"
                         Click="ClassSharedFilesLoadButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="ClassSharedFilesLoadButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="ClassSharedFilesLoadButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="ClassSharedFilesDateTimeLabel"
@@ -536,10 +587,20 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="ClassResultsButton"
+                        Name="ClassResultsLoadButton"
                         Margin="6"
-                        Click="ClassResultsButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                        Click="ClassResultsLoadButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="ClassResultsLoadButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="ClassResultsLoadButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
                     </Button>
                     <Label
                         Name="ClassResultsDateTimeLabel"
