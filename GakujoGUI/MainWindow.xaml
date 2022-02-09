@@ -523,5 +523,116 @@
                 </Grid>
             </Grid>
         </TabItem>
+        <TabItem Name="ClassResultsTabItem" Header="成績情報">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button
+                        Name="ClassResultsButton"
+                        Margin="6"
+                        Click="ClassResultsButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE72C;" />
+                    </Button>
+                    <Label
+                        Name="ClassResultsDateTimeLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
+                </StackPanel>
+                <GridSplitter
+                    Grid.Row="1"
+                    Width="5"
+                    VerticalAlignment="Stretch" />
+                <DataGrid
+                    Name="ClassResultsDataGrid"
+                    Grid.Row="2"
+                    Margin="6"
+                    AreRowDetailsFrozen="True"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    CanUserSortColumns="False"
+                    RowHeight="32"
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="160"
+                            MinWidth="160"
+                            Binding="{Binding Subjects}"
+                            Header="教科名"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding TeacherName}"
+                            Header="担当教員名"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding SubjectsSection}"
+                            Header="科目区分"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding SelectionSection}"
+                            Header="必修選択区分"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding SchoolCredit}"
+                            Header="単位"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding Evaluation}"
+                            Header="評価"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding Score}"
+                            Header="得点"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding GP}"
+                            Header="科目GP"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding AcquisitionYear}"
+                            Header="取得年度"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding ReportDate, StringFormat=yyyy/MM/dd}"
+                            Header="報告日"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding TestType}"
+                            Header="試験種別"
+                            IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
     </TabControl>
 </Window>

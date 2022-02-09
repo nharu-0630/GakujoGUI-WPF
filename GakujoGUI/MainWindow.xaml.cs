@@ -217,6 +217,35 @@ namespace GakujoGUI
 
         #region 授業共有ファイル
 
+        private void ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classSharedFiles }.View;
+            collectionView.Filter = new Predicate<object>(item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchAutoSuggestBox.Text));
+            ClassSharedFilesDataGrid.ItemsSource = collectionView;
+        }
+
+        private void ClassSharedFilesSearchAutoSuggestBox_SuggestionChosen(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxSuggestionChosenEventArgs args)
+        {
+            ClassSharedFilesSearchAutoSuggestBox.Text = args.SelectedItem.ToString();
+        }
+
+        private void ClassSharedFilesSearchAutoSuggestBox_TextChanged(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == ModernWpf.Controls.AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                List<String> suitableItems = new();
+                string[] splitText = sender.Text.Split(" ");
+                foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
+                {
+                    if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
+                    if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
+                }
+                sender.ItemsSource = suitableItems.Distinct();
+            }
+        }
 
         private void ClassSharedFilesLoadButton_Click(object sender, RoutedEventArgs e)
         {
@@ -302,38 +331,9 @@ namespace GakujoGUI
             QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
             ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
+            ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
         }
-
-        private void ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxQuerySubmittedEventArgs args)
-        {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classSharedFiles }.View;
-            collectionView.Filter = new Predicate<object>(item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchAutoSuggestBox.Text));
-            ClassSharedFilesDataGrid.ItemsSource = collectionView;
-        }
-
-        private void ClassSharedFilesSearchAutoSuggestBox_SuggestionChosen(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxSuggestionChosenEventArgs args)
-        {
-            ClassSharedFilesSearchAutoSuggestBox.Text = args.SelectedItem.ToString();
-        }
-
-        private void ClassSharedFilesSearchAutoSuggestBox_TextChanged(ModernWpf.Controls.AutoSuggestBox sender, ModernWpf.Controls.AutoSuggestBoxTextChangedEventArgs args)
-        {
-            if (args.Reason == ModernWpf.Controls.AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                List<String> suitableItems = new();
-                string[] splitText = sender.Text.Split(" ");
-                foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
-                {
-                    if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
-                }
-                sender.ItemsSource = suitableItems.Distinct();
-            }
-        }
-
         private void ClassTablesDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (sender == null)
@@ -371,6 +371,28 @@ namespace GakujoGUI
                     ClassContactsTabItem.IsSelected = true;
                 }
             }
+        }
+
+        private void ClassResultsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (MessageBox.Show("ログイン状態ではありません．自動ログインしますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.No)
+                {
+                    return;
+                }
+                LoginButton_Click(sender, e);
+            }
+            Task.Run(() =>
+            {
+                gakujoAPI.GetClassContacts(out int diffCount);
+                Dispatcher.Invoke(() =>
+                {
+                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                    MessageBox.Show(diffCount + "件の成績情報を更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
+            });
         }
     }
 }
