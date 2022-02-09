@@ -54,7 +54,8 @@ namespace GakujoGUI
 
         public void SetAccount(string userId, string passWord)
         {
-            account = new Account() { UserId = userId, PassWord = passWord };
+            account.UserId = userId;
+            account.PassWord = passWord;
             SaveJson();
         }
 
@@ -856,7 +857,7 @@ namespace GakujoGUI
             return true;
         }
 
-        public void GetClassResults()
+        public void GetClassResults(out int diffCount)
         {
             SetAcademicSystem();
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/seisekiSearchStudentInit.do?mainMenuCode=008&parentMenuCode=007");
@@ -866,6 +867,7 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
             {
+                diffCount = 0;
                 return;
             }
             classResults.Clear();
@@ -891,6 +893,7 @@ namespace GakujoGUI
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
                 classResults.Add(classResult);
             }
+            diffCount = classResults.Count;
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
