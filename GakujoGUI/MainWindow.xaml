@@ -55,7 +55,7 @@
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="静大ID" />
                     <PasswordBox
-                        Name="PassWordTextBox"
+                        Name="PassWordPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="パスワード" />
@@ -79,6 +79,38 @@
                         Name="LoginDateTimeLabel"
                         Margin="6"
                         Content="最終更新" />
+                    <Separator Margin="6" />
+                    <PasswordBox
+                        Name="TodoistTokenPasswordBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Todoistトークン" />
+                    <TextBox
+                        Name="DiscordChannelTextBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Discordチャンネル" />
+                    <PasswordBox
+                        Name="DiscordTokenPasswordBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Discordトークン" />
+                    <Button
+                        Name="TokenSaveButton"
+                        Margin="6"
+                        Click="TokenSaveButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="TokenSaveButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE74E;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="TokenSaveButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
                 <GridSplitter
                     Grid.Column="1"

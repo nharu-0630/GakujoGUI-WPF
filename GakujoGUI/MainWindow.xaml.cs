@@ -35,7 +35,7 @@ namespace GakujoGUI
         {
             Dispatcher.Invoke(() =>
             {
-                gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordTextBox.Password);
+                gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordPasswordBox.Password);
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
@@ -412,7 +412,7 @@ namespace GakujoGUI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             UserIdTextBox.Text = gakujoAPI.account.UserId;
-            PassWordTextBox.Password = gakujoAPI.account.PassWord;
+            PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
             LoginDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables.Take(5);
             ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
@@ -498,6 +498,11 @@ namespace GakujoGUI
             Topmost = true;
             SystemCommands.RestoreWindow(this);
             Topmost = false;
+        }
+
+        private void TokenSaveButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
