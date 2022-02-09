@@ -165,21 +165,6 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
-                            <!--
-                            <DataGridTextColumn
-                                Width="240"
-                                MinWidth="120"
-                                MaxWidth="240"
-                                Binding="{Binding Content}"
-                                Header="内容"
-                                IsReadOnly="True">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            -->
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
@@ -196,40 +181,44 @@
                         Grid.Column="2"
                         ScrollViewer.CanContentScroll="True"
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <StackPanel Orientation="Vertical">
-                            <TextBox
-                                Name="ClassContactContentTextBox"
-                                Text="内容"
-                                Visibility="Collapsed" />
-                            <TextBlock
-                                xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                Margin="12"
-                                Text="{Binding ElementName=ClassContactContentTextBox, Path=Text}"
-                                TextWrapping="Wrap">
-                                <link:HyperlinkTextBlock.Inline>
-                                    <Binding ElementName="ClassContactContentTextBox" Path="Text" />
-                                </link:HyperlinkTextBlock.Inline>
-                            </TextBlock>
-                            <StackPanel
-                                Name="ClassContactFilesStackPanel"
-                                Orientation="Horizontal"
-                                Visibility="Hidden">
-                                <ComboBox
-                                    Name="ClassContactFilesComboBox"
-                                    MaxWidth="360"
-                                    Margin="6" />
-                                <Button
-                                    Name="ClassContactOpenFileButton"
-                                    Margin="6"
-                                    Click="ClassContactOpenFileButton_Click"
-                                    Content="ファイルを開く" />
-                                <Button
-                                    Name="ClassContactOpenFolderButton"
-                                    Margin="6"
-                                    Click="ClassContactOpenFolderButton_Click"
-                                    Content="フォルダを開く" />
+                        <DockPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBox
+                                    Name="ClassContactContentTextBox"
+                                    Text="内容"
+                                    Visibility="Collapsed" />
+                                <TextBlock
+                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                    Margin="12"
+                                    Text="{Binding ElementName=ClassContactContentTextBox, Path=Text}"
+                                    TextWrapping="Wrap">
+                                    <link:HyperlinkTextBlock.Inline>
+                                        <Binding ElementName="ClassContactContentTextBox" Path="Text" />
+                                    </link:HyperlinkTextBlock.Inline>
+                                </TextBlock>
+                                <StackPanel
+                                    Name="ClassContactFilesStackPanel"
+                                    Orientation="Horizontal"
+                                    Visibility="Hidden">
+                                    <ComboBox
+                                        Name="ClassContactFilesComboBox"
+                                        MaxWidth="360"
+                                        Margin="6" />
+                                    <Button
+                                        Name="ClassContactOpenFileButton"
+                                        Margin="6"
+                                        Click="ClassContactOpenFileButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                    </Button>
+                                    <Button
+                                        Name="ClassContactOpenFolderButton"
+                                        Margin="6"
+                                        Click="ClassContactOpenFolderButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                    </Button>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
+                        </DockPanel>
                     </ScrollViewer>
                 </Grid>
             </Grid>
@@ -460,21 +449,6 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
-                            <!--
-                            <DataGridTextColumn
-                                Width="240"
-                                MinWidth="120"
-                                MaxWidth="240"
-                                Binding="{Binding Description}"
-                                Header="ファイル説明"
-                                IsReadOnly="True">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="TextBlock">
-                                        <Setter Property="TextWrapping" Value="Wrap" />
-                                    </Style>
-                                </DataGridTextColumn.ElementStyle>
-                            </DataGridTextColumn>
-                            -->
                             <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
@@ -491,34 +465,38 @@
                         Grid.Column="2"
                         ScrollViewer.CanContentScroll="True"
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <StackPanel Orientation="Vertical">
-                            <TextBox
-                                Name="ClassSharedFileDescriptionTextBox"
-                                Text="ファイル説明"
-                                Visibility="Collapsed" />
-                            <TextBlock
-                                xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                Margin="12"
-                                Text="{Binding ElementName=ClassSharedFileDescriptionTextBox, Path=Text}"
-                                TextWrapping="Wrap">
-                                <link:HyperlinkTextBlock.Inline>
-                                    <Binding ElementName="ClassSharedFileDescriptionTextBox" Path="Text" />
-                                </link:HyperlinkTextBlock.Inline>
-                            </TextBlock>
-                            <StackPanel Orientation="Horizontal">
-                                <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
-                                <Button
-                                    Name="ClassSharedOpenFileButton"
-                                    Margin="6"
-                                    Click="ClassSharedOpenFileButton_Click"
-                                    Content="ファイルを開く" />
-                                <Button
-                                    Name="ClassSharedOpenFolderButton"
-                                    Margin="6"
-                                    Click="ClassSharedOpenFolderButton_Click"
-                                    Content="フォルダを開く" />
+                        <DockPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBox
+                                    Name="ClassSharedFileDescriptionTextBox"
+                                    Text="ファイル説明"
+                                    Visibility="Collapsed" />
+                                <TextBlock
+                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                    Margin="12"
+                                    Text="{Binding ElementName=ClassSharedFileDescriptionTextBox, Path=Text}"
+                                    TextWrapping="Wrap">
+                                    <link:HyperlinkTextBlock.Inline>
+                                        <Binding ElementName="ClassSharedFileDescriptionTextBox" Path="Text" />
+                                    </link:HyperlinkTextBlock.Inline>
+                                </TextBlock>
+                                <StackPanel Orientation="Horizontal">
+                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
+                                    <Button
+                                        Name="ClassSharedOpenFileButton"
+                                        Margin="6"
+                                        Click="ClassSharedOpenFileButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                    </Button>
+                                    <Button
+                                        Name="ClassSharedOpenFolderButton"
+                                        Margin="6"
+                                        Click="ClassSharedOpenFolderButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                    </Button>
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
+                        </DockPanel>
                     </ScrollViewer>
                 </Grid>
             </Grid>
