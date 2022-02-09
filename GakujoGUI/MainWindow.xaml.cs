@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
-using Hardcodet.Wpf.TaskbarNotification;
 
 namespace GakujoGUI
 {

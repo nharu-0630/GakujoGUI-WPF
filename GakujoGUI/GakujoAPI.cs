@@ -9,7 +9,6 @@ using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
-using System.Diagnostics;
 
 namespace GakujoGUI
 {
