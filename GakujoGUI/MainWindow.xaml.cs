@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
+using ModernWpf.Controls;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -10,7 +12,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
-using ModernWpf.Controls;
 
 namespace GakujoGUI
 {
@@ -66,6 +67,83 @@ namespace GakujoGUI
                 }
             });
             return true;
+        }
+
+        private void Load(bool messageBox = true)
+        {
+            if (!gakujoAPI.loginStatus)
+            {
+                if (messageBox)
+                {
+                    MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                return;
+            }
+            Task.Run(() =>
+            {
+                gakujoAPI.GetClassContacts(out int classContactsDiffCount);
+                gakujoAPI.GetReports(out int reportsDiffCount);
+                gakujoAPI.GetQuizzes(out int quizzesDiffCount);
+                gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
+                gakujoAPI.GetClassResults(out int classResultsDiffCount);
+                Dispatcher.Invoke(() =>
+                {
+                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                    ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+                    ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+                    QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+                    ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
+                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                    for (int i = 0; i < classContactsDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classContacts[i]);
+                    }
+                    for (int i = 0; i < reportsDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.reports[i]);
+                    }
+                    for (int i = 0; i < quizzesDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.quizzes[i]);
+                    }
+                    for (int i = 0; i < classSharedFilesDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classSharedFiles[i]);
+                    }
+                    for (int i = 0; i < classResultsDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classResults[i]);
+                    }
+                    //MessageBox.Show(classContactsDiffCount + "件の授業連絡を新しく取得しました．\n" + reportsDiffCount + "件のレポートを新しく取得しました．\n" + quizzesDiffCount + "件の小テストを新しく取得しました．\n" + classSharedFilesDiffCount + "件の授業共有ファイルを新しく取得しました．\n" + classResultsDiffCount + "件の成績情報を更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                });
+            });
+        }
+
+        private void TokenSaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    notifyAPI.SetToken(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    TokenSaveButtonFontIcon.Visibility = Visibility.Collapsed;
+                    TokenSaveButtonProgressRing.Visibility = Visibility.Visible;
+                });
+                notifyAPI.Login();
+                notifyAPI.SetTodoistTask(gakujoAPI.reports);
+                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
+                Dispatcher.Invoke(() =>
+                {
+                    TokenSaveButtonFontIcon.Visibility = Visibility.Visible;
+                    TokenSaveButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
         }
 
         #region 授業連絡
@@ -481,6 +559,35 @@ namespace GakujoGUI
             }
         }
 
+        #region 通知
+
+        private void NotifyToast(ClassContact classContact)
+        {
+            new ToastContentBuilder().AddArgument("Type", "ClassContact").AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
+        }
+
+        private void NotifyToast(Report report)
+        {
+            new ToastContentBuilder().AddArgument("Type", "Report").AddText(report.Title).AddText(report.StartDateTime + " -> " + report.EndDateTime).AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
+        }
+
+        private void NotifyToast(Quiz quiz)
+        {
+            new ToastContentBuilder().AddArgument("Type", "Quiz").AddText(quiz.Title).AddText(quiz.StartDateTime + " -> " + quiz.EndDateTime).AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
+        }
+
+        private void NotifyToast(ClassSharedFile classSharedFile)
+        {
+            new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
+        }
+
+        private void NotifyToast(ClassResult classResult)
+        {
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddText(classResult.Subjects).AddText(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")).AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+        }
+
+        #endregion
+
         #region タスクバー
 
         private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
@@ -495,40 +602,22 @@ namespace GakujoGUI
 
         private void LoadMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.loginStatus)
-            {
-                MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-            Task.Run(() =>
-            {
-                gakujoAPI.GetClassContacts(out int classContactsDiffCount);
-                gakujoAPI.GetReports(out int reportsDiffCount);
-                gakujoAPI.GetQuizzes(out int quizzesDiffCount);
-                gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
-                gakujoAPI.GetClassResults(out int classResultsDiffCount);
-                Dispatcher.Invoke(() =>
-                {
-                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
-                    ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
-                    ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-                    QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-                    ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
-                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
-                    MessageBox.Show(classContactsDiffCount + "件の授業連絡を新しく取得しました．\n" + reportsDiffCount + "件のレポートを新しく取得しました．\n" + quizzesDiffCount + "件の小テストを新しく取得しました．\n" + classSharedFilesDiffCount + "件の授業共有ファイルを新しく取得しました．\n" + classResultsDiffCount + "件の成績情報を更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
-                });
-            });
+            Load();
         }
 
         private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
         {
             Close();
+        }
+
+        private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ShowInTaskbar = true;
+            TaskBarIcon.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            Topmost = true;
+            SystemCommands.RestoreWindow(this);
+            Topmost = false;
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -543,38 +632,6 @@ namespace GakujoGUI
         }
 
         #endregion
-
-        private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
-        {
-            ShowInTaskbar = true;
-            TaskBarIcon.Visibility = Visibility.Collapsed;
-            Visibility = Visibility.Visible;
-            Topmost = true;
-            SystemCommands.RestoreWindow(this);
-            Topmost = false;
-        }
-
-        private void TokenSaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    notifyAPI.SetToken(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
-                    TokenSaveButtonFontIcon.Visibility = Visibility.Collapsed;
-                    TokenSaveButtonProgressRing.Visibility = Visibility.Visible;
-                });
-                notifyAPI.Login();
-                notifyAPI.SetTodoistTask(gakujoAPI.reports);
-                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
-                Dispatcher.Invoke(() =>
-                {
-                    TokenSaveButtonFontIcon.Visibility = Visibility.Visible;
-                    TokenSaveButtonProgressRing.Visibility = Visibility.Collapsed;
-                });
-            });
-        }
-
 
     }
 }

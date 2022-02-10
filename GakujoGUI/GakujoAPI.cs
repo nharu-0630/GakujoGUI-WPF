@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -733,6 +732,8 @@ namespace GakujoGUI
             SaveCookies();
         }
 
+        #region
+
         //public string GetQuiz(Quiz quiz)
         //{
         //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/forwardSubmitRef");
@@ -844,6 +845,8 @@ namespace GakujoGUI
         //    return true;
         //}
 
+        #endregion
+
         private bool CheckConnection()
         {
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
@@ -899,6 +902,7 @@ namespace GakujoGUI
                 diffCount = 0;
                 return;
             }
+            diffCount = classResults.Count;
             classResults.Clear();
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
             {
@@ -922,7 +926,7 @@ namespace GakujoGUI
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
                 classResults.Add(classResult);
             }
-            diffCount = classResults.Count;
+            diffCount = classResults.Count - diffCount;
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
