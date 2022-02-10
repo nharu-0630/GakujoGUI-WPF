@@ -107,7 +107,7 @@
                             <ui:FontIcon
                                 x:Name="TokenSaveButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE74E;"
+                                Glyph="&#xE72A;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
                                 x:Name="TokenSaveButtonProgressRing"
