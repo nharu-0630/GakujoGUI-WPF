@@ -7,9 +7,9 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     mc:Ignorable="d">
-    <StackPanel Margin="0,0,0,6" Orientation="Vertical">
-        <Label Margin="6" Content="{Binding SubjectsName}" />
-        <Label Margin="6" Content="{Binding ClassRoom}" />
+    <StackPanel Orientation="Vertical">
+        <Label Margin="6,6" Content="{Binding SubjectsName}" />
+        <Label Margin="6,0" Content="{Binding ClassRoom}" />
         <Grid>
             <Grid.Style>
                 <Style TargetType="{x:Type Grid}">
@@ -20,26 +20,29 @@
                     </Style.Triggers>
                 </Style>
             </Grid.Style>
-            <UniformGrid Rows="1">
+            <StackPanel Margin="0,3" Orientation="Horizontal">
                 <Button
                     Name="ClassContactButton"
+                    Margin="3"
                     HorizontalAlignment="Center"
                     Click="ClassContactButton_Click">
                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F2;" />
                 </Button>
                 <Button
                     Name="ReportButton"
+                    Margin="3"
                     HorizontalAlignment="Center"
                     Click="ReportButton_Click">
                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
                 </Button>
                 <Button
                     Name="QuizButton"
+                    Margin="3"
                     HorizontalAlignment="Center"
                     Click="QuizButton_Click">
                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70B;" />
                 </Button>
-            </UniformGrid>
+            </StackPanel>
         </Grid>
     </StackPanel>
 </UserControl>

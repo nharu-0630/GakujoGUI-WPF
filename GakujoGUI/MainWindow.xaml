@@ -142,56 +142,76 @@
                     <DataGrid.Columns>
                         <DataGridTemplateColumn
                             Width="*"
-                            MinWidth="120"
+                            MinWidth="130"
                             Header="月曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Monday}" />
+                                    <local:ClassTablesCell
+                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                        DataContext="{Binding Monday}"
+                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
+                                        ReportButtonClick="ClassTablesCell_ReportButtonClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
-                            MinWidth="120"
+                            MinWidth="130"
                             Header="火曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Tuesday}" />
+                                    <local:ClassTablesCell
+                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                        DataContext="{Binding Tuesday}"
+                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
+                                        ReportButtonClick="ClassTablesCell_ReportButtonClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
-                            MinWidth="120"
+                            MinWidth="130"
                             Header="水曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Wednesday}" />
+                                    <local:ClassTablesCell
+                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                        DataContext="{Binding Wednesday}"
+                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
+                                        ReportButtonClick="ClassTablesCell_ReportButtonClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
-                            MinWidth="120"
+                            MinWidth="130"
                             Header="木曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Thursday}" />
+                                    <local:ClassTablesCell
+                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                        DataContext="{Binding Thursday}"
+                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
+                                        ReportButtonClick="ClassTablesCell_ReportButtonClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
-                            MinWidth="120"
+                            MinWidth="130"
                             Header="金曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Friday}" />
+                                    <local:ClassTablesCell
+                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                        DataContext="{Binding Friday}"
+                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
+                                        ReportButtonClick="ClassTablesCell_ReportButtonClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -213,8 +233,8 @@
                         Margin="6"
                         QueryIcon="Find"
                         QuerySubmitted="ClassContactsSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="ClassContactsSearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="ClassContactsSearchAutoSuggestBox_TextChanged" />
+                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
                         x:Name="ClassContactsLoadButton"
                         Margin="6"
@@ -524,8 +544,8 @@
                         Margin="6"
                         QueryIcon="Find"
                         QuerySubmitted="ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="ClassSharedFilesSearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="ClassSharedFilesSearchAutoSuggestBox_TextChanged" />
+                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
                         x:Name="ClassSharedFilesLoadButton"
                         Margin="6"

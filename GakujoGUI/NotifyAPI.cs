@@ -32,10 +32,7 @@ namespace GakujoGUI
                 }
                 return _todoistResources!;
             }
-            set
-            {
-                _todoistResources = value;
-            }
+            set { _todoistResources = value; }
         }
 
         public static string GetJsonPath(string value)
@@ -71,8 +68,7 @@ namespace GakujoGUI
             {
                 File.WriteAllText(GetJsonPath("Token"), JsonConvert.SerializeObject(token, Formatting.Indented));
             }
-            catch
-            { }
+            catch { }
         }
 
         public void Login()
@@ -81,15 +77,13 @@ namespace GakujoGUI
             {
                 todoistClient = new(token.TodoistToken);
             }
-            catch
-            { }
+            catch { }
             try
             {
                 discordSocketClient = new();
                 discordSocketClient.LoginAsync(TokenType.Bot, token.DiscordToken).Wait();
             }
-            catch
-            { }
+            catch { }
         }
 
         private bool ExistsTodoistTask(string content, DateTime dateTime)
@@ -112,27 +106,35 @@ namespace GakujoGUI
             return false;
         }
 
-        public void AddTodoistTask(string content, DateTime dateTime)
+        private void AddTodoistTask(string content, DateTime dateTime)
         {
-            if (!ExistsTodoistTask(content, dateTime))
+            try
             {
-                todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Wait();
+                if (!ExistsTodoistTask(content, dateTime))
+                {
+                    todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Wait();
+                }
             }
+            catch { }
         }
 
-        public void ArchiveTodoistTask(string content, DateTime dateTime)
+        private void ArchiveTodoistTask(string content, DateTime dateTime)
         {
-            foreach (Item item in TodoistResources.Items)
+            try
             {
-                if (item.DueDate == null)
+                foreach (Item item in TodoistResources.Items)
                 {
-                    continue;
-                }
-                if (item.Content == content && item.DueDate.Date == dateTime && item.IsArchived == false)
-                {
-                    todoistClient!.Items.ArchiveAsync(item.Id).Wait();
+                    if (item.DueDate == null)
+                    {
+                        continue;
+                    }
+                    if (item.Content == content && item.DueDate.Date == dateTime && item.IsArchived == false)
+                    {
+                        todoistClient!.Items.ArchiveAsync(item.Id).Wait();
+                    }
                 }
             }
+            catch { }
         }
 
         public void SetTodoistTask(List<Report> reports)

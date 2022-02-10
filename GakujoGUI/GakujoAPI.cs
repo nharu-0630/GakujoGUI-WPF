@@ -134,58 +134,31 @@ namespace GakujoGUI
 
         private void SaveJson()
         {
+            try { File.WriteAllText(GetJsonPath("Reports"), JsonConvert.SerializeObject(reports, Formatting.Indented)); }
+            catch { }
+            try { File.WriteAllText(GetJsonPath("Quizzes"), JsonConvert.SerializeObject(quizzes, Formatting.Indented)); }
+            catch { }
             try
-            {
-                File.WriteAllText(GetJsonPath("Reports"), JsonConvert.SerializeObject(reports, Formatting.Indented));
-            }
+            { File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts, Formatting.Indented)); }
+            catch { }
+            try
+            { File.WriteAllText(GetJsonPath("SchoolContacts"), JsonConvert.SerializeObject(schoolContacts, Formatting.Indented)); }
+            catch { }
+            try
+            { File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented)); }
+            catch { }
+            try
+            { File.WriteAllText(GetJsonPath("SchoolSharedFiles"), JsonConvert.SerializeObject(schoolSharedFiles, Formatting.Indented)); }
+            catch { }
+            try
+            { File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults, Formatting.Indented)); }
+            catch { }
+            try
+            { File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented)); }
             catch
             { }
             try
-            {
-                File.WriteAllText(GetJsonPath("Quizzes"), JsonConvert.SerializeObject(quizzes, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("SchoolContacts"), JsonConvert.SerializeObject(schoolContacts, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("SchoolSharedFiles"), JsonConvert.SerializeObject(schoolSharedFiles, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented));
-            }
-            catch
-            { }
-            try
-            {
-                File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account, Formatting.Indented));
-            }
+            { File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account, Formatting.Indented)); }
             catch
             { }
         }
