@@ -45,7 +45,10 @@
             IsSelected="True">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="180" />
+                    <ColumnDefinition
+                        Width="180"
+                        MinWidth="180"
+                        MaxWidth="180" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
@@ -130,7 +133,7 @@
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
                     MinRowHeight="96"
-                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.CanContentScroll="False"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     SelectionMode="Single"
@@ -139,6 +142,7 @@
                     <DataGrid.Columns>
                         <DataGridTemplateColumn
                             Width="*"
+                            MinWidth="120"
                             Header="月曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
@@ -149,6 +153,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
+                            MinWidth="120"
                             Header="火曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
@@ -159,6 +164,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
+                            MinWidth="120"
                             Header="水曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
@@ -169,6 +175,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
+                            MinWidth="120"
                             Header="木曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
@@ -179,6 +186,7 @@
                         </DataGridTemplateColumn>
                         <DataGridTemplateColumn
                             Width="*"
+                            MinWidth="120"
                             Header="金曜日"
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>

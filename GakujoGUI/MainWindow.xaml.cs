@@ -19,6 +19,7 @@ namespace GakujoGUI
     public partial class MainWindow : Window
     {
         private readonly GakujoAPI gakujoAPI = new();
+        private readonly NotifyAPI notifyAPI = new();
 
         public MainWindow()
         {
@@ -253,7 +254,7 @@ namespace GakujoGUI
         {
             if (args.Reason == ModernWpf.Controls.AutoSuggestionBoxTextChangeReason.UserInput)
             {
-                List<String> suitableItems = new();
+                List<string> suitableItems = new();
                 string[] splitText = sender.Text.Split(" ");
                 foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
                 {
@@ -405,17 +406,20 @@ namespace GakujoGUI
         {
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
-            LoginDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables.Take(5);
-            ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            LoginDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            TodoistTokenPasswordBox.Password = notifyAPI.token.TodoistToken;
+            DiscordChannelTextBox.Text = notifyAPI.token.DiscordChannel.ToString();
+            DiscordTokenPasswordBox.Password = notifyAPI.token.DiscordToken;
+            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+            ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
-            ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ReportsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-            QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            QuizzesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-            ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassSharedFilesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
-            ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
         }
 
@@ -494,7 +498,23 @@ namespace GakujoGUI
 
         private void TokenSaveButton_Click(object sender, RoutedEventArgs e)
         {
-
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    notifyAPI.SetToken(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    TokenSaveButtonFontIcon.Visibility = Visibility.Collapsed;
+                    TokenSaveButtonProgressRing.Visibility = Visibility.Visible;
+                });
+                notifyAPI.Login();
+                notifyAPI.SetTodoistTask(gakujoAPI.reports);
+                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
+                Dispatcher.Invoke(() =>
+                {
+                    TokenSaveButtonFontIcon.Visibility = Visibility.Visible;
+                    TokenSaveButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
         }
     }
 }
