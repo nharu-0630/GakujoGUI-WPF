@@ -1333,6 +1333,14 @@ namespace GakujoGUI
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";
 
+        public bool IsVisible
+        {
+            get
+            {
+                return (SubjectsName != "" && SubjectsId != "");
+            }
+        }
+
         public override string ToString()
         {
             if (SubjectsId == "")

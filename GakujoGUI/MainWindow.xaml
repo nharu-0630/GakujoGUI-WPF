@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:GakujoGUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:ui="http://schemas.modernwpf.com/2019"
@@ -16,15 +17,15 @@
     <Window.Resources>
         <ContextMenu x:Key="ContextMenu">
             <MenuItem
-                Name="OpenMenuItem"
+                x:Name="OpenMenuItem"
                 Click="OpenMenuItem_Click"
                 Header="表示" />
             <MenuItem
-                Name="LoadMenuItem"
+                x:Name="LoadMenuItem"
                 Click="LoadMenuItem_Click"
                 Header="更新" />
             <MenuItem
-                Name="CloseMenuItem"
+                x:Name="CloseMenuItem"
                 Click="CloseMenuItem_Click"
                 Header="終了" />
         </ContextMenu>
@@ -39,7 +40,7 @@
     </Window.DataContext>
     <TabControl>
         <TabItem
-            Name="LoginTabItem"
+            x:Name="LoginTabItem"
             Header="ログイン"
             IsSelected="True">
             <Grid>
@@ -50,63 +51,63 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBox
-                        Name="UserIdTextBox"
+                        x:Name="UserIdTextBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="静大ID" />
                     <PasswordBox
-                        Name="PassWordPasswordBox"
+                        x:Name="PassWordPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="パスワード" />
                     <Button
-                        Name="LoginButton"
+                        x:Name="LoginButton"
                         Margin="6"
                         Click="LoginButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="LoginButtonFontIcon"
+                                x:Name="LoginButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72A;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="LoginButtonProgressRing"
+                                x:Name="LoginButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="LoginDateTimeLabel"
+                        x:Name="LoginDateTimeLabel"
                         Margin="6"
                         Content="最終更新" />
                     <Separator Margin="6" />
                     <PasswordBox
-                        Name="TodoistTokenPasswordBox"
+                        x:Name="TodoistTokenPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Todoistトークン" />
                     <TextBox
-                        Name="DiscordChannelTextBox"
+                        x:Name="DiscordChannelTextBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordチャンネル" />
                     <PasswordBox
-                        Name="DiscordTokenPasswordBox"
+                        x:Name="DiscordTokenPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordトークン" />
                     <Button
-                        Name="TokenSaveButton"
+                        x:Name="TokenSaveButton"
                         Margin="6"
                         Click="TokenSaveButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="TokenSaveButtonFontIcon"
+                                x:Name="TokenSaveButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE74E;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="TokenSaveButtonProgressRing"
+                                x:Name="TokenSaveButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -117,7 +118,7 @@
                     Width="5"
                     HorizontalAlignment="Stretch" />
                 <DataGrid
-                    Name="ClassTablesDataGrid"
+                    x:Name="ClassTablesDataGrid"
                     Grid.Column="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -128,44 +129,69 @@
                     CanUserResizeColumns="False"
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
-                    MouseDoubleClick="ClassTablesDataGrid_MouseDoubleClick"
-                    RowHeight="96"
+                    MinRowHeight="96"
                     ScrollViewer.CanContentScroll="True"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
                     SelectionMode="Single"
-                    SelectionUnit="Cell">
+                    SelectionUnit="Cell"
+                    Visibility="Visible">
                     <DataGrid.Columns>
-                        <DataGridTextColumn
+                        <DataGridTemplateColumn
                             Width="*"
-                            Binding="{Binding Monday}"
                             Header="月曜日"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
+                            IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Monday}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                             Width="*"
-                            Binding="{Binding Tuesday}"
                             Header="火曜日"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
+                            IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Tuesday}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                             Width="*"
-                            Binding="{Binding Wednesday}"
                             Header="水曜日"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
+                            IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Wednesday}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                             Width="*"
-                            Binding="{Binding Thursday}"
                             Header="木曜日"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
+                            IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Thursday}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn
                             Width="*"
-                            Binding="{Binding Friday}"
                             Header="金曜日"
-                            IsReadOnly="True" />
+                            IsReadOnly="True">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <local:ClassTablesCell ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick" DataContext="{Binding Friday}" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Name="ClassContactsTabItem" Header="授業連絡">
+        <TabItem x:Name="ClassContactsTabItem" Header="授業連絡">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -174,7 +200,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        Name="ClassContactsSearchAutoSuggestBox"
+                        x:Name="ClassContactsSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -182,23 +208,23 @@
                         SuggestionChosen="ClassContactsSearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="ClassContactsSearchAutoSuggestBox_TextChanged" />
                     <Button
-                        Name="ClassContactsLoadButton"
+                        x:Name="ClassContactsLoadButton"
                         Margin="6"
                         Click="ClassContactsLoadButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="ClassContactsLoadButtonFontIcon"
+                                x:Name="ClassContactsLoadButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="ClassContactsLoadButtonProgressRing"
+                                x:Name="ClassContactsLoadButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="ClassContactsDateTimeLabel"
+                        x:Name="ClassContactsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -214,7 +240,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        Name="ClassContactsDataGrid"
+                        x:Name="ClassContactsDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -262,34 +288,31 @@
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
                                 <TextBox
-                                    Name="ClassContactContentTextBox"
+                                    x:Name="ClassContactContentTextBox"
                                     Text="内容"
                                     Visibility="Collapsed" />
                                 <TextBlock
                                     xmlns:link="clr-namespace:HyperlinkTextBlock"
                                     Margin="12"
-                                    Text="{Binding ElementName=ClassContactContentTextBox, Path=Text}"
-                                    TextWrapping="Wrap">
-                                    <link:HyperlinkTextBlock.Inline>
-                                        <Binding ElementName="ClassContactContentTextBox" Path="Text" />
-                                    </link:HyperlinkTextBlock.Inline>
-                                </TextBlock>
+                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
+                                    Text="{Binding Text, ElementName=ClassContactContentTextBox}"
+                                    TextWrapping="Wrap" />
                                 <StackPanel
-                                    Name="ClassContactFilesStackPanel"
+                                    x:Name="ClassContactFilesStackPanel"
                                     Orientation="Horizontal"
                                     Visibility="Hidden">
                                     <ComboBox
-                                        Name="ClassContactFilesComboBox"
+                                        x:Name="ClassContactFilesComboBox"
                                         MaxWidth="360"
                                         Margin="6" />
                                     <Button
-                                        Name="ClassContactOpenFileButton"
+                                        x:Name="ClassContactOpenFileButton"
                                         Margin="6"
                                         Click="ClassContactOpenFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        Name="ClassContactOpenFolderButton"
+                                        x:Name="ClassContactOpenFolderButton"
                                         Margin="6"
                                         Click="ClassContactOpenFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
@@ -301,7 +324,7 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem Name="ReportsTabItem" Header="レポート">
+        <TabItem x:Name="ReportsTabItem" Header="レポート">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -310,23 +333,23 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="ReportsLoadButton"
+                        x:Name="ReportsLoadButton"
                         Margin="6"
                         Click="ReportsLoadButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="ReportsLoadButtonFontIcon"
+                                x:Name="ReportsLoadButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="ReportsLoadButtonProgressRing"
+                                x:Name="ReportsLoadButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="ReportsDateTimeLabel"
+                        x:Name="ReportsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -336,7 +359,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="ReportsDataGrid"
+                    x:Name="ReportsDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -387,7 +410,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Name="QuizzesTabItem" Header="小テスト">
+        <TabItem x:Name="QuizzesTabItem" Header="小テスト">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -396,23 +419,23 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="QuizzesLoadButton"
+                        x:Name="QuizzesLoadButton"
                         Margin="6"
                         Click="QuizzesLoadButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="QuizzesLoadButtonFontIcon"
+                                x:Name="QuizzesLoadButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="QuizzesLoadButtonProgressRing"
+                                x:Name="QuizzesLoadButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="QuizzesDateTimeLabel"
+                        x:Name="QuizzesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -422,7 +445,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="QuizzesDataGrid"
+                    x:Name="QuizzesDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -479,7 +502,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
+        <TabItem x:Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -488,7 +511,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        Name="ClassSharedFilesSearchAutoSuggestBox"
+                        x:Name="ClassSharedFilesSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -496,23 +519,23 @@
                         SuggestionChosen="ClassSharedFilesSearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="ClassSharedFilesSearchAutoSuggestBox_TextChanged" />
                     <Button
-                        Name="ClassSharedFilesLoadButton"
+                        x:Name="ClassSharedFilesLoadButton"
                         Margin="6"
                         Click="ClassSharedFilesLoadButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="ClassSharedFilesLoadButtonFontIcon"
+                                x:Name="ClassSharedFilesLoadButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="ClassSharedFilesLoadButtonProgressRing"
+                                x:Name="ClassSharedFilesLoadButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="ClassSharedFilesDateTimeLabel"
+                        x:Name="ClassSharedFilesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -528,7 +551,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        Name="ClassSharedFilesDataGrid"
+                        x:Name="ClassSharedFilesDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -576,28 +599,25 @@
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
                                 <TextBox
-                                    Name="ClassSharedFileDescriptionTextBox"
+                                    x:Name="ClassSharedFileDescriptionTextBox"
                                     Text="ファイル説明"
                                     Visibility="Collapsed" />
                                 <TextBlock
                                     xmlns:link="clr-namespace:HyperlinkTextBlock"
                                     Margin="12"
-                                    Text="{Binding ElementName=ClassSharedFileDescriptionTextBox, Path=Text}"
-                                    TextWrapping="Wrap">
-                                    <link:HyperlinkTextBlock.Inline>
-                                        <Binding ElementName="ClassSharedFileDescriptionTextBox" Path="Text" />
-                                    </link:HyperlinkTextBlock.Inline>
-                                </TextBlock>
+                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
+                                    Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
+                                    TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal">
-                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
+                                    <ComboBox x:Name="ClassSharedFileFilesComboBox" Margin="6" />
                                     <Button
-                                        Name="ClassSharedOpenFileButton"
+                                        x:Name="ClassSharedOpenFileButton"
                                         Margin="6"
                                         Click="ClassSharedOpenFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        Name="ClassSharedOpenFolderButton"
+                                        x:Name="ClassSharedOpenFolderButton"
                                         Margin="6"
                                         Click="ClassSharedOpenFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
@@ -609,7 +629,7 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem Name="ClassResultsTabItem" Header="成績情報">
+        <TabItem x:Name="ClassResultsTabItem" Header="成績情報">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -618,23 +638,23 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        Name="ClassResultsLoadButton"
+                        x:Name="ClassResultsLoadButton"
                         Margin="6"
                         Click="ClassResultsLoadButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                Name="ClassResultsLoadButtonFontIcon"
+                                x:Name="ClassResultsLoadButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                Name="ClassResultsLoadButtonProgressRing"
+                                x:Name="ClassResultsLoadButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        Name="ClassResultsDateTimeLabel"
+                        x:Name="ClassResultsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -644,7 +664,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    Name="ClassResultsDataGrid"
+                    x:Name="ClassResultsDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
