@@ -167,6 +167,10 @@ namespace GakujoGUI
 
         public bool Login()
         {
+            if (3 <= DateTime.Now.Hour && DateTime.Now.Hour < 5)
+            {
+                return false;
+            }
             cookieContainer = new CookieContainer();
             httpClientHandler = new HttpClientHandler
             {

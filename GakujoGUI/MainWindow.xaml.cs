@@ -87,7 +87,10 @@ namespace GakujoGUI
             {
                 if (messageBox)
                 {
-                    MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Dispatcher.Invoke(() =>
+                    {
+                        MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                    });
                 }
                 return;
             }
