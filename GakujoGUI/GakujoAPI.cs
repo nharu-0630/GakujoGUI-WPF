@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -124,6 +125,8 @@ namespace GakujoGUI
             {
                 classTables = JsonConvert.DeserializeObject<ClassTableRow[]>(File.ReadAllText(GetJsonPath("ClassTables")))!;
             }
+            ApplyReportsClassTables();
+            ApplyQuizzesClassTables();
             if (File.Exists(GetJsonPath("Account")))
             {
                 account = JsonConvert.DeserializeObject<Account>(File.ReadAllText(GetJsonPath("Account")))!;
@@ -264,8 +267,35 @@ namespace GakujoGUI
             }
             diffCount = reports.Count - diffCount;
             account.ReportDateTime = DateTime.Now;
+            ApplyReportsClassTables();
             SaveJson();
             SaveCookies();
+        }
+
+        private void ApplyReportsClassTables()
+        {
+            foreach (ClassTableRow classTableRow in classTables)
+            {
+                classTableRow.Monday.ReportCount = 0;
+                classTableRow.Tuesday.ReportCount = 0;
+                classTableRow.Wednesday.ReportCount = 0;
+                classTableRow.Thursday.ReportCount = 0;
+                classTableRow.Friday.ReportCount = 0;
+            }
+            foreach (Report report in reports)
+            {
+                //if (report.Status == "受付中" && report.SubmittedDateTime == new DateTime())
+                //{
+                foreach (ClassTableRow classTableRow in classTables)
+                {
+                    if (report.Subjects.Contains(classTableRow.Monday.SubjectsName + "（" + classTableRow.Monday.ClassName + "）")) { classTableRow.Monday.ReportCount++; }
+                    if (report.Subjects.Contains(classTableRow.Tuesday.SubjectsName + "（" + classTableRow.Tuesday.ClassName + "）")) { classTableRow.Tuesday.ReportCount++; }
+                    if (report.Subjects.Contains(classTableRow.Wednesday.SubjectsName + "（" + classTableRow.Wednesday.ClassName + "）")) { classTableRow.Wednesday.ReportCount++; }
+                    if (report.Subjects.Contains(classTableRow.Thursday.SubjectsName + "（" + classTableRow.Thursday.ClassName + "）")) { classTableRow.Thursday.ReportCount++; }
+                    if (report.Subjects.Contains(classTableRow.Friday.SubjectsName + "（" + classTableRow.Friday.ClassName + "）")) { classTableRow.Friday.ReportCount++; }
+                }
+                //}
+            }
         }
 
         public void GetQuizzes(out int diffCount)
@@ -301,8 +331,35 @@ namespace GakujoGUI
             }
             diffCount = quizzes.Count - diffCount;
             account.QuizDateTime = DateTime.Now;
+            ApplyQuizzesClassTables();
             SaveJson();
             SaveCookies();
+        }
+
+        private void ApplyQuizzesClassTables()
+        {
+            foreach (ClassTableRow classTableRow in classTables)
+            {
+                classTableRow.Monday.QuizCount = 0;
+                classTableRow.Tuesday.QuizCount = 0;
+                classTableRow.Wednesday.QuizCount = 0;
+                classTableRow.Thursday.QuizCount = 0;
+                classTableRow.Friday.QuizCount = 0;
+            }
+            foreach (Quiz quiz in quizzes)
+            {
+                //if (quiz.Status == "受付中" && quiz.SubmissionStatus == "未提出")
+                //{
+                foreach (ClassTableRow classTableRow in classTables)
+                {
+                    if (quiz.Subjects.Contains(classTableRow.Monday.SubjectsName + "（" + classTableRow.Monday.ClassName + "）")) { classTableRow.Monday.QuizCount++; }
+                    if (quiz.Subjects.Contains(classTableRow.Tuesday.SubjectsName + "（" + classTableRow.Tuesday.ClassName + "）")) { classTableRow.Tuesday.QuizCount++; }
+                    if (quiz.Subjects.Contains(classTableRow.Wednesday.SubjectsName + "（" + classTableRow.Wednesday.ClassName + "）")) { classTableRow.Wednesday.QuizCount++; }
+                    if (quiz.Subjects.Contains(classTableRow.Thursday.SubjectsName + "（" + classTableRow.Thursday.ClassName + "）")) { classTableRow.Thursday.QuizCount++; }
+                    if (quiz.Subjects.Contains(classTableRow.Friday.SubjectsName + "（" + classTableRow.Friday.ClassName + "）")) { classTableRow.Friday.QuizCount++; }
+                }
+                //}
+            }
         }
 
         public void GetClassContacts(out int diffCount)
@@ -893,6 +950,7 @@ namespace GakujoGUI
                     {
                         continue;
                     }
+
                     string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                     string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
                     ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
@@ -919,6 +977,8 @@ namespace GakujoGUI
                     }
                 }
             }
+            ApplyReportsClassTables();
+            ApplyQuizzesClassTables();
             SaveJson();
             SaveCookies();
         }
@@ -961,7 +1021,6 @@ namespace GakujoGUI
         public DateTime ClassResultDateTime { get; set; }
     }
 
-    // : IComparable
     public class Report
     {
         public string Subjects { get; set; } = "";
@@ -1001,31 +1060,6 @@ namespace GakujoGUI
         {
             return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ ReportId.GetHashCode();
         }
-
-        //public int CompareTo(Object obj)
-        //{
-        //    if (obj == null || GetType() != obj.GetType())
-        //    {
-        //        return 1;
-        //    }
-        //    Report objReport = (Report)obj;
-        //    if (EndDateTime > objReport.EndDateTime)
-        //    {
-        //        return 1;
-        //    }
-        //    else
-        //    {
-        //        if (Status == "未提出")
-        //        {
-        //            return 1;
-        //        }
-        //        if (Status == "提出済")
-        //        {
-        //            return -1;
-        //        }
-        //        return SubjectCode.CompareTo(objReport.SubjectCode);
-        //    }
-        //}
     }
 
     public class Quiz
@@ -1306,7 +1340,11 @@ namespace GakujoGUI
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";
 
-        public bool IsVisible => (SubjectsName != "" && SubjectsId != "");
+        public bool ButtonsVisible => (SubjectsName != "" && SubjectsId != "");
+        public bool ReportBadgeVisible => (ReportCount > 0);
+        public int ReportCount { get; set; }
+        public bool QuizBadgeVisible => (QuizCount > 0);
+        public int QuizCount { get; set; }
 
         public override string ToString()
         {

@@ -10,6 +10,8 @@
     Title="GakujoGUI"
     Width="900"
     Height="600"
+    MinWidth="900"
+    MinHeight="600"
     ui:WindowHelper.UseModernWindowStyle="True"
     Deactivated="Window_Deactivated"
     Loaded="Window_Loaded"
@@ -360,6 +362,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <ui:AutoSuggestBox
+                        x:Name="ReportsSearchAutoSuggestBox"
+                        MinWidth="300"
+                        Margin="6"
+                        QueryIcon="Find"
+                        QuerySubmitted="ReportsSearchAutoSuggestBox_QuerySubmitted"
+                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
                         x:Name="ReportsLoadButton"
                         Margin="6"
@@ -446,6 +456,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <ui:AutoSuggestBox
+                        x:Name="QuizzesSearchAutoSuggestBox"
+                        MinWidth="300"
+                        Margin="6"
+                        QueryIcon="Find"
+                        QuerySubmitted="QuizzesSearchAutoSuggestBox_QuerySubmitted"
+                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                        TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
                         x:Name="QuizzesLoadButton"
                         Margin="6"

@@ -8,18 +8,32 @@
     xmlns:ui="http://schemas.modernwpf.com/2019"
     mc:Ignorable="d">
     <StackPanel Orientation="Vertical">
+        <StackPanel.Resources>
+            <Style x:Key="ButtonsVisible" TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ButtonsVisible}" Value="False">
+                        <Setter Property="Visibility" Value="Hidden" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="ReportBadgeVisible" TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ReportBadgeVisible}" Value="False">
+                        <Setter Property="Visibility" Value="Hidden" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="QuizBadgeVisible" TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding QuizBadgeVisible}" Value="False">
+                        <Setter Property="Visibility" Value="Hidden" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </StackPanel.Resources>
         <Label Margin="6,6" Content="{Binding SubjectsName}" />
         <Label Margin="6,0" Content="{Binding ClassRoom}" />
-        <Grid>
-            <Grid.Style>
-                <Style TargetType="{x:Type Grid}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsVisible}" Value="False">
-                            <Setter Property="Visibility" Value="Hidden" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
+        <Grid Name="ButtonsGrid" Style="{StaticResource ButtonsVisible}">
             <StackPanel Margin="0,3" Orientation="Horizontal">
                 <Button
                     Name="ClassContactButton"
@@ -33,14 +47,48 @@
                     Margin="3"
                     HorizontalAlignment="Center"
                     Click="ReportButton_Click">
-                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
+                    <Grid>
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
+                        <Grid Style="{StaticResource ReportBadgeVisible}">
+                            <Rectangle
+                                Width="15"
+                                Margin="15,-10,-10,15"
+                                Fill="#e03131"
+                                RadiusX="5"
+                                RadiusY="5"
+                                StrokeThickness="1" />
+                            <Label
+                                Margin="0,-13,-7,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Content="{Binding ReportCount}"
+                                Foreground="#f8f9fa" />
+                        </Grid>
+                    </Grid>
                 </Button>
                 <Button
                     Name="QuizButton"
                     Margin="3"
                     HorizontalAlignment="Center"
                     Click="QuizButton_Click">
-                    <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE70B;" />
+                    <Grid>
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
+                        <Grid Style="{StaticResource QuizBadgeVisible}">
+                            <Rectangle
+                                Width="15"
+                                Margin="15,-10,-10,15"
+                                Fill="#e03131"
+                                RadiusX="5"
+                                RadiusY="5"
+                                StrokeThickness="1" />
+                            <Label
+                                Margin="0,-13,-7,0"
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Top"
+                                Content="{Binding QuizCount}"
+                                Foreground="#f8f9fa" />
+                        </Grid>
+                    </Grid>
                 </Button>
             </StackPanel>
         </Grid>
