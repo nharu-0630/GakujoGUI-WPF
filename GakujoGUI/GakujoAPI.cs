@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Web;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
-using HtmlAgilityPack;
+using System.Web;
 
 namespace GakujoGUI
 {
@@ -1306,13 +1306,7 @@ namespace GakujoGUI
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";
 
-        public bool IsVisible
-        {
-            get
-            {
-                return (SubjectsName != "" && SubjectsId != "");
-            }
-        }
+        public bool IsVisible => (SubjectsName != "" && SubjectsId != "");
 
         public override string ToString()
         {

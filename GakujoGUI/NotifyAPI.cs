@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using Discord;
+using Discord.WebSocket;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Todoist.Net;
 using Todoist.Net.Models;
-using Discord;
-using Discord.WebSocket;
 
 namespace GakujoGUI
 {
@@ -32,7 +29,7 @@ namespace GakujoGUI
                 }
                 return _todoistResources!;
             }
-            set { _todoistResources = value; }
+            set => _todoistResources = value;
         }
 
         public static string GetJsonPath(string value)

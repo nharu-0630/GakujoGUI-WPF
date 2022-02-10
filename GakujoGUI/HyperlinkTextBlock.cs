@@ -115,7 +115,7 @@ namespace HyperlinkTextBlock
                 {
                     if (newLine.Count - l > 0)
                     {
-                        var buff = text[position..newLine[l]];
+                        string? buff = text[position..newLine[l]];
                         textBlock.Inlines.Add(new Run(buff));
                         textBlock.Inlines.Add(new LineBreak());
                         position = newLine[l];
@@ -123,7 +123,7 @@ namespace HyperlinkTextBlock
                     }
                     else
                     {
-                        var buff = text[position..];
+                        string? buff = text[position..];
                         textBlock.Inlines.Add(new Run(buff));
                         position = text.Length;
                         break;
