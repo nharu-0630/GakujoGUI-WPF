@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
 
@@ -22,6 +23,8 @@ namespace GakujoGUI
     {
         private readonly GakujoAPI gakujoAPI = new();
         private readonly NotifyAPI notifyAPI = new();
+
+        private readonly DispatcherTimer dispatcherTimer = new();
 
         public MainWindow()
         {
@@ -41,6 +44,10 @@ namespace GakujoGUI
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
+            if (gakujoAPI.account.UserId == "" || gakujoAPI.account.PassWord == "")
+            {
+                return false;
+            }
             if (!gakujoAPI.Login())
             {
                 Dispatcher.Invoke(() =>
@@ -69,6 +76,11 @@ namespace GakujoGUI
             return true;
         }
 
+        private void LoadEvent(object? sender, EventArgs? e)
+        {
+            Load(false);
+        }
+
         private void Load(bool messageBox = true)
         {
             if (!gakujoAPI.loginStatus)
@@ -79,6 +91,18 @@ namespace GakujoGUI
                 }
                 return;
             }
+
+            ClassContactsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
+            ClassContactsLoadButtonProgressRing.Visibility = Visibility.Visible;
+            ReportsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
+            ReportsLoadButtonProgressRing.Visibility = Visibility.Visible;
+            QuizzesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
+            QuizzesLoadButtonProgressRing.Visibility = Visibility.Visible;
+            ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
+            ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Visible;
+            ClassResultsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
+            ClassResultsLoadButtonProgressRing.Visibility = Visibility.Visible;
+
             Task.Run(() =>
             {
                 gakujoAPI.GetClassContacts(out int classContactsDiffCount);
@@ -88,8 +112,6 @@ namespace GakujoGUI
                 gakujoAPI.GetClassResults(out int classResultsDiffCount);
                 Dispatcher.Invoke(() =>
                 {
-                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                     ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
                     ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
@@ -100,6 +122,18 @@ namespace GakujoGUI
                     ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
                     ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+
+                    ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
+                    ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
+                    ReportsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    QuizzesLoadButtonFontIcon.Visibility = Visibility.Visible;
+                    QuizzesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Visible;
+                    ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    ClassResultsLoadButtonFontIcon.Visibility = Visibility.Visible;
+                    ClassResultsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+
                     for (int i = 0; i < classContactsDiffCount; i++)
                     {
                         NotifyToast(gakujoAPI.classContacts[i]);
@@ -120,7 +154,6 @@ namespace GakujoGUI
                     {
                         NotifyToast(gakujoAPI.classResults[i]);
                     }
-                    //MessageBox.Show(classContactsDiffCount + "件の授業連絡を新しく取得しました．\n" + reportsDiffCount + "件のレポートを新しく取得しました．\n" + quizzesDiffCount + "件の小テストを新しく取得しました．\n" + classSharedFilesDiffCount + "件の授業共有ファイルを新しく取得しました．\n" + classResultsDiffCount + "件の成績情報を更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -534,6 +567,15 @@ namespace GakujoGUI
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
             ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+
+            Task.Run(() =>
+            {
+                Login(false);
+                Load();
+                dispatcherTimer.Interval = TimeSpan.FromMinutes(10);
+                dispatcherTimer.Tick += new EventHandler(LoadEvent);
+                dispatcherTimer.Start();
+            });
         }
 
         private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
@@ -561,27 +603,27 @@ namespace GakujoGUI
 
         #region 通知
 
-        private void NotifyToast(ClassContact classContact)
+        private static void NotifyToast(ClassContact classContact)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassContact").AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
         }
 
-        private void NotifyToast(Report report)
+        private static void NotifyToast(Report report)
         {
             new ToastContentBuilder().AddArgument("Type", "Report").AddText(report.Title).AddText(report.StartDateTime + " -> " + report.EndDateTime).AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
         }
 
-        private void NotifyToast(Quiz quiz)
+        private static void NotifyToast(Quiz quiz)
         {
             new ToastContentBuilder().AddArgument("Type", "Quiz").AddText(quiz.Title).AddText(quiz.StartDateTime + " -> " + quiz.EndDateTime).AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
         }
 
-        private void NotifyToast(ClassSharedFile classSharedFile)
+        private static void NotifyToast(ClassSharedFile classSharedFile)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
         }
 
-        private void NotifyToast(ClassResult classResult)
+        private static void NotifyToast(ClassResult classResult)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassResult").AddText(classResult.Subjects).AddText(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")).AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
         }
