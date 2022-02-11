@@ -5,11 +5,15 @@
     <TargetFramework>net6.0-windows10.0.18362.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>GakujoGUI.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\GakujoGUI.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="GakujoGUI.ico" />
+    <None Remove="Resources\GakujoGUI.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\GakujoGUI.ico" />
   </ItemGroup>
 
   <ItemGroup>
