@@ -36,6 +36,7 @@
         <tb:TaskbarIcon
             x:Name="TaskBarIcon"
             ContextMenu="{StaticResource ContextMenu}"
+            IconSource="Resources/GakujoGUI.ico"
             ToolTipText="GakujoGUI"
             TrayMouseDoubleClick="TaskBarIcon_TrayMouseDoubleClick"
             Visibility="Hidden" />
@@ -117,6 +118,24 @@
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
+                    <Separator Margin="6" />
+                    <CheckBox
+                        Name="TimerCheckBox"
+                        Margin="6"
+                        Checked="TimerCheckBox_Checked"
+                        Content="自動更新"
+                        IsChecked="True"
+                        Unchecked="TimerCheckBox_Unchecked" />
+                    <ui:NumberBox
+                        Name="TimerNumberBox"
+                        Margin="6,0"
+                        Header="更新間隔 (分)"
+                        Maximum="60"
+                        Minimum="5"
+                        SmallChange="5"
+                        SpinButtonPlacementMode="Compact"
+                        ValueChanged="TimerNumberBox_ValueChanged"
+                        Value="10" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Column="1"

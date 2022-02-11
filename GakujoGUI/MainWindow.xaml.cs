@@ -31,6 +31,8 @@ namespace GakujoGUI
             InitializeComponent();
         }
 
+        #region ログイン
+
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(() => Login());
@@ -65,7 +67,6 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables;
-                    if (messageBox) { MessageBox.Show("自動ログインに成功しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information); }
                 });
             }
             Dispatcher.Invoke(() =>
@@ -174,6 +175,8 @@ namespace GakujoGUI
             });
         }
 
+        #endregion
+
         #region 授業連絡
 
         private void ClassContactsSearchAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -199,9 +202,12 @@ namespace GakujoGUI
                 {
                     ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+                    for (int i = 0; i < diffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classContacts[i]);
+                    }
                     ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                    MessageBox.Show(diffCount + "件の授業連絡を新しく取得しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -282,9 +288,12 @@ namespace GakujoGUI
                 {
                     ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+                    for (int i = 0; i < diffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.reports[i]);
+                    }
                     ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ReportsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                    MessageBox.Show(diffCount + "件のレポートを新しく取得しました．．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -322,9 +331,12 @@ namespace GakujoGUI
                 {
                     QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+                    for (int i = 0; i < diffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.quizzes[i]);
+                    }
                     QuizzesLoadButtonFontIcon.Visibility = Visibility.Visible;
                     QuizzesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                    MessageBox.Show(diffCount + "件の小テストを新しく取得しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -361,9 +373,12 @@ namespace GakujoGUI
                 {
                     ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
+                    for (int i = 0; i < diffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classSharedFiles[i]);
+                    }
                     ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                    MessageBox.Show(diffCount + "件の授業共有ファイルを新しく取得しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -434,9 +449,12 @@ namespace GakujoGUI
                 {
                     ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                    for (int i = 0; i < diffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classResults[i]);
+                    }
                     ClassResultsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassResultsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                    MessageBox.Show(diffCount + "件の成績情報を更新しました．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 });
             });
         }
@@ -566,10 +584,13 @@ namespace GakujoGUI
             {
                 Login();
                 Load();
+                Dispatcher.Invoke(() =>
+                {
+                    dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
+                    dispatcherTimer.Tick += new EventHandler(LoadEvent);
+                    dispatcherTimer.Start();
+                });
             });
-            dispatcherTimer.Interval = TimeSpan.FromMinutes(10);
-            dispatcherTimer.Tick += new EventHandler(LoadEvent);
-            dispatcherTimer.Start();
         }
 
         private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
@@ -669,5 +690,29 @@ namespace GakujoGUI
 
         #endregion
 
+        #region タイマー
+
+        private void TimerCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!dispatcherTimer.IsEnabled)
+            {
+                dispatcherTimer.Start();
+            }
+        }
+
+        private void TimerCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (dispatcherTimer.IsEnabled)
+            {
+                dispatcherTimer.Stop();
+            }
+        }
+
+        private void TimerNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
+        }
+
+        #endregion
     }
 }
