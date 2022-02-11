@@ -50,13 +50,24 @@
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
                         <Grid Style="{StaticResource ReportBadgeVisible}">
-                            <Rectangle
-                                Width="15"
-                                Margin="15,-10,-10,15"
-                                Fill="#e03131"
-                                RadiusX="5"
-                                RadiusY="5"
-                                StrokeThickness="1" />
+                            <Grid>
+                                <Border
+                                    Margin="15,-10,-10,15"
+                                    BorderBrush="Black"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <Border.Effect>
+                                        <DropShadowEffect />
+                                    </Border.Effect>
+                                </Border>
+                                <Rectangle
+                                    Width="15"
+                                    Margin="15,-10,-10,15"
+                                    Fill="#e03131"
+                                    RadiusX="5"
+                                    RadiusY="5"
+                                    StrokeThickness="1" />
+                            </Grid>
                             <Label
                                 Margin="0,-13,-7,0"
                                 HorizontalAlignment="Right"
@@ -74,13 +85,24 @@
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
                         <Grid Style="{StaticResource QuizBadgeVisible}">
-                            <Rectangle
-                                Width="15"
-                                Margin="15,-10,-10,15"
-                                Fill="#e03131"
-                                RadiusX="5"
-                                RadiusY="5"
-                                StrokeThickness="1" />
+                            <Grid>
+                                <Border
+                                    Margin="15,-10,-10,15"
+                                    BorderBrush="Black"
+                                    BorderThickness="1"
+                                    CornerRadius="10">
+                                    <Border.Effect>
+                                        <DropShadowEffect />
+                                    </Border.Effect>
+                                </Border>
+                                <Rectangle
+                                    Width="15"
+                                    Margin="15,-10,-10,15"
+                                    Fill="#e03131"
+                                    RadiusX="5"
+                                    RadiusY="5"
+                                    StrokeThickness="1" />
+                            </Grid>
                             <Label
                                 Margin="0,-13,-7,0"
                                 HorizontalAlignment="Right"
