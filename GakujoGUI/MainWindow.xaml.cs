@@ -132,6 +132,7 @@ namespace GakujoGUI
                     ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables;
                 });
             }
+            notifyAPI.Login();
             Dispatcher.Invoke(() =>
             {
                 LoginButtonFontIcon.Visibility = Visibility.Visible;
@@ -187,23 +188,30 @@ namespace GakujoGUI
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classContacts[i]);
+                    notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
                 }
                 for (int i = 0; i < reportsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.reports[i]);
+                    notifyAPI.NotifyDiscord(gakujoAPI.reports[i]);
                 }
                 for (int i = 0; i < quizzesDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.quizzes[i]);
+                    notifyAPI.NotifyDiscord(gakujoAPI.quizzes[i]);
                 }
                 for (int i = 0; i < classSharedFilesDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classSharedFiles[i]);
+                    notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
                 }
                 for (int i = 0; i < classResultsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classResults[i]);
+                    notifyAPI.NotifyDiscord(gakujoAPI.classResults[i], true);
                 }
+                notifyAPI.SetTodoistTask(gakujoAPI.reports);
+                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
                 ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
                 ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
                 ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
@@ -730,17 +738,8 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
-                    SaveTokensButtonFontIcon.Visibility = Visibility.Collapsed;
-                    SaveTokensButtonProgressRing.Visibility = Visibility.Visible;
                 });
                 notifyAPI.Login();
-                notifyAPI.SetTodoistTask(gakujoAPI.reports);
-                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
-                Dispatcher.Invoke(() =>
-                {
-                    SaveTokensButtonFontIcon.Visibility = Visibility.Visible;
-                    SaveTokensButtonProgressRing.Visibility = Visibility.Collapsed;
-                });
             });
         }
 

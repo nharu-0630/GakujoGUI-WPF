@@ -70,9 +70,12 @@ namespace GakujoGUI
             {
                 discordSocketClient = new();
                 discordSocketClient.LoginAsync(TokenType.Bot, tokens.DiscordToken).Wait();
+                discordSocketClient.StartAsync().Wait();
             }
             catch { }
         }
+
+        #region Todoist
 
         private bool ExistsTodoistTask(string content, DateTime dateTime)
         {
@@ -154,6 +157,62 @@ namespace GakujoGUI
                 }
             }
         }
+
+        #endregion
+
+        #region Discord
+
+        public void NotifyDiscord(ClassContact classContact)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle(classContact.Title);
+            embedBuilder.WithDescription(classContact.Content);
+            embedBuilder.WithAuthor(classContact.Subjects);
+            embedBuilder.WithTimestamp(classContact.ContactDateTime);
+            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
+        }
+
+        public void NotifyDiscord(Report report)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle(report.Title);
+            embedBuilder.WithDescription(report.StartDateTime + " -> " + report.EndDateTime);
+            embedBuilder.WithAuthor(report.Subjects);
+            embedBuilder.WithTimestamp(report.StartDateTime);
+            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
+        }
+
+        public void NotifyDiscord(Quiz quiz)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle(quiz.Title);
+            embedBuilder.WithDescription(quiz.StartDateTime + " -> " + quiz.EndDateTime);
+            embedBuilder.WithAuthor(quiz.Subjects);
+            embedBuilder.WithTimestamp(quiz.StartDateTime);
+            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
+        }
+
+        public void NotifyDiscord(ClassSharedFile classSharedFile)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle(classSharedFile.Title);
+            embedBuilder.WithDescription(classSharedFile.Description);
+            embedBuilder.WithAuthor(classSharedFile.Subjects);
+            embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
+            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
+        }
+
+        public void NotifyDiscord(ClassResult classResult, bool hideDetail)
+        {
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.WithTitle(classResult.Subjects);
+            if (!hideDetail) { embedBuilder.WithDescription(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")); }
+            embedBuilder.WithAuthor(classResult.TeacherName);
+            embedBuilder.WithTimestamp(classResult.ReportDate);
+            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
+        }
+
+        #endregion
     }
 
     public class Tokens
