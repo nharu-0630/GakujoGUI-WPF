@@ -23,10 +23,34 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+            <Style x:Key="ReportBadgeOneDigits" TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding ReportBadgeOneDigits}" Value="True">
+                        <Setter Property="Width" Value="15" />
+                        <Setter Property="Margin" Value="15,-10,-10,15" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding ReportBadgeOneDigits}" Value="False">
+                        <Setter Property="Width" Value="20" />
+                        <Setter Property="Margin" Value="10,-10,-10,15" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
             <Style x:Key="QuizBadgeVisible" TargetType="Grid">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding QuizBadgeVisible}" Value="False">
                         <Setter Property="Visibility" Value="Hidden" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+            <Style x:Key="QuizBadgeOneDigits" TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding QuizBadgeOneDigits}" Value="True">
+                        <Setter Property="Width" Value="15" />
+                        <Setter Property="Margin" Value="15,-10,-10,15" />
+                    </DataTrigger>
+                    <DataTrigger Binding="{Binding QuizBadgeOneDigits}" Value="False">
+                        <Setter Property="Width" Value="20" />
+                        <Setter Property="Margin" Value="10,-10,-10,15" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -50,9 +74,8 @@
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
                         <Grid Style="{StaticResource ReportBadgeVisible}">
-                            <Grid>
+                            <Grid Style="{StaticResource ReportBadgeOneDigits}">
                                 <Border
-                                    Margin="15,-10,-10,15"
                                     BorderBrush="Black"
                                     BorderThickness="1"
                                     CornerRadius="10">
@@ -61,8 +84,6 @@
                                     </Border.Effect>
                                 </Border>
                                 <Rectangle
-                                    Width="15"
-                                    Margin="15,-10,-10,15"
                                     Fill="#e03131"
                                     RadiusX="5"
                                     RadiusY="5"
@@ -85,9 +106,8 @@
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
                         <Grid Style="{StaticResource QuizBadgeVisible}">
-                            <Grid>
+                            <Grid Style="{StaticResource QuizBadgeOneDigits}">
                                 <Border
-                                    Margin="15,-10,-10,15"
                                     BorderBrush="Black"
                                     BorderThickness="1"
                                     CornerRadius="10">
@@ -96,8 +116,6 @@
                                     </Border.Effect>
                                 </Border>
                                 <Rectangle
-                                    Width="15"
-                                    Margin="15,-10,-10,15"
                                     Fill="#e03131"
                                     RadiusX="5"
                                     RadiusY="5"

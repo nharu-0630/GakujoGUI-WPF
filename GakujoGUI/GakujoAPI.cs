@@ -1350,8 +1350,10 @@ namespace GakujoGUI
 
         public bool ButtonsVisible => (SubjectsName != "" && SubjectsId != "");
         public bool ReportBadgeVisible => (ReportCount > 0);
+        public bool ReportBadgeOneDigits => (ReportCount < 10);
         public int ReportCount { get; set; }
         public bool QuizBadgeVisible => (QuizCount > 0);
+        public bool QuizBadgeOneDigits => (QuizCount < 10);
         public int QuizCount { get; set; }
 
         public override string ToString()
