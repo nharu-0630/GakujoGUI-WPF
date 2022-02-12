@@ -783,7 +783,7 @@ namespace GakujoGUI
             using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
             if (settings.StartUpEnable)
             {
-                registryKey.SetValue("GakujoGUI", AppDomain.CurrentDomain.BaseDirectory);
+                registryKey.SetValue("GakujoGUI", Environment.ProcessPath!);
             }
             else
             {
