@@ -144,15 +144,15 @@ namespace GakujoGUI
             gakujoAPI.GetClassResults(out int classResultsDiffCount);
             Dispatcher.Invoke(() =>
             {
-                ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                 ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
-                ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                ReportsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                 ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-                QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                QuizzesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                 QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-                ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                ClassSharedFilesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                 ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
-                ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                 ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
@@ -233,7 +233,7 @@ namespace GakujoGUI
                 gakujoAPI.GetClassContacts(out int diffCount);
                 Dispatcher.Invoke(() =>
                 {
-                    ClassContactsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
                     for (int i = 0; i < diffCount; i++)
                     {
@@ -319,7 +319,7 @@ namespace GakujoGUI
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 Dispatcher.Invoke(() =>
                 {
-                    ReportsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ReportsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ReportsDataGrid.ItemsSource = gakujoAPI.reports;
                     for (int i = 0; i < diffCount; i++)
                     {
@@ -362,7 +362,7 @@ namespace GakujoGUI
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
                 Dispatcher.Invoke(() =>
                 {
-                    QuizzesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    QuizzesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
                     for (int i = 0; i < diffCount; i++)
                     {
@@ -404,7 +404,7 @@ namespace GakujoGUI
                 gakujoAPI.GetClassSharedFiles(out int diffCount);
                 Dispatcher.Invoke(() =>
                 {
-                    ClassSharedFilesDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassSharedFilesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
                     for (int i = 0; i < diffCount; i++)
                     {
@@ -480,7 +480,7 @@ namespace GakujoGUI
                 gakujoAPI.GetClassResults(out int diffCount);
                 Dispatcher.Invoke(() =>
                 {
-                    ClassResultsDateTimeLabel.Content = "最終更新 : " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+                    ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                     for (int i = 0; i < diffCount; i++)
                     {
