@@ -86,56 +86,6 @@
                         x:Name="LoginDateTimeLabel"
                         Margin="6"
                         Content="最終更新" />
-                    <Separator Margin="6" />
-                    <PasswordBox
-                        x:Name="TodoistTokenPasswordBox"
-                        Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Todoistトークン" />
-                    <TextBox
-                        x:Name="DiscordChannelTextBox"
-                        Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Discordチャンネル" />
-                    <PasswordBox
-                        x:Name="DiscordTokenPasswordBox"
-                        Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Discordトークン" />
-                    <Button
-                        x:Name="TokenSaveButton"
-                        Margin="6"
-                        Click="TokenSaveButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                x:Name="TokenSaveButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72A;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                x:Name="TokenSaveButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Separator Margin="6" />
-                    <CheckBox
-                        Name="TimerCheckBox"
-                        Margin="6"
-                        Checked="TimerCheckBox_Checked"
-                        Content="自動更新"
-                        IsChecked="True"
-                        Unchecked="TimerCheckBox_Unchecked" />
-                    <ui:NumberBox
-                        Name="TimerNumberBox"
-                        Margin="6,0"
-                        Header="更新間隔 (分)"
-                        Maximum="60"
-                        Minimum="5"
-                        SmallChange="5"
-                        SpinButtonPlacementMode="Compact"
-                        ValueChanged="TimerNumberBox_ValueChanged"
-                        Value="10" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Column="1"
@@ -813,6 +763,76 @@
                             IsReadOnly="True" />
                     </DataGrid.Columns>
                 </DataGrid>
+            </Grid>
+        </TabItem>
+        <TabItem x:Name="SettingsTabItem" Header="設定">
+            <Grid Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="200" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <Label Margin="6" Content="外部連携" />
+                    <PasswordBox
+                        x:Name="TodoistTokenPasswordBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Todoistトークン" />
+                    <TextBox
+                        x:Name="DiscordChannelTextBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Discordチャンネル" />
+                    <PasswordBox
+                        x:Name="DiscordTokenPasswordBox"
+                        Width="Auto"
+                        Margin="6"
+                        ui:ControlHelper.PlaceholderText="Discordトークン" />
+                    <Button
+                        x:Name="TokenSaveButton"
+                        Margin="6"
+                        Click="TokenSaveButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                x:Name="TokenSaveButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72A;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                x:Name="TokenSaveButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+                    </Button>
+                    <Separator Margin="6" />
+                    <Label Margin="6" Content="自動更新" />
+                    <CheckBox
+                        Name="TimerCheckBox"
+                        Margin="6"
+                        Checked="TimerCheckBox_Checked"
+                        Content="自動的に更新する"
+                        IsChecked="True"
+                        Unchecked="TimerCheckBox_Unchecked" />
+                    <ui:NumberBox
+                        Name="TimerNumberBox"
+                        Margin="6"
+                        Header="更新間隔 (分)"
+                        Maximum="60"
+                        Minimum="5"
+                        SmallChange="5"
+                        SpinButtonPlacementMode="Compact"
+                        ValueChanged="TimerNumberBox_ValueChanged"
+                        Value="10" />
+                    <Separator Margin="6" />
+                    <Label Margin="6" Content="Windows設定" />
+                    <CheckBox
+                        Name="StartUpCheckBox"
+                        Margin="6"
+                        Content="GakujoGUIを開く" />
+                    <CheckBox
+                        Name="HideCheckBox"
+                        Margin="6"
+                        Content="最小化した状態で起動する" />
+                </StackPanel>
             </Grid>
         </TabItem>
     </TabControl>
