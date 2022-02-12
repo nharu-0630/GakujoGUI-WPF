@@ -255,6 +255,7 @@ namespace GakujoGUI
                     for (int i = 0; i < diffCount; i++)
                     {
                         NotifyToast(gakujoAPI.classContacts[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
                     }
                     ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -341,6 +342,7 @@ namespace GakujoGUI
                     for (int i = 0; i < diffCount; i++)
                     {
                         NotifyToast(gakujoAPI.reports[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.reports[i]);
                     }
                     ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ReportsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -384,6 +386,7 @@ namespace GakujoGUI
                     for (int i = 0; i < diffCount; i++)
                     {
                         NotifyToast(gakujoAPI.quizzes[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.quizzes[i]);
                     }
                     QuizzesLoadButtonFontIcon.Visibility = Visibility.Visible;
                     QuizzesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -426,6 +429,7 @@ namespace GakujoGUI
                     for (int i = 0; i < diffCount; i++)
                     {
                         NotifyToast(gakujoAPI.classSharedFiles[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
                     }
                     ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -502,6 +506,7 @@ namespace GakujoGUI
                     for (int i = 0; i < diffCount; i++)
                     {
                         NotifyToast(gakujoAPI.classResults[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.classResults[i], true);
                     }
                     ClassResultsLoadButtonFontIcon.Visibility = Visibility.Visible;
                     ClassResultsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
