@@ -29,6 +29,7 @@ namespace GakujoGUI
         public MainWindow()
         {
             InitializeComponent();
+            ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
         }
 
         #region ログイン
@@ -580,6 +581,7 @@ namespace GakujoGUI
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
             ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+
             Task.Run(() =>
             {
                 Login();
@@ -618,29 +620,70 @@ namespace GakujoGUI
 
         #region 通知
 
-        private static void NotifyToast(ClassContact classContact)
+        private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassContact").AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
+            ToastArguments toastArguments = ToastArguments.Parse(e.Argument);
+            if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
+            {
+                return;
+            }
+            Dispatcher.Invoke(() =>
+            {
+                ShowInTaskbar = true;
+                TaskBarIcon.Visibility = Visibility.Collapsed;
+                Visibility = Visibility.Visible;
+                Topmost = true;
+                SystemCommands.RestoreWindow(this);
+                Topmost = false;
+                switch (toastArguments.Get("Type"))
+                {
+                    case "ClassContact":
+                        ClassContactsTabItem.IsSelected = true;
+                        ClassContactsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        break;
+                    case "Report":
+                        ReportsTabItem.IsSelected = true;
+                        ReportsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        break;
+                    case "Quiz":
+                        QuizzesTabItem.IsSelected = true;
+                        QuizzesDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        break;
+                    case "ClassSharedFile":
+                        ClassSharedFilesTabItem.IsSelected = true;
+                        ClassSharedFilesDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        break;
+                    case "ClassResult":
+                        ClassResultsTabItem.IsSelected = true;
+                        ClassResultsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        break;
+                }
+            });
         }
 
-        private static void NotifyToast(Report report)
+        private void NotifyToast(ClassContact classContact)
         {
-            new ToastContentBuilder().AddArgument("Type", "Report").AddText(report.Title).AddText(report.StartDateTime + " -> " + report.EndDateTime).AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassContact").AddArgument("Index", gakujoAPI.classContacts.IndexOf(classContact)).AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
         }
 
-        private static void NotifyToast(Quiz quiz)
+        private void NotifyToast(Report report)
         {
-            new ToastContentBuilder().AddArgument("Type", "Quiz").AddText(quiz.Title).AddText(quiz.StartDateTime + " -> " + quiz.EndDateTime).AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "Report").AddArgument("Index", gakujoAPI.reports.IndexOf(report)).AddText(report.Title).AddText(report.StartDateTime + " -> " + report.EndDateTime).AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
         }
 
-        private static void NotifyToast(ClassSharedFile classSharedFile)
+        private void NotifyToast(Quiz quiz)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "Quiz").AddArgument("Index", gakujoAPI.quizzes.IndexOf(quiz)).AddText(quiz.Title).AddText(quiz.StartDateTime + " -> " + quiz.EndDateTime).AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
         }
 
-        private static void NotifyToast(ClassResult classResult)
+        private void NotifyToast(ClassSharedFile classSharedFile)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddText(classResult.Subjects).AddText(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")).AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddArgument("Index", gakujoAPI.classSharedFiles.IndexOf(classSharedFile)).AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
+        }
+
+        private void NotifyToast(ClassResult classResult)
+        {
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.classResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")).AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
         }
 
         #endregion
