@@ -790,7 +790,7 @@
                         <DataGridTextColumn
                             Width="60"
                             MinWidth="60"
-                            Binding="{Binding GP}"
+                            Binding="{Binding GP, StringFormat={}{0:N2}}"
                             Header="科目GP"
                             IsReadOnly="True" />
                         <DataGridTextColumn
