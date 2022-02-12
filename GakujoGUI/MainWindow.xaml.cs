@@ -1,5 +1,7 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32;
 using ModernWpf.Controls;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,7 +26,14 @@ namespace GakujoGUI
         private readonly GakujoAPI gakujoAPI = new();
         private readonly NotifyAPI notifyAPI = new();
 
-        private readonly DispatcherTimer dispatcherTimer = new();
+        private Settings settings = new();
+
+        private readonly DispatcherTimer autoLoadTimer = new();
+
+        private static string GetJsonPath(string value)
+        {
+            return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
+        }
 
         public MainWindow()
         {
@@ -34,12 +43,24 @@ namespace GakujoGUI
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (File.Exists(GetJsonPath("Settings")))
+            {
+                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
+            }
+            if (settings.StartUpMinimize)
+            {
+                WindowState = WindowState.Minimized;
+                ShowInTaskbar = false;
+                TaskBarIcon.Visibility = Visibility.Visible;
+                Visibility = Visibility.Hidden;
+                Hide();
+            }
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
             LoginDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            TodoistTokenPasswordBox.Password = notifyAPI.token.TodoistToken;
-            DiscordChannelTextBox.Text = notifyAPI.token.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = notifyAPI.token.DiscordToken;
+            TodoistTokenPasswordBox.Password = notifyAPI.tokens.TodoistToken;
+            DiscordChannelTextBox.Text = notifyAPI.tokens.DiscordChannel.ToString();
+            DiscordTokenPasswordBox.Password = notifyAPI.tokens.DiscordToken;
             ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
             ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
@@ -51,15 +72,22 @@ namespace GakujoGUI
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
             ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
             ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+            AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
+            AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
+            StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
+            StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
+            SchoolYearNumberBox.Value = settings.SchoolYear;
+            SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode == 1 ? 0 : 2;
+            UserAgentTextBox.Text = settings.UserAgent;
             Task.Run(() =>
             {
                 Login();
                 Load();
                 Dispatcher.Invoke(() =>
                 {
-                    dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
-                    dispatcherTimer.Tick += new EventHandler(LoadEvent);
-                    dispatcherTimer.Start();
+                    autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
+                    autoLoadTimer.Tick += new EventHandler(LoadEvent);
+                    autoLoadTimer.Start();
                 });
             });
         }
@@ -187,27 +215,6 @@ namespace GakujoGUI
             });
         }
 
-        private void TokenSaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            Task.Run(() =>
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    notifyAPI.SetToken(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
-                    TokenSaveButtonFontIcon.Visibility = Visibility.Collapsed;
-                    TokenSaveButtonProgressRing.Visibility = Visibility.Visible;
-                });
-                notifyAPI.Login();
-                notifyAPI.SetTodoistTask(gakujoAPI.reports);
-                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
-                Dispatcher.Invoke(() =>
-                {
-                    TokenSaveButtonFontIcon.Visibility = Visibility.Visible;
-                    TokenSaveButtonProgressRing.Visibility = Visibility.Collapsed;
-                });
-            });
-        }
-
         #endregion
 
         #region 授業連絡
@@ -264,7 +271,7 @@ namespace GakujoGUI
             }
         }
 
-        private void ClassContactOpenFileButton_Click(object sender, RoutedEventArgs e)
+        private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
@@ -278,7 +285,7 @@ namespace GakujoGUI
             }
         }
 
-        private void ClassContactOpenFolderButton_Click(object sender, RoutedEventArgs e)
+        private void OpenClassContactFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassContactFilesComboBox.SelectedIndex != -1)
             {
@@ -433,7 +440,7 @@ namespace GakujoGUI
             }
         }
 
-        private void ClassSharedOpenFileButton_Click(object sender, RoutedEventArgs e)
+        private void OpenClassSharedFileButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
@@ -447,7 +454,7 @@ namespace GakujoGUI
             }
         }
 
-        private void ClassSharedOpenFolderButton_Click(object sender, RoutedEventArgs e)
+        private void OpenClassSharedFolderButton_Click(object sender, RoutedEventArgs e)
         {
             if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
             {
@@ -703,29 +710,124 @@ namespace GakujoGUI
 
         #endregion
 
-        #region タイマー
+        #region 設定
 
-        private void TimerCheckBox_Checked(object sender, RoutedEventArgs e)
+        private void SaveJson()
         {
-            if (!dispatcherTimer.IsEnabled)
+            try
             {
-                dispatcherTimer.Start();
+                File.WriteAllText(GetJsonPath("Settings"), JsonConvert.SerializeObject(settings, Formatting.Indented));
+            }
+            catch { }
+        }
+
+        private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
+        {
+            Task.Run(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    SaveTokensButtonFontIcon.Visibility = Visibility.Collapsed;
+                    SaveTokensButtonProgressRing.Visibility = Visibility.Visible;
+                });
+                notifyAPI.Login();
+                notifyAPI.SetTodoistTask(gakujoAPI.reports);
+                notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
+                Dispatcher.Invoke(() =>
+                {
+                    SaveTokensButtonFontIcon.Visibility = Visibility.Visible;
+                    SaveTokensButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        private void AutoLoadEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            settings.AutoLoadEnable = (bool)AutoLoadEnableCheckBox.IsChecked!;
+            SaveJson();
+            if (settings.AutoLoadEnable)
+            {
+                autoLoadTimer.Start();
+            }
+            else
+            {
+                autoLoadTimer.Stop();
             }
         }
 
-        private void TimerCheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void AutoLoadSpanNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
-            if (dispatcherTimer.IsEnabled)
-            {
-                dispatcherTimer.Stop();
-            }
+            settings.AutoLoadSpan = (int)AutoLoadSpanNumberBox.Value;
+            SaveJson();
+            autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
         }
 
-        private void TimerNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        private void StartUpEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
-            dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
+            settings.StartUpEnable = (bool)StartUpEnableCheckBox.IsChecked!;
+            SaveJson();
+            SetStartUp();
+        }
+
+        private void StartUpMinimizeCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            settings.StartUpMinimize = (bool)StartUpMinimizeCheckBox.IsChecked!;
+            SaveJson();
+        }
+
+        private void SetStartUp()
+        {
+            using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
+            if (settings.StartUpEnable)
+            {
+                registryKey.SetValue("GakujoGUI", AppDomain.CurrentDomain.BaseDirectory);
+            }
+            else
+            {
+                registryKey.DeleteValue("GakujoGUI", false);
+            }
+            registryKey.Close();
+        }
+
+        private void SchoolYearNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        {
+            settings.SchoolYear = (int)SchoolYearNumberBox.Value;
+            SaveJson();
+            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
+        }
+
+        private void SchoolSemesterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex < 2 ? 1 : 2;
+            SaveJson();
+            gakujoAPI.semesterCode = settings.SemesterCode;
+        }
+
+        private void UserAgentTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            settings.UserAgent = UserAgentTextBox.Text;
+            SaveJson();
+            gakujoAPI.userAgent = settings.UserAgent;
         }
 
         #endregion
+    }
+
+    public class Settings
+    {
+        public bool AutoLoadEnable { get; set; } = true;
+
+        public int AutoLoadSpan { get; set; } = 10;
+
+        public bool StartUpEnable { get; set; } = false;
+
+        public bool StartUpMinimize { get; set; } = false;
+
+        public int SchoolYear { get; set; } = 2021;
+
+        public int SemesterCode { get; set; } = 2;
+
+        public string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36 Edg/91.0.864.71";
     }
 }

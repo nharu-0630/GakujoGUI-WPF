@@ -305,15 +305,15 @@
                                         MaxWidth="360"
                                         Margin="6" />
                                     <Button
-                                        x:Name="ClassContactOpenFileButton"
+                                        x:Name="OpenClassContactFileButton"
                                         Margin="6"
-                                        Click="ClassContactOpenFileButton_Click">
+                                        Click="OpenClassContactFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        x:Name="ClassContactOpenFolderButton"
+                                        x:Name="OpenClassContactFolderButton"
                                         Margin="6"
-                                        Click="ClassContactOpenFolderButton_Click">
+                                        Click="OpenClassContactFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
                                     </Button>
                                 </StackPanel>
@@ -626,15 +626,15 @@
                                 <StackPanel Orientation="Horizontal">
                                     <ComboBox x:Name="ClassSharedFileFilesComboBox" Margin="6" />
                                     <Button
-                                        x:Name="ClassSharedOpenFileButton"
+                                        x:Name="OpenClassSharedFileButton"
                                         Margin="6"
-                                        Click="ClassSharedOpenFileButton_Click">
+                                        Click="OpenClassSharedFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        x:Name="ClassSharedOpenFolderButton"
+                                        x:Name="OpenClassSharedFolderButton"
                                         Margin="6"
-                                        Click="ClassSharedOpenFolderButton_Click">
+                                        Click="OpenClassSharedFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
                                     </Button>
                                 </StackPanel>
@@ -768,10 +768,10 @@
         <TabItem x:Name="SettingsTabItem" Header="設定">
             <Grid Margin="6">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200" />
-                    <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="220" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
+                <StackPanel Grid.Column="0" Margin="6">
                     <Label Margin="6" Content="外部連携" />
                     <PasswordBox
                         x:Name="TodoistTokenPasswordBox"
@@ -789,17 +789,17 @@
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordトークン" />
                     <Button
-                        x:Name="TokenSaveButton"
+                        x:Name="SaveTokensButton"
                         Margin="6"
-                        Click="TokenSaveButton_Click">
+                        Click="SaveTokensButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="TokenSaveButtonFontIcon"
+                                x:Name="SaveTokensButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72A;"
+                                Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="TokenSaveButtonProgressRing"
+                                x:Name="SaveTokensButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -807,34 +807,36 @@
                     <Separator Margin="6" />
                     <Label Margin="6" Content="自動更新" />
                     <CheckBox
-                        Name="TimerCheckBox"
+                        Name="AutoLoadEnableCheckBox"
                         Margin="6"
-                        Checked="TimerCheckBox_Checked"
+                        Checked="AutoLoadEnableCheckBox_CheckStateChanged"
                         Content="自動的に更新する"
-                        IsChecked="True"
-                        Unchecked="TimerCheckBox_Unchecked" />
+                        Unchecked="AutoLoadEnableCheckBox_CheckStateChanged" />
                     <ui:NumberBox
-                        Name="TimerNumberBox"
+                        Name="AutoLoadSpanNumberBox"
                         Margin="6"
                         Header="更新間隔 (分)"
                         Maximum="60"
                         Minimum="5"
                         SmallChange="5"
                         SpinButtonPlacementMode="Inline"
-                        ValueChanged="TimerNumberBox_ValueChanged"
-                        Value="10" />
+                        ValueChanged="AutoLoadSpanNumberBox_ValueChanged" />
                     <Separator Margin="6" />
                     <Label Margin="6" Content="Windows設定" />
                     <CheckBox
-                        Name="StartUpCheckBox"
+                        Name="StartUpEnableCheckBox"
                         Margin="6"
-                        Content="GakujoGUIを開く" />
+                        Checked="StartUpEnableCheckBox_CheckStateChanged"
+                        Content="GakujoGUIを開く"
+                        Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
                     <CheckBox
-                        Name="HideCheckBox"
+                        Name="StartUpMinimizeCheckBox"
                         Margin="6"
-                        Content="最小化した状態で起動する" />
+                        Checked="StartUpMinimizeCheckBox_CheckStateChanged"
+                        Content="最小化した状態で起動する"
+                        Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
                 </StackPanel>
-                <StackPanel Grid.Column="1">
+                <StackPanel Grid.Column="1" Margin="6">
                     <Label Margin="6" Content="学情設定" />
                     <ui:NumberBox
                         Name="SchoolYearNumberBox"
@@ -844,14 +846,27 @@
                         Minimum="2020"
                         SmallChange="1"
                         SpinButtonPlacementMode="Inline"
-                        Value="2021" />
+                        ValueChanged="SchoolYearNumberBox_ValueChanged" />
                     <Label Margin="6" Content="取得学期" />
-                    <ComboBox Width="Auto" Margin="6">
+                    <ComboBox
+                        Name="SchoolSemesterComboBox"
+                        Width="Auto"
+                        Margin="6"
+                        SelectionChanged="SchoolSemesterComboBox_SelectionChanged">
                         <ComboBoxItem Content="前期前半" />
                         <ComboBoxItem Content="前期後半" />
                         <ComboBoxItem Content="後期前半" />
                         <ComboBoxItem Content="後期後半" />
                     </ComboBox>
+                    <Separator Margin="6" />
+                    <Label Margin="6" Content="詳細設定" />
+                    <Label Margin="6" Content="UserAgent" />
+                    <TextBox
+                        Name="UserAgentTextBox"
+                        MinHeight="96"
+                        Margin="6"
+                        TextChanged="UserAgentTextBox_TextChanged"
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </Grid>
         </TabItem>

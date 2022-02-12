@@ -36,11 +36,11 @@ namespace GakujoGUI
         private readonly string cookiesPath = Path.Combine(Environment.CurrentDirectory, "Cookies");
         private readonly string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
 
-        private readonly string schoolYear = "2021";
-        private readonly int semesterCode = 2;
-        private readonly string userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36 Edg/91.0.864.71";
+        public string schoolYear = "";
+        public int semesterCode;
+        public string userAgent = "";
 
-        public static string GetJsonPath(string value)
+        private static string GetJsonPath(string value)
         {
             return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
         }
@@ -1009,7 +1009,6 @@ namespace GakujoGUI
             return classTableCell;
         }
     }
-
 
     public class Account
     {

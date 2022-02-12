@@ -11,7 +11,7 @@ namespace GakujoGUI
 {
     internal class NotifyAPI
     {
-        public Token token = new();
+        public Tokens tokens = new();
 
         private TodoistClient? todoistClient;
         private DiscordSocketClient? discordSocketClient;
@@ -32,53 +32,44 @@ namespace GakujoGUI
             set => _todoistResources = value;
         }
 
-        public static string GetJsonPath(string value)
+        private static string GetJsonPath(string value)
         {
             return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
         }
 
         public NotifyAPI()
         {
-            LoadJson();
+            if (File.Exists(GetJsonPath("Tokens")))
+            {
+                tokens = JsonConvert.DeserializeObject<Tokens>(File.ReadAllText(GetJsonPath("Tokens")))!;
+            }
             Login();
         }
 
-        public void SetToken(string todoistToken, string discordChannel, string discordToken)
+        public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
-            token.TodoistToken = todoistToken;
-            token.DiscordChannel = ulong.Parse(discordChannel);
-            token.DiscordToken = discordToken;
-            SaveJson();
-        }
-
-        private void LoadJson()
-        {
-            if (File.Exists(GetJsonPath("Token")))
-            {
-                token = JsonConvert.DeserializeObject<Token>(File.ReadAllText(GetJsonPath("Token")))!;
-            }
-        }
-
-        private void SaveJson()
-        {
+            tokens.TodoistToken = todoistToken;
+            tokens.DiscordChannel = ulong.Parse(discordChannel);
+            tokens.DiscordToken = discordToken;
             try
             {
-                File.WriteAllText(GetJsonPath("Token"), JsonConvert.SerializeObject(token, Formatting.Indented));
+                File.WriteAllText(GetJsonPath("Token"), JsonConvert.SerializeObject(tokens, Formatting.Indented));
             }
             catch { }
         }
+
 
         public void Login()
         {
             try
             {
-                todoistClient = new(token.TodoistToken);
+                todoistClient = new(tokens.TodoistToken);
             }
             catch { }
             try
             {
                 discordSocketClient = new();
-                discordSocketClient.LoginAsync(TokenType.Bot, token.DiscordToken).Wait();
+                discordSocketClient.LoginAsync(TokenType.Bot, tokens.DiscordToken).Wait();
             }
             catch { }
         }
@@ -164,10 +155,11 @@ namespace GakujoGUI
             }
         }
     }
-    public class Token
+
+    public class Tokens
     {
-        public string TodoistToken = "";
-        public ulong DiscordChannel;
-        public string DiscordToken = "";
+        public string TodoistToken { get; set; } = "";
+        public ulong DiscordChannel { get; set; }
+        public string DiscordToken { get; set; } = "";
     }
 }
