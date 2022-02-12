@@ -32,6 +32,38 @@ namespace GakujoGUI
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            UserIdTextBox.Text = gakujoAPI.account.UserId;
+            PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
+            LoginDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            TodoistTokenPasswordBox.Password = notifyAPI.token.TodoistToken;
+            DiscordChannelTextBox.Text = notifyAPI.token.DiscordChannel.ToString();
+            DiscordTokenPasswordBox.Password = notifyAPI.token.DiscordToken;
+            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+            ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+            ReportsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ReportsDataGrid.ItemsSource = gakujoAPI.reports;
+            QuizzesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
+            ClassSharedFilesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
+            ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
+            ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+            Task.Run(() =>
+            {
+                Login();
+                Load();
+                Dispatcher.Invoke(() =>
+                {
+                    dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
+                    dispatcherTimer.Tick += new EventHandler(LoadEvent);
+                    dispatcherTimer.Start();
+                });
+            });
+        }
+
         #region ログイン
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
@@ -464,7 +496,7 @@ namespace GakujoGUI
 
         #region 個人時間割
 
-        private void ClassTablesCell_ClassContactButtonClick(object sender, RoutedEventArgs e)
+        private string GetClassTablesCellSubjectsName()
         {
             string suggestText = "";
             switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
@@ -485,9 +517,14 @@ namespace GakujoGUI
                     suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
                     break;
             }
-            if (suggestText != "")
+            return suggestText;
+        }
+
+        private void ClassTablesCell_ClassContactButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (GetClassTablesCellSubjectsName() != "")
             {
-                ClassContactsSearchAutoSuggestBox.Text = suggestText;
+                ClassContactsSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
                 ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
                 collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
                 ClassContactsDataGrid.ItemsSource = collectionView;
@@ -498,28 +535,9 @@ namespace GakujoGUI
 
         private void ClassTablesCell_ReportButtonClick(object sender, RoutedEventArgs e)
         {
-            string suggestText = "";
-            switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+            if (GetClassTablesCellSubjectsName() != "")
             {
-                case 0:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
-                    break;
-                case 1:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
-                    break;
-                case 2:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
-                    break;
-                case 3:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
-                    break;
-                case 4:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
-                    break;
-            }
-            if (suggestText != "")
-            {
-                ReportsSearchAutoSuggestBox.Text = suggestText;
+                ReportsSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
                 ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
                 collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text));
                 ReportsDataGrid.ItemsSource = collectionView;
@@ -530,28 +548,9 @@ namespace GakujoGUI
 
         private void ClassTablesCell_QuizButtonClick(object sender, RoutedEventArgs e)
         {
-            string suggestText = "";
-            switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+            if (GetClassTablesCellSubjectsName() != "")
             {
-                case 0:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
-                    break;
-                case 1:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
-                    break;
-                case 2:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
-                    break;
-                case 3:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
-                    break;
-                case 4:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
-                    break;
-            }
-            if (suggestText != "")
-            {
-                QuizzesSearchAutoSuggestBox.Text = suggestText;
+                QuizzesSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
                 ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
                 collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text));
                 QuizzesDataGrid.ItemsSource = collectionView;
@@ -562,38 +561,7 @@ namespace GakujoGUI
 
         #endregion
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            UserIdTextBox.Text = gakujoAPI.account.UserId;
-            PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
-            LoginDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.LoginDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            TodoistTokenPasswordBox.Password = notifyAPI.token.TodoistToken;
-            DiscordChannelTextBox.Text = notifyAPI.token.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = notifyAPI.token.DiscordToken;
-            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
-            ClassContactsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassContactDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
-            ReportsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ReportDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-            QuizzesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.QuizDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-            ClassSharedFilesDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassSharedFileDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
-            ClassResultsDateTimeLabel.Content = "最終更新 " + gakujoAPI.account.ClassResultDateTime.ToString("yyyy/MM/dd HH:mm:ss");
-            ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
-
-            Task.Run(() =>
-            {
-                Login();
-                Load();
-                Dispatcher.Invoke(() =>
-                {
-                    dispatcherTimer.Interval = TimeSpan.FromMinutes(TimerNumberBox.Value);
-                    dispatcherTimer.Tick += new EventHandler(LoadEvent);
-                    dispatcherTimer.Start();
-                });
-            });
-        }
+        #region サジェスト
 
         private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
         {
@@ -617,6 +585,8 @@ namespace GakujoGUI
                 sender.ItemsSource = suitableItems.Distinct();
             }
         }
+
+        #endregion
 
         #region 通知
 
