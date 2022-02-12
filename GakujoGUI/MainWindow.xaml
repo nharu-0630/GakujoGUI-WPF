@@ -770,6 +770,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Margin="6">
                     <Label Margin="6" Content="外部連携" />
@@ -867,6 +868,32 @@
                         Margin="6"
                         TextChanged="UserAgentTextBox_TextChanged"
                         TextWrapping="Wrap" />
+                </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Image
+                        Width="100"
+                        Margin="6,120,6,0"
+                        Source="Resources/GakujoGUI.ico" />
+                    <Label
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Content="GakujoGUI"
+                        FontSize="28" />
+                    <Label
+                        Margin="6,0,6,0"
+                        HorizontalAlignment="Center"
+                        Content="WPF Version" />
+                    <Label
+                        Name="VersionLabel"
+                        Margin="6,0,6,0"
+                        HorizontalAlignment="Center"
+                        Content="Version" />
+                    <TextBlock Margin="12" HorizontalAlignment="Center">
+                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/xyzyxJP/GakujoGUI-WPF</Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="12,80,12,0" HorizontalAlignment="Center">
+                        <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
+                    </TextBlock>
                 </StackPanel>
             </Grid>
         </TabItem>

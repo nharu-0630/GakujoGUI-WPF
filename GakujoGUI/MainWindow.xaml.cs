@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -79,6 +80,7 @@ namespace GakujoGUI
             SchoolYearNumberBox.Value = settings.SchoolYear;
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode == 1 ? 0 : 2;
             UserAgentTextBox.Text = settings.UserAgent;
+            VersionLabel.Content = Assembly.GetExecutingAssembly().GetName().Version;
             Task.Run(() =>
             {
                 Login();
@@ -809,6 +811,12 @@ namespace GakujoGUI
             settings.UserAgent = UserAgentTextBox.Text;
             SaveJson();
             gakujoAPI.userAgent = settings.UserAgent;
+        }
+
+        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
 
         #endregion
