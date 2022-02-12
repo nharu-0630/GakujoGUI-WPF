@@ -769,6 +769,7 @@
             <Grid Margin="6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="200" />
+                    <ColumnDefinition Width="200" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
                     <Label Margin="6" Content="外部連携" />
@@ -819,7 +820,7 @@
                         Maximum="60"
                         Minimum="5"
                         SmallChange="5"
-                        SpinButtonPlacementMode="Compact"
+                        SpinButtonPlacementMode="Inline"
                         ValueChanged="TimerNumberBox_ValueChanged"
                         Value="10" />
                     <Separator Margin="6" />
@@ -832,6 +833,25 @@
                         Name="HideCheckBox"
                         Margin="6"
                         Content="最小化した状態で起動する" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <Label Margin="6" Content="学情設定" />
+                    <ui:NumberBox
+                        Name="SchoolYearNumberBox"
+                        Margin="6"
+                        Header="取得年度"
+                        Maximum="2050"
+                        Minimum="2020"
+                        SmallChange="1"
+                        SpinButtonPlacementMode="Inline"
+                        Value="2021" />
+                    <Label Margin="6" Content="取得学期" />
+                    <ComboBox Width="Auto" Margin="6">
+                        <ComboBoxItem Content="前期前半" />
+                        <ComboBoxItem Content="前期後半" />
+                        <ComboBoxItem Content="後期前半" />
+                        <ComboBoxItem Content="後期後半" />
+                    </ComboBox>
                 </StackPanel>
             </Grid>
         </TabItem>
