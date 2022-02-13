@@ -34,7 +34,7 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            return Path.Combine(Environment.CurrentDirectory, @"Json\" + value + ".json");
+            return Path.Combine(Environment.CurrentDirectory, @$"Json\{value}.json");
         }
 
         public NotifyAPI()
@@ -164,7 +164,7 @@ namespace GakujoGUI
 
         public void NotifyDiscord(ClassContact classContact)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            EmbedBuilder embedBuilder = new();
             embedBuilder.WithTitle(classContact.Title);
             embedBuilder.WithDescription(classContact.Content);
             embedBuilder.WithAuthor(classContact.Subjects);
@@ -174,9 +174,9 @@ namespace GakujoGUI
 
         public void NotifyDiscord(Report report)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            EmbedBuilder embedBuilder = new();
             embedBuilder.WithTitle(report.Title);
-            embedBuilder.WithDescription(report.StartDateTime + " -> " + report.EndDateTime);
+            embedBuilder.WithDescription($"{report.StartDateTime} -> {report.EndDateTime}");
             embedBuilder.WithAuthor(report.Subjects);
             embedBuilder.WithTimestamp(report.StartDateTime);
             (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
@@ -184,9 +184,9 @@ namespace GakujoGUI
 
         public void NotifyDiscord(Quiz quiz)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            EmbedBuilder embedBuilder = new();
             embedBuilder.WithTitle(quiz.Title);
-            embedBuilder.WithDescription(quiz.StartDateTime + " -> " + quiz.EndDateTime);
+            embedBuilder.WithDescription($"{quiz.StartDateTime} -> {quiz.EndDateTime}");
             embedBuilder.WithAuthor(quiz.Subjects);
             embedBuilder.WithTimestamp(quiz.StartDateTime);
             (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
@@ -194,7 +194,7 @@ namespace GakujoGUI
 
         public void NotifyDiscord(ClassSharedFile classSharedFile)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            EmbedBuilder embedBuilder = new();
             embedBuilder.WithTitle(classSharedFile.Title);
             embedBuilder.WithDescription(classSharedFile.Description);
             embedBuilder.WithAuthor(classSharedFile.Subjects);
@@ -204,9 +204,9 @@ namespace GakujoGUI
 
         public void NotifyDiscord(ClassResult classResult, bool hideDetail)
         {
-            EmbedBuilder embedBuilder = new EmbedBuilder();
+            EmbedBuilder embedBuilder = new();
             embedBuilder.WithTitle(classResult.Subjects);
-            if (!hideDetail) { embedBuilder.WithDescription(classResult.Score + " (" + classResult.Evaluation + ")   " + classResult.GP.ToString("F1")); }
+            if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}"); }
             embedBuilder.WithAuthor(classResult.TeacherName);
             embedBuilder.WithTimestamp(classResult.ReportDate);
             (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build()).Wait();
