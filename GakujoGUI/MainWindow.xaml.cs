@@ -78,7 +78,7 @@ namespace GakujoGUI
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
             StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
             SchoolYearNumberBox.Value = settings.SchoolYear;
-            SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode == 1 ? 0 : 2;
+            SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             VersionLabel.Content = Assembly.GetExecutingAssembly().GetName().Version;
             Task.Run(() =>
@@ -805,7 +805,7 @@ namespace GakujoGUI
 
         private void SchoolSemesterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex < 2 ? 1 : 2;
+            settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
             SaveJson();
             gakujoAPI.semesterCode = settings.SemesterCode;
         }

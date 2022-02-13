@@ -422,7 +422,7 @@ namespace GakujoGUI
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/goDetail/" + indexCount);
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            string content = "org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&teacherCode=&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart=" + schoolYear + "/01/01&reportDateEnd=&requireResponse=&studentCode=&studentName=&tbl_A01_01_length=-1&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A01_01&_screenInfoDisp=true&_scrollTop=0";
+            string content = "org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&teacherCode=&schoolYear=" + schoolYear + "&semesterCode=" + (semesterCode < 2 ? 1 : 2) + "&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart=" + schoolYear + "/01/01&reportDateEnd=&requireResponse=&studentCode=&studentName=&tbl_A01_01_length=-1&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A01_01&_screenInfoDisp=true&_scrollTop=0";
             httpRequestMessage.Content = new StringContent(content);
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
@@ -954,16 +954,35 @@ namespace GakujoGUI
                 classTables[i] = new ClassTableRow();
                 for (int j = 0; j < 5; j++)
                 {
-                    if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a") == null)
+                    ClassTableCell classTableCell = new();
+                    if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a") != null)
+                    {
+                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerHtml;
+                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                    }
+                    else if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[1]/tr/td/a") != null && (semesterCode == 0 || semesterCode == 2))
+                    {
+                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[1]/tr/td/a").InnerHtml;
+                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                    }
+                    else if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[2]/tr/td/a") != null && (semesterCode == 1 || semesterCode == 3))
+                    {
+                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table[2]/tr/td/a").InnerHtml;
+                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                    }
+                    else
                     {
                         continue;
                     }
-
-                    string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                    string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
-                    ClassTableCell classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                    string classRoom = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table/tr[" + (i + 2) + "]/td[" + (j + 2) + "]/table/tr[2]/td").InnerHtml;
-                    classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
 
                     switch (j)
                     {
