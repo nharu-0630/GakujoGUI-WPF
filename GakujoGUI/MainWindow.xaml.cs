@@ -602,7 +602,9 @@ namespace GakujoGUI
 
         #region サジェスト
 
+#pragma warning disable CA1822 // メンバーを static に設定します
         private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+#pragma warning restore CA1822 // メンバーを static に設定します
         {
             sender.Text = args.SelectedItem.ToString();
         }

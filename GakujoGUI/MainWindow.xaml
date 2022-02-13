@@ -869,7 +869,7 @@
                         TextChanged="UserAgentTextBox_TextChanged"
                         TextWrapping="Wrap" />
                 </StackPanel>
-                <StackPanel Grid.Column="2">
+                <StackPanel Grid.Column="2" Margin="6">
                     <Image
                         Width="100"
                         Margin="6,120,6,0"
