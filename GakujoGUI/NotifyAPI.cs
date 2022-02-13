@@ -22,7 +22,7 @@ namespace GakujoGUI
         {
             get
             {
-                if (todoistUpdateDateTime + TimeSpan.FromMinutes(3) < DateTime.Now)
+                if (todoistUpdateDateTime + TimeSpan.FromMinutes(3) < DateTime.Now && todoistClient != null)
                 {
                     todoistUpdateDateTime = DateTime.Now;
                     TodoistResources = todoistClient!.GetResourcesAsync().Result;
@@ -130,6 +130,7 @@ namespace GakujoGUI
 
         public void SetTodoistTask(List<Report> reports)
         {
+            if (TodoistResources == null) { return; }
             foreach (Report report in reports)
             {
                 if (report.Status == "受付中" && report.SubmittedDateTime == new DateTime())
@@ -145,6 +146,7 @@ namespace GakujoGUI
 
         public void SetTodoistTask(List<Quiz> quizzes)
         {
+            if (TodoistResources == null) { return; }
             foreach (Quiz quiz in quizzes)
             {
                 if (quiz.Status == "受付中" && quiz.SubmissionStatus == "未提出")
@@ -164,52 +166,72 @@ namespace GakujoGUI
 
         public void NotifyDiscord(ClassContact classContact)
         {
-            EmbedBuilder embedBuilder = new();
-            embedBuilder.WithTitle(classContact.Title);
-            embedBuilder.WithDescription(classContact.Content);
-            embedBuilder.WithAuthor(classContact.Subjects);
-            embedBuilder.WithTimestamp(classContact.ContactDateTime);
-            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            try
+            {
+                EmbedBuilder embedBuilder = new();
+                embedBuilder.WithTitle(classContact.Title);
+                embedBuilder.WithDescription(classContact.Content);
+                embedBuilder.WithAuthor(classContact.Subjects);
+                embedBuilder.WithTimestamp(classContact.ContactDateTime);
+                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            }
+            catch { }
         }
 
         public void NotifyDiscord(Report report)
         {
-            EmbedBuilder embedBuilder = new();
-            embedBuilder.WithTitle(report.Title);
-            embedBuilder.WithDescription($"{report.StartDateTime} -> {report.EndDateTime}");
-            embedBuilder.WithAuthor(report.Subjects);
-            embedBuilder.WithTimestamp(report.StartDateTime);
-            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            try
+            {
+                EmbedBuilder embedBuilder = new();
+                embedBuilder.WithTitle(report.Title);
+                embedBuilder.WithDescription($"{report.StartDateTime} -> {report.EndDateTime}");
+                embedBuilder.WithAuthor(report.Subjects);
+                embedBuilder.WithTimestamp(report.StartDateTime);
+                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            }
+            catch { }
         }
 
         public void NotifyDiscord(Quiz quiz)
         {
-            EmbedBuilder embedBuilder = new();
-            embedBuilder.WithTitle(quiz.Title);
-            embedBuilder.WithDescription($"{quiz.StartDateTime} -> {quiz.EndDateTime}");
-            embedBuilder.WithAuthor(quiz.Subjects);
-            embedBuilder.WithTimestamp(quiz.StartDateTime);
-            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            try
+            {
+                EmbedBuilder embedBuilder = new();
+                embedBuilder.WithTitle(quiz.Title);
+                embedBuilder.WithDescription($"{quiz.StartDateTime} -> {quiz.EndDateTime}");
+                embedBuilder.WithAuthor(quiz.Subjects);
+                embedBuilder.WithTimestamp(quiz.StartDateTime);
+                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            }
+            catch { }
         }
 
         public void NotifyDiscord(ClassSharedFile classSharedFile)
         {
-            EmbedBuilder embedBuilder = new();
-            embedBuilder.WithTitle(classSharedFile.Title);
-            embedBuilder.WithDescription(classSharedFile.Description);
-            embedBuilder.WithAuthor(classSharedFile.Subjects);
-            embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
-            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            try
+            {
+                EmbedBuilder embedBuilder = new();
+                embedBuilder.WithTitle(classSharedFile.Title);
+                embedBuilder.WithDescription(classSharedFile.Description);
+                embedBuilder.WithAuthor(classSharedFile.Subjects);
+                embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
+                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            }
+            catch { }
         }
 
         public void NotifyDiscord(ClassResult classResult, bool hideDetail)
         {
-            EmbedBuilder embedBuilder = new();
-            embedBuilder.WithTitle(classResult.Subjects);
-            if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}"); }
-            embedBuilder.WithAuthor(classResult.TeacherName);
-            embedBuilder.WithTimestamp(classResult.ReportDate);
-            (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            try
+            {
+                EmbedBuilder embedBuilder = new();
+                embedBuilder.WithTitle(classResult.Subjects);
+                if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}"); }
+                embedBuilder.WithAuthor(classResult.TeacherName);
+                embedBuilder.WithTimestamp(classResult.ReportDate);
+                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+            }
+            catch { }
         }
 
         #endregion

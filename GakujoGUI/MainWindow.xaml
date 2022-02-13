@@ -857,31 +857,38 @@
                         <ComboBoxItem Content="後期前半" />
                         <ComboBoxItem Content="後期後半" />
                     </ComboBox>
-                    <Button
-                        x:Name="SaveGakujoButton"
-                        Margin="6"
-                        Click="SaveGakujoButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                x:Name="SaveGakujoButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                x:Name="SaveGakujoButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="詳細設定" />
                     <Label Margin="6" Content="UserAgent" />
                     <TextBox
                         Name="UserAgentTextBox"
                         MinHeight="96"
                         Margin="6"
-                        TextChanged="UserAgentTextBox_TextChanged"
                         TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            x:Name="SaveGakujoButton"
+                            Margin="6"
+                            Click="SaveGakujoButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    x:Name="SaveGakujoButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    x:Name="SaveGakujoButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Width="150"
+                            Margin="6"
+                            FontSize="12">
+                            <Label.Content>
+                                <AccessText Text="適用するにはGakujoGUIを再起動する必要があります．" TextWrapping="Wrap" />
+                            </Label.Content>
+                        </Label>
+                    </StackPanel>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="6">
                     <Image

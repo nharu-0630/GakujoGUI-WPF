@@ -34,8 +34,8 @@ namespace GakujoGUI
         private readonly string cookiesPath = Path.Combine(Environment.CurrentDirectory, "Cookies");
         private readonly string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
 
-        public string schoolYear = "";
-        public int semesterCode;
+        private readonly string schoolYear = "";
+        private readonly int semesterCode;
         private string SchoolYearSemesterCodeSuffix
         {
             get { return $"_{schoolYear}_{(semesterCode < 2 ? 1 : 2)}"; }
@@ -44,16 +44,20 @@ namespace GakujoGUI
         {
             get { return $"{schoolYear}/0{(semesterCode < 2 ? 3 : 8)}/01"; }
         }
-        public string userAgent = "";
+        private readonly string userAgent = "";
 
         private static string GetJsonPath(string value)
         {
             return Path.Combine(Environment.CurrentDirectory, @$"Json\{value}.json");
         }
 
-        public GakujoAPI()
+        public GakujoAPI(string schoolYear, int semesterCode, string userAgent)
         {
+            this.schoolYear = schoolYear;
+            this.semesterCode = semesterCode;
+            this.userAgent = userAgent;
             LoadCookies();
+            LoadJson();
         }
 
         public void SetAccount(string userId, string passWord)
@@ -390,7 +394,7 @@ namespace GakujoGUI
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={semesterCode}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             htmlDocument = new();
@@ -420,7 +424,7 @@ namespace GakujoGUI
             {
                 classContacts.Insert(i, diffClassContacts[i]);
             }
-            for (int i = 0; i < diffCount; i++)
+            for (int i = 0; i < Math.Min(diffCount, 10); i++)
             {
                 GetClassContact(i);
             }
@@ -441,7 +445,7 @@ namespace GakujoGUI
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={semesterCode}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             htmlDocument = new();
@@ -524,7 +528,7 @@ namespace GakujoGUI
             {
                 classSharedFiles.Insert(i, diffClassSharedFiles[i]);
             }
-            for (int i = 0; i < diffCount; i++)
+            for (int i = 0; i < Math.Min(diffCount, 10); i++)
             {
                 GetClassSharedFile(i);
             }

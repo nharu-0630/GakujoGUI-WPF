@@ -24,10 +24,11 @@ namespace GakujoGUI
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly GakujoAPI gakujoAPI = new();
+        private readonly GakujoAPI gakujoAPI;
         private readonly NotifyAPI notifyAPI = new();
 
-        private Settings settings = new();
+        private readonly Settings settings = new();
+
 
         private readonly DispatcherTimer autoLoadTimer = new();
 
@@ -40,10 +41,6 @@ namespace GakujoGUI
         {
             InitializeComponent();
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
             if (File.Exists(GetJsonPath("Settings")))
             {
                 settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
@@ -56,6 +53,11 @@ namespace GakujoGUI
                 Visibility = Visibility.Hidden;
                 Hide();
             }
+            gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
             LoginDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
@@ -87,9 +89,7 @@ namespace GakujoGUI
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
             StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
             SchoolYearNumberBox.Value = settings.SchoolYear;
-            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
-            gakujoAPI.semesterCode = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             VersionLabel.Content = Assembly.GetExecutingAssembly().GetName().Version;
             Task.Run(() =>
@@ -110,10 +110,14 @@ namespace GakujoGUI
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Login());
+            Task.Run(() =>
+            {
+                Login();
+                Load();
+            });
         }
 
-        private void Login(bool messageBox = true)
+        private void Login()
         {
             Dispatcher.Invoke(() =>
             {
@@ -132,15 +136,15 @@ namespace GakujoGUI
             {
                 Dispatcher.Invoke(() =>
                 {
-                    if (messageBox) { MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); }
+                    MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
             else
             {
                 gakujoAPI.GetClassTables();
-                gakujoAPI.GetClassResults(out _);
                 Dispatcher.Invoke(() =>
                 {
+                    LoginDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
                     ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables![0..5];
                     ClassTablesDataGrid.Items.Refresh();
                 });
@@ -158,14 +162,10 @@ namespace GakujoGUI
             Task.Run(() => Load());
         }
 
-        private void Load(bool messageBox = true)
+        private void Load()
         {
             if (!gakujoAPI.loginStatus)
             {
-                Dispatcher.Invoke(() =>
-                {
-                    if (messageBox) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); }
-                });
                 return;
             }
             Dispatcher.Invoke(() =>
@@ -286,6 +286,19 @@ namespace GakujoGUI
         {
             if (ClassContactsDataGrid.SelectedIndex != -1)
             {
+                if (((ClassContact)ClassContactsDataGrid.SelectedItem).Content == "")
+                {
+                    if (MessageBox.Show("授業連絡の詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        if (!gakujoAPI.loginStatus)
+                        {
+                            MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        int index = ClassContactsDataGrid.SelectedIndex;
+                        Task.Run(() => gakujoAPI.GetClassContact(index));
+                    }
+                }
                 ClassContactContentTextBox.Text = ((ClassContact)ClassContactsDataGrid.SelectedItem).Content;
                 if (((ClassContact)ClassContactsDataGrid.SelectedItem).Files.Length == 0)
                 {
@@ -463,6 +476,19 @@ namespace GakujoGUI
         {
             if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
+                if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description == "")
+                {
+                    if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        if (!gakujoAPI.loginStatus)
+                        {
+                            MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+                        int index = ClassSharedFilesDataGrid.SelectedIndex;
+                        Task.Run(() => gakujoAPI.GetClassSharedFile(index));
+                    }
+                }
                 ClassSharedFileDescriptionTextBox.Text = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description;
                 if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files.Length == 0)
                 {
@@ -829,21 +855,28 @@ namespace GakujoGUI
 
         private void SaveGakujoButton_Click(object sender, RoutedEventArgs e)
         {
-            settings.SchoolYear = (int)SchoolYearNumberBox.Value;
-            settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
-            SaveJson();
-            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
-            gakujoAPI.semesterCode = settings.SemesterCode;
-            MessageBox.Show("適用のためGakujoGUIを再起動します．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
-            Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
-        }
-
-        private void UserAgentTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            settings.UserAgent = UserAgentTextBox.Text;
-            SaveJson();
-            gakujoAPI.userAgent = settings.UserAgent;
+            switch (MessageBox.Show("適用するにはGakujoGUIを再起動する必要があります．\n再起動しますか．", "GakujoGUI", MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
+            {
+                case MessageBoxResult.Yes:
+                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
+                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
+                    settings.UserAgent = UserAgentTextBox.Text;
+                    SaveJson();
+                    Process.Start(Environment.ProcessPath!);
+                    Application.Current.Shutdown();
+                    break;
+                case MessageBoxResult.No:
+                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
+                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
+                    settings.UserAgent = UserAgentTextBox.Text;
+                    SaveJson();
+                    break;
+                case MessageBoxResult.Cancel:
+                    SchoolYearNumberBox.Value = settings.SchoolYear;
+                    SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
+                    UserAgentTextBox.Text = settings.UserAgent;
+                    break;
+            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
