@@ -889,6 +889,19 @@
                             </Label.Content>
                         </Label>
                     </StackPanel>
+                    <Label Margin="6" Content="詳細を一括取得する" />
+                    <StackPanel Orientation="Horizontal">
+                        <Button Margin="6" Content="授業連絡" />
+                        <Button Margin="6" Content="授業共有ファイル" />
+                    </StackPanel>
+                    <Label
+                        Width="150"
+                        Margin="6"
+                        FontSize="12">
+                        <Label.Content>
+                            <AccessText Text="この操作には10分以上かかる場合があります．" TextWrapping="Wrap" />
+                        </Label.Content>
+                    </Label>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="6">
                     <Image
