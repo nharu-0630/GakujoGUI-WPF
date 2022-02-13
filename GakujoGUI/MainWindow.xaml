@@ -846,19 +846,33 @@
                         Maximum="2050"
                         Minimum="2020"
                         SmallChange="1"
-                        SpinButtonPlacementMode="Inline"
-                        ValueChanged="SchoolYearNumberBox_ValueChanged" />
+                        SpinButtonPlacementMode="Inline" />
                     <Label Margin="6" Content="取得学期" />
                     <ComboBox
                         Name="SchoolSemesterComboBox"
                         Width="Auto"
-                        Margin="6"
-                        SelectionChanged="SchoolSemesterComboBox_SelectionChanged">
+                        Margin="6">
                         <ComboBoxItem Content="前期前半" />
                         <ComboBoxItem Content="前期後半" />
                         <ComboBoxItem Content="後期前半" />
                         <ComboBoxItem Content="後期後半" />
                     </ComboBox>
+                    <Button
+                        x:Name="SaveGakujoButton"
+                        Margin="6"
+                        Click="SaveGakujoButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                x:Name="SaveGakujoButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                x:Name="SaveGakujoButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+                    </Button>
                     <Separator Margin="6" />
                     <Label Margin="6" Content="詳細設定" />
                     <Label Margin="6" Content="UserAgent" />

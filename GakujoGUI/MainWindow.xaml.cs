@@ -62,8 +62,11 @@ namespace GakujoGUI
             TodoistTokenPasswordBox.Password = notifyAPI.tokens.TodoistToken;
             DiscordChannelTextBox.Text = notifyAPI.tokens.DiscordChannel.ToString();
             DiscordTokenPasswordBox.Password = notifyAPI.tokens.DiscordToken;
-            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
-            ClassTablesDataGrid.Items.Refresh();
+            if (gakujoAPI.classTables != null)
+            {
+                ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+                ClassTablesDataGrid.Items.Refresh();
+            }
             ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
             ClassContactsDataGrid.Items.Refresh();
@@ -84,11 +87,14 @@ namespace GakujoGUI
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
             StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
             SchoolYearNumberBox.Value = settings.SchoolYear;
+            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
+            gakujoAPI.semesterCode = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             VersionLabel.Content = Assembly.GetExecutingAssembly().GetName().Version;
             Task.Run(() =>
             {
+                gakujoAPI.LoadJson();
                 Login();
                 Load();
                 Dispatcher.Invoke(() =>
@@ -135,7 +141,7 @@ namespace GakujoGUI
                 gakujoAPI.GetClassResults(out _);
                 Dispatcher.Invoke(() =>
                 {
-                    ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+                    ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables![0..5];
                     ClassTablesDataGrid.Items.Refresh();
                 });
             }
@@ -538,23 +544,26 @@ namespace GakujoGUI
         private string GetClassTablesCellSubjectsName()
         {
             string suggestText = "";
-            switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+            if (gakujoAPI.classTables != null)
             {
-                case 0:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
-                    break;
-                case 1:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
-                    break;
-                case 2:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
-                    break;
-                case 3:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
-                    break;
-                case 4:
-                    suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
-                    break;
+                switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
+                {
+                    case 0:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
+                        break;
+                    case 1:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
+                        break;
+                    case 2:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
+                        break;
+                    case 3:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
+                        break;
+                    case 4:
+                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
+                        break;
+                }
             }
             return suggestText;
         }
@@ -615,13 +624,16 @@ namespace GakujoGUI
             {
                 List<string> suitableItems = new();
                 string[] splitText = sender.Text.Split(" ");
-                foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
+                if (gakujoAPI.classTables != null)
                 {
-                    if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
-                    if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
+                    foreach (ClassTableRow classTableRow in gakujoAPI.classTables)
+                    {
+                        if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
+                        if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
+                        if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
+                        if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
+                        if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
+                    }
                 }
                 sender.ItemsSource = suitableItems.Distinct();
             }
@@ -815,18 +827,16 @@ namespace GakujoGUI
             registryKey.Close();
         }
 
-        private void SchoolYearNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
+        private void SaveGakujoButton_Click(object sender, RoutedEventArgs e)
         {
             settings.SchoolYear = (int)SchoolYearNumberBox.Value;
-            SaveJson();
-            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
-        }
-
-        private void SchoolSemesterComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
             settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
             SaveJson();
+            gakujoAPI.schoolYear = settings.SchoolYear.ToString();
             gakujoAPI.semesterCode = settings.SemesterCode;
+            MessageBox.Show("適用のためGakujoGUIを再起動します．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+            Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
         }
 
         private void UserAgentTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -843,6 +853,7 @@ namespace GakujoGUI
         }
 
         #endregion
+
     }
 
     public class Settings
