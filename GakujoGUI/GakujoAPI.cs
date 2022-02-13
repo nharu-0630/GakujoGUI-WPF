@@ -137,7 +137,6 @@ namespace GakujoGUI
             try
             { File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts, Formatting.Indented)); }
             catch { }
-            catch { }
             try
             { File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented)); }
             catch { }
