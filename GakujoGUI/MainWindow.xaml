@@ -207,17 +207,17 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="ClassContactsLoadButton"
+                        x:Name="LoadClassContactsButton"
                         Margin="6"
-                        Click="ClassContactsLoadButton_Click">
+                        Click="LoadClassContactsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="ClassContactsLoadButtonFontIcon"
+                                x:Name="LoadClassContactsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="ClassContactsLoadButtonProgressRing"
+                                x:Name="LoadClassContactsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -340,17 +340,17 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="ReportsLoadButton"
+                        x:Name="LoadReportsButton"
                         Margin="6"
-                        Click="ReportsLoadButton_Click">
+                        Click="LoadReportsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="ReportsLoadButtonFontIcon"
+                                x:Name="LoadReportsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="ReportsLoadButtonProgressRing"
+                                x:Name="LoadReportsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -434,17 +434,17 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="QuizzesLoadButton"
+                        x:Name="LoadQuizzesButton"
                         Margin="6"
-                        Click="QuizzesLoadButton_Click">
+                        Click="LoadQuizzesButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="QuizzesLoadButtonFontIcon"
+                                x:Name="LoadQuizzesButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="QuizzesLoadButtonProgressRing"
+                                x:Name="LoadQuizzesButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -534,17 +534,17 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="ClassSharedFilesLoadButton"
+                        x:Name="LoadClassSharedFilesButton"
                         Margin="6"
-                        Click="ClassSharedFilesLoadButton_Click">
+                        Click="LoadClassSharedFilesButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="ClassSharedFilesLoadButtonFontIcon"
+                                x:Name="LoadClassSharedFilesButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="ClassSharedFilesLoadButtonProgressRing"
+                                x:Name="LoadClassSharedFilesButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -653,17 +653,17 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        x:Name="ClassResultsLoadButton"
+                        x:Name="LoadClassResultsButton"
                         Margin="6"
-                        Click="ClassResultsLoadButton_Click">
+                        Click="LoadClassResultsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="ClassResultsLoadButtonFontIcon"
+                                x:Name="LoadClassResultsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="ClassResultsLoadButtonProgressRing"
+                                x:Name="LoadClassResultsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -891,8 +891,14 @@
                     </StackPanel>
                     <Label Margin="6" Content="詳細を一括取得する" />
                     <StackPanel Orientation="Horizontal">
-                        <Button Margin="6" Content="授業連絡" />
-                        <Button Margin="6" Content="授業共有ファイル" />
+                        <Button
+                            Name="LoadAllClassContactsButton"
+                            Margin="6"
+                            Content="授業連絡" />
+                        <Button
+                            Name="LoadAllClassSharedFilesButton"
+                            Margin="6"
+                            Content="授業共有ファイル" />
                     </StackPanel>
                     <Label
                         Width="150"

@@ -170,16 +170,16 @@ namespace GakujoGUI
             }
             Dispatcher.Invoke(() =>
             {
-                ClassContactsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-                ClassContactsLoadButtonProgressRing.Visibility = Visibility.Visible;
-                ReportsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-                ReportsLoadButtonProgressRing.Visibility = Visibility.Visible;
-                QuizzesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-                QuizzesLoadButtonProgressRing.Visibility = Visibility.Visible;
-                ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-                ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Visible;
-                ClassResultsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-                ClassResultsLoadButtonProgressRing.Visibility = Visibility.Visible;
+                LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
+                LoadReportsButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
+                LoadQuizzesButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
+                LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
+                LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             });
             gakujoAPI.GetClassContacts(out int classContactsDiffCount);
             gakujoAPI.GetReports(out int reportsDiffCount);
@@ -230,16 +230,16 @@ namespace GakujoGUI
                 }
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
-                ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                ReportsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                QuizzesLoadButtonFontIcon.Visibility = Visibility.Visible;
-                QuizzesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Visible;
-                ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
-                ClassResultsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                ClassResultsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadClassContactsButtonFontIcon.Visibility = Visibility.Visible;
+                LoadClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
+                LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadQuizzesButtonFontIcon.Visibility = Visibility.Visible;
+                LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Visible;
+                LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
+                LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
             });
         }
 
@@ -261,8 +261,8 @@ namespace GakujoGUI
                 MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ClassContactsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-            ClassContactsLoadButtonProgressRing.Visibility = Visibility.Visible;
+            LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
                 gakujoAPI.GetClassContacts(out int diffCount);
@@ -276,8 +276,8 @@ namespace GakujoGUI
                         NotifyToast(gakujoAPI.classContacts[i]);
                         notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
                     }
-                    ClassContactsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                    ClassContactsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    LoadClassContactsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
         }
@@ -361,8 +361,8 @@ namespace GakujoGUI
                 MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ReportsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-            ReportsLoadButtonProgressRing.Visibility = Visibility.Visible;
+            LoadReportsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
                 gakujoAPI.GetReports(out int diffCount);
@@ -377,8 +377,8 @@ namespace GakujoGUI
                         NotifyToast(gakujoAPI.reports[i]);
                         notifyAPI.NotifyDiscord(gakujoAPI.reports[i]);
                     }
-                    ReportsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                    ReportsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
         }
@@ -406,8 +406,8 @@ namespace GakujoGUI
                 MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            QuizzesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-            QuizzesLoadButtonProgressRing.Visibility = Visibility.Visible;
+            LoadQuizzesButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
                 gakujoAPI.GetQuizzes(out int diffCount);
@@ -422,8 +422,8 @@ namespace GakujoGUI
                         NotifyToast(gakujoAPI.quizzes[i]);
                         notifyAPI.NotifyDiscord(gakujoAPI.quizzes[i]);
                     }
-                    QuizzesLoadButtonFontIcon.Visibility = Visibility.Visible;
-                    QuizzesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    LoadQuizzesButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
         }
@@ -451,8 +451,8 @@ namespace GakujoGUI
                 MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-            ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Visible;
+            LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
                 gakujoAPI.GetClassSharedFiles(out int diffCount);
@@ -466,8 +466,8 @@ namespace GakujoGUI
                         NotifyToast(gakujoAPI.classSharedFiles[i]);
                         notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
                     }
-                    ClassSharedFilesLoadButtonFontIcon.Visibility = Visibility.Visible;
-                    ClassSharedFilesLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
         }
@@ -542,8 +542,8 @@ namespace GakujoGUI
                 MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
-            ClassResultsLoadButtonFontIcon.Visibility = Visibility.Collapsed;
-            ClassResultsLoadButtonProgressRing.Visibility = Visibility.Visible;
+            LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
                 gakujoAPI.GetClassResults(out int diffCount);
@@ -557,8 +557,8 @@ namespace GakujoGUI
                         NotifyToast(gakujoAPI.classResults[i]);
                         notifyAPI.NotifyDiscord(gakujoAPI.classResults[i], true);
                     }
-                    ClassResultsLoadButtonFontIcon.Visibility = Visibility.Visible;
-                    ClassResultsLoadButtonProgressRing.Visibility = Visibility.Collapsed;
+                    LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
         }
