@@ -38,6 +38,10 @@ namespace GakujoGUI
 
         public string schoolYear = "";
         public int semesterCode;
+        private string ReportDateStart
+        {
+            get { return schoolYear + "/0" + (semesterCode < 2 ? 3 : 8) + "/01"; }
+        }
         public string userAgent = "";
 
         private static string GetJsonPath(string value)
