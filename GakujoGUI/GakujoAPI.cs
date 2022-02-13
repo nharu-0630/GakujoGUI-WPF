@@ -18,9 +18,7 @@ namespace GakujoGUI
         public List<Report> reports = new();
         public List<Quiz> quizzes = new();
         public List<ClassContact> classContacts = new() { };
-        public List<SchoolContact> schoolContacts = new() { };
         public List<ClassSharedFile> classSharedFiles = new() { };
-        public List<SchoolSharedFile> schoolSharedFiles = new() { };
         public List<ClassResult> classResults = new() { };
         public ClassTableRow[] classTables = new ClassTableRow[7];
 
@@ -108,17 +106,9 @@ namespace GakujoGUI
             {
                 classContacts = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts")))!;
             }
-            if (File.Exists(GetJsonPath("SchoolContacts")))
-            {
-                schoolContacts = JsonConvert.DeserializeObject<List<SchoolContact>>(File.ReadAllText(GetJsonPath("SchoolContacts")))!;
-            }
             if (File.Exists(GetJsonPath("ClassSharedFiles")))
             {
                 classSharedFiles = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles")))!;
-            }
-            if (File.Exists(GetJsonPath("SchoolSharedFiles")))
-            {
-                schoolSharedFiles = JsonConvert.DeserializeObject<List<SchoolSharedFile>>(File.ReadAllText(GetJsonPath("SchoolSharedFiles")))!;
             }
             if (File.Exists(GetJsonPath("ClassResults")))
             {
@@ -147,14 +137,9 @@ namespace GakujoGUI
             try
             { File.WriteAllText(GetJsonPath("ClassContacts"), JsonConvert.SerializeObject(classContacts, Formatting.Indented)); }
             catch { }
-            try
-            { File.WriteAllText(GetJsonPath("SchoolContacts"), JsonConvert.SerializeObject(schoolContacts, Formatting.Indented)); }
             catch { }
             try
             { File.WriteAllText(GetJsonPath("ClassSharedFiles"), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented)); }
-            catch { }
-            try
-            { File.WriteAllText(GetJsonPath("SchoolSharedFiles"), JsonConvert.SerializeObject(schoolSharedFiles, Formatting.Indented)); }
             catch { }
             try
             { File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults, Formatting.Indented)); }
@@ -331,7 +316,6 @@ namespace GakujoGUI
             htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-
             diffCount = quizzes.Count;
             quizzes.Clear();
             int limitCount = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -486,100 +470,6 @@ namespace GakujoGUI
             SaveCookies();
         }
 
-        public void GetSchoolContacts(out int diffCount)
-        {
-            SchoolContact? lastSchoolContact = (schoolContacts.Count > 0) ? schoolContacts[0] : null;
-            List<SchoolContact> diffSchoolContacts = new() { };
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=キャンパスライフ&menuCode=B01&nextPath=/commoncontact/commonContact/initialize");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            for (int i = 0; i < htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr").Count; i++)
-            {
-                SchoolContact schoolContact = new();
-                schoolContact.Category = htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText;
-                schoolContact.Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText).Trim();
-                schoolContact.ContactSource = htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText;
-                schoolContact.ContactDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText.Trim());
-                schoolContact.SchoolContactId = htmlDocument.GetElementbyId("tbl_commoncontact_rcv").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("dtlScreen('", "").Replace("'", "");
-                if (schoolContact.Equals(lastSchoolContact))
-                {
-                    break;
-                }
-                diffSchoolContacts.Add(schoolContact);
-            }
-            diffCount = diffSchoolContacts.Count;
-            for (int i = 0; i < diffCount; i++)
-            {
-                schoolContacts.Insert(i, diffSchoolContacts[i]);
-            }
-            for (int i = 0; i < diffCount; i++)
-            {
-                GetSchoolContact(i);
-            }
-            account.SchoolContactDateTime = DateTime.Now;
-            SaveJson();
-            SaveCookies();
-        }
-
-        public void GetSchoolContact(int indexCount)
-        {
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=キャンパスライフ&menuCode=B01&nextPath=/commoncontact/commonContact/initialize");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/commoncontact/commonContact/dtlEdit");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            string content = $"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&confirmMsg=&mode=initializeRcv&selectIndex={indexCount}&commonContactId={schoolContacts[indexCount].SchoolContactId}&commonContactKindDivision=1&_searchConditionDisp.tbl_commoncontact_rcv_dl=false&_screenIdentifier=SC_B01_01&_screenInfoDisp=true&_scrollTop=0";
-            httpRequestMessage.Content = new StringContent(content);
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            schoolContacts[indexCount].Content = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
-            schoolContacts[indexCount].ContactSource = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td").InnerText;
-            schoolContacts[indexCount].FileLinkRelease = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[5].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\r", "").Replace("\n", "").Replace("\t", "");
-            schoolContacts[indexCount].ReferenceURL = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[6].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "");
-            schoolContacts[indexCount].Severity = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[7].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "");
-            schoolContacts[indexCount].WebReplyRequest = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[9].SelectSingleNode("td").InnerText;
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div") != null)
-            {
-                schoolContacts[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
-                {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form/div[3]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td/div").SelectNodes("div")[i];
-                    string prefix = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "");
-                    string no = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
-                    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
-                    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                    httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
-                    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-                    Stream stream = httpResponse.Content.ReadAsStreamAsync().Result;
-                    if (!Directory.Exists(downloadPath))
-                    {
-                        Directory.CreateDirectory(downloadPath);
-                    }
-                    using (FileStream fileStream = File.Create(Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim())))
-                    {
-                        stream.Seek(0, SeekOrigin.Begin);
-                        stream.CopyTo(fileStream);
-                    }
-                    schoolContacts[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
-                }
-            }
-            SaveJson();
-            SaveCookies();
-        }
-
         public void GetClassSharedFiles(out int diffCount)
         {
             ClassSharedFile? lastClassSharedFile = (classSharedFiles.Count > 0) ? classSharedFiles[0] : null;
@@ -668,216 +558,6 @@ namespace GakujoGUI
             SaveJson();
             SaveCookies();
         }
-
-        public void GetSchoolSharedFiles(out int diffCount)
-        {
-            SchoolSharedFile? lastSchoolSharedFile = (schoolSharedFiles.Count > 0) ? schoolSharedFiles[0] : null;
-            List<SchoolSharedFile> diffSchoolSharedFiles = new() { };
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=学内共有ファイル&menuCode=B08&nextPath=/commonfile/commonFile/initialize");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            int limitCount = 0;
-            if (htmlDocument.GetElementbyId("tbl_commonFileList") != null)
-            {
-                limitCount = htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr").Count;
-            }
-            for (int i = 0; i < limitCount; i++)
-            {
-                SchoolSharedFile schoolSharedFile = new();
-                schoolSharedFile.Category = htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText.Replace("\r", "").Replace("\n", "").Trim();
-                schoolSharedFile.Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].SelectSingleNode("a").InnerText).Trim();
-                schoolSharedFile.DownloadCount = int.Parse(htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText);
-                schoolSharedFile.Size = htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText;
-                schoolSharedFile.UpdateDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_commonFileList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText);
-                if (schoolSharedFile.Equals(lastSchoolSharedFile))
-                {
-                    break;
-                }
-                schoolSharedFile.SchoolSharedFileId = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/input[{i + 1}]").Attributes["value"].Value;
-                diffSchoolSharedFiles.Add(schoolSharedFile);
-            }
-            diffCount = diffSchoolSharedFiles.Count;
-            for (int i = 0; i < diffCount; i++)
-            {
-                schoolSharedFiles.Insert(i, diffSchoolSharedFiles[i]);
-            }
-            for (int i = 0; i < diffCount; i++)
-            {
-                GetSchoolSharedFile(i);
-            }
-            account.SchoolSharedFileDateTime = DateTime.Now;
-            SaveJson();
-            SaveCookies();
-        }
-
-        public void GetSchoolSharedFile(int indexCount)
-        {
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=学内共有ファイル&menuCode=B08&nextPath=/commonfile/commonFile/initialize");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/commonfile/commonFileDetail/initialize");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&searchKeyWord=&searchTitleName=Y&commonFileCategoryId=&lastUpdateDate=&tbl_commonFileList_length=50&prevPageId=backToList&hiddenDeleteCommonFileId=&hiddenCommonFileId={schoolSharedFiles[indexCount].SchoolSharedFileId}&confirmMsg=&tableName=T_GROUP_MANAGE&backPath=/commonfile/commonFile/initialize&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_B08_01&_screenInfoDisp=true&_scrollTop=0");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            schoolSharedFiles[indexCount].Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[3].SelectSingleNode("td").InnerText);
-            schoolSharedFiles[indexCount].PublicPeriod = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[4].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "");
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div") != null)
-            {
-                schoolSharedFiles[indexCount].Files = new string[htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
-                {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectNodes("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/table")[0].SelectNodes("tr")[2].SelectSingleNode("td/div").SelectNodes("div")[i];
-                    string prefix = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "");
-                    string no = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
-                    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
-                    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                    httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
-                    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-                    Stream stream = httpResponse.Content.ReadAsStreamAsync().Result;
-                    if (!Directory.Exists(downloadPath))
-                    {
-                        Directory.CreateDirectory(downloadPath);
-                    }
-                    using (FileStream fileStream = File.Create(Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim())))
-                    {
-                        stream.Seek(0, SeekOrigin.Begin);
-                        stream.CopyTo(fileStream);
-                    }
-                    schoolSharedFiles[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
-                }
-            }
-            SaveJson();
-            SaveCookies();
-        }
-
-        #region
-
-        //public string GetQuiz(Quiz quiz)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/forwardSubmitRef");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&testId=" + quiz.QuizId + "&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=" + quiz.SchoolYear + "&listSubjectCode=" + quiz.SubjectCode + "&listClassCode=" + quiz.ClassCode + "&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    return htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form").InnerHtml;
-        //}
-
-        //public bool SubmitQuiz(string testId, string outputText)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/submit/confirmAction");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&studentCode=" + account.ApacheToken + "&testId=" + testId + "&questionNumber=&selectedKey=&backPath=/test/student/searchList/selfForward" + Uri.EscapeUriString(outputText) + "&maxFileSize=5&_screenIdentifier=SC_A03_02_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/submitConfirm/confirmAction");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&studentCode=" + account.StudentCode + "&testId=" + testId + "&questionNumber=/test/student/submit/selfForward&maxFileSize=5&_screenIdentifier=SC_A03_03_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    Login();
-        //    return true;
-        //}
-
-        //public bool CancelQuiz(string testId)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/submitCancel");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&testId=" + testId + "&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=/test/student/submit/selfForward&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    return true;
-        //}
-
-        //public string GetReport(Report report)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/forwardSubmitRef?submitStatusCode=01");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&reportId=" + report.ReportId + "&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=" + report.SchoolYear + "&listSubjectCode=" + report.SubjectCode + "&listClassCode=" + report.ClassCode + "&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    htmlDocument.GetElementbyId("accordionInformation").Remove();
-        //    return htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form").InnerHtml;
-        //}
-
-        //public bool SubmitReport(string reportId, string[] fileArray, string comment)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/forwardSubmit");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&reportId=" + reportId + "&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUpload/fileUploadInit");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&prefix=reportFile&sequence=true&webspaceTabDisplayFlag=true&screenName=ファイル添付&fileNameAutonumberFlag=true&fileNameDisplayFlag=true");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div/div/div/div[3]/div/div/div[1]/div[2]/form/div[1]/input")[0].Attributes["value"].Value;
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadLocal/fileUploadLocal");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("X-Requested-With", "XMLHttpRequest");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    MultipartFormDataContent multipartFormDataContent = new MultipartFormDataContent();
-        //    multipartFormDataContent.Add(new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken));
-        //    using (FileStream fileStream = new FileStream(fileArray[0], FileMode.Open, FileAccess.Read))
-        //    {
-        //        StreamContent streamContent = new StreamContent(fileStream);
-        //        streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-        //        {
-        //            Name = "formFile",
-        //            FileName = Path.GetFileName(fileArray[0])
-        //        };
-        //        streamContent.Headers.ContentType = new MediaTypeHeaderValue(MimeMapping.MimeUtility.GetMimeMapping(Path.GetFileName(fileArray[0])));
-        //        multipartFormDataContent.Add(streamContent);
-        //        httpRequestMessage.Content = multipartFormDataContent;
-        //        httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    }
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/reportEntry/regist");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&studentName=" + account.StudentName + "&studentCode=" + account.StudentCode + "&submitNo=&fileNo=&backPath=/report/student/searchList/selfForward&submitFileHidden=&maxFileSize=10&comment=" + Uri.EscapeUriString(comment) + "&_screenIdentifier=SC_A02_02_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    Login();
-        //    return true;
-        //}
-
-        //public bool CancelReport(Report report)
-        //{
-        //    httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/submitCancel");
-        //    httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-        //    httpRequestMessage.Content = new StringContent("org.apache.struts.taglib.html.TOKEN=" + account.ApacheToken + "&reportId=" + report.ReportId + "&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=" + report.SchoolYear + "&listSubjectCode=" + report.SubjectCode + "&listClassCode=" + report.ClassCode + "&schoolYear=" + schoolYear + "&semesterCode=" + semesterCode + "&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
-        //    httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-        //    httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-        //    htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
-        //    account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input")[0].Attributes["value"].Value;
-        //    return true;
-        //}
-
-        #endregion
 
         private bool CheckConnection()
         {
