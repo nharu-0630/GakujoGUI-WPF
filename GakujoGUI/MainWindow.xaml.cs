@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,9 +39,26 @@ namespace GakujoGUI
             return Path.Combine(Environment.CurrentDirectory, @$"Json\{value}.json");
         }
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         public MainWindow()
         {
             InitializeComponent();
+            Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
+            int processId = Environment.ProcessId;
+            foreach (Process process in processes)
+            {
+                if (process.Id != processId)
+                {
+                    ShowWindow(process.MainWindowHandle, 1);
+                    SetForegroundWindow(process.MainWindowHandle);
+                    Application.Current.Shutdown();
+                }
+            }
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
             if (File.Exists(GetJsonPath("Settings")))
             {
@@ -52,6 +71,7 @@ namespace GakujoGUI
                 TaskBarIcon.Visibility = Visibility.Visible;
                 Visibility = Visibility.Hidden;
                 Hide();
+                new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
             }
             gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
         }
@@ -254,7 +274,7 @@ namespace GakujoGUI
             ClassContactsDataGrid.ItemsSource = collectionView;
         }
 
-        private void ClassContactsLoadButton_Click(object sender, RoutedEventArgs e)
+        private void LoadClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -354,7 +374,7 @@ namespace GakujoGUI
             ReportsDataGrid.ItemsSource = collectionView;
         }
 
-        private void ReportsLoadButton_Click(object sender, RoutedEventArgs e)
+        private void LoadReportsButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -399,7 +419,7 @@ namespace GakujoGUI
             QuizzesDataGrid.ItemsSource = collectionView;
         }
 
-        private void QuizzesLoadButton_Click(object sender, RoutedEventArgs e)
+        private void LoadQuizzesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -444,7 +464,7 @@ namespace GakujoGUI
             ClassSharedFilesDataGrid.ItemsSource = collectionView;
         }
 
-        private void ClassSharedFilesLoadButton_Click(object sender, RoutedEventArgs e)
+        private void LoadClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -535,7 +555,7 @@ namespace GakujoGUI
 
         #region 成績情報
 
-        private void ClassResultsLoadButton_Click(object sender, RoutedEventArgs e)
+        private void LoadClassResultsButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
             {
@@ -672,10 +692,6 @@ namespace GakujoGUI
         private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
         {
             ToastArguments toastArguments = ToastArguments.Parse(e.Argument);
-            if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
-            {
-                return;
-            }
             Dispatcher.Invoke(() =>
             {
                 ShowInTaskbar = true;
@@ -684,6 +700,10 @@ namespace GakujoGUI
                 Topmost = true;
                 SystemCommands.RestoreWindow(this);
                 Topmost = false;
+                if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
+                {
+                    return;
+                }
                 switch (toastArguments.Get("Type"))
                 {
                     case "ClassContact":
@@ -887,6 +907,51 @@ namespace GakujoGUI
 
         #endregion
 
+        private void LoadAllClassContactsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.loginStatus)
+            {
+                MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            LoadAllClassContactsButtonLabel.Visibility = Visibility.Collapsed;
+            LoadAllClassContactsButtonProgressRing.Visibility = Visibility.Visible;
+            Task.Run(() =>
+            {
+                gakujoAPI.GetClassContacts(out _, -1);
+                Dispatcher.Invoke(() =>
+                {
+                    ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
+                    ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
+                    ClassContactsDataGrid.Items.Refresh();
+                    LoadAllClassContactsButtonLabel.Visibility = Visibility.Visible;
+                    LoadAllClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        private void LoadAllClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.loginStatus)
+            {
+                MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            LoadAllClassSharedFilesButtonLabel.Visibility = Visibility.Collapsed;
+            LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
+            Task.Run(() =>
+            {
+                gakujoAPI.GetClassSharedFiles(out _, -1);
+                Dispatcher.Invoke(() =>
+                {
+                    ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
+                    ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
+                    ClassSharedFilesDataGrid.Items.Refresh();
+                    LoadAllClassSharedFilesButtonLabel.Visibility = Visibility.Visible;
+                    LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
     }
 
     public class Settings

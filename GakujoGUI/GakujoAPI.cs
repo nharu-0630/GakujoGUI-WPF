@@ -380,7 +380,7 @@ namespace GakujoGUI
             }
         }
 
-        public void GetClassContacts(out int diffCount)
+        public void GetClassContacts(out int diffCount, int maxCount = 10)
         {
             ClassContact? lastClassContact = classContacts.Count > 0 ? classContacts[0] : null;
             List<ClassContact> diffClassContacts = new() { };
@@ -400,6 +400,11 @@ namespace GakujoGUI
             htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
+            if (htmlDocument.GetElementbyId("tbl_A01_01") == null)
+            {
+                diffCount = 0;
+                return;
+            }
             int limitCount = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr").Count;
             for (int i = 0; i < limitCount; i++)
             {
@@ -424,7 +429,8 @@ namespace GakujoGUI
             {
                 classContacts.Insert(i, diffClassContacts[i]);
             }
-            for (int i = 0; i < Math.Min(diffCount, 10); i++)
+            maxCount = maxCount == -1 ? diffCount : maxCount;
+            for (int i = 0; i < Math.Min(diffCount, maxCount); i++)
             {
                 GetClassContact(i);
             }
@@ -496,7 +502,7 @@ namespace GakujoGUI
             SaveCookies();
         }
 
-        public void GetClassSharedFiles(out int diffCount)
+        public void GetClassSharedFiles(out int diffCount, int maxCount = 10)
         {
             ClassSharedFile? lastClassSharedFile = (classSharedFiles.Count > 0) ? classSharedFiles[0] : null;
             List<ClassSharedFile> diffClassSharedFiles = new() { };
@@ -508,6 +514,19 @@ namespace GakujoGUI
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
+            if (htmlDocument.GetElementbyId("tbl_classFile") == null)
+            {
+                diffCount = 0;
+                return;
+            }
             int limitCount = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr").Count;
             for (int i = 0; i < limitCount; i++)
             {
@@ -528,7 +547,8 @@ namespace GakujoGUI
             {
                 classSharedFiles.Insert(i, diffClassSharedFiles[i]);
             }
-            for (int i = 0; i < Math.Min(diffCount, 10); i++)
+            maxCount = maxCount == -1 ? diffCount : maxCount;
+            for (int i = 0; i < Math.Min(diffCount, maxCount); i++)
             {
                 GetClassSharedFile(i);
             }
@@ -545,6 +565,14 @@ namespace GakujoGUI
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/showClassFileDetail?EXCLUDE_SET=&org.apache.struts.taglib.html.TOKEN=" + $"{account.ApacheToken}&selectIndex={indexCount}&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_searchConditionDisp.accordionSearchCondition=false&_scrollTop=0");

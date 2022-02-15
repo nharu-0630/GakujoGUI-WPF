@@ -860,9 +860,11 @@
                     <Label Margin="6" Content="UserAgent" />
                     <TextBox
                         Name="UserAgentTextBox"
-                        MinHeight="96"
+                        MinHeight="128"
+                        MaxHeight="128"
                         Margin="6"
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        VerticalScrollBarVisibility="Auto" />
                     <StackPanel Orientation="Horizontal">
                         <Button
                             x:Name="SaveGakujoButton"
@@ -894,11 +896,33 @@
                         <Button
                             Name="LoadAllClassContactsButton"
                             Margin="6"
-                            Content="授業連絡" />
+                            Click="LoadAllClassContactsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Label
+                                    Name="LoadAllClassContactsButtonLabel"
+                                    Content="授業連絡"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadAllClassContactsButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
                         <Button
                             Name="LoadAllClassSharedFilesButton"
                             Margin="6"
-                            Content="授業共有ファイル" />
+                            Click="LoadAllClassSharedFilesButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <Label
+                                    Name="LoadAllClassSharedFilesButtonLabel"
+                                    Content="授業共有ファイル"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadAllClassSharedFilesButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                     <Label
                         Width="150"
