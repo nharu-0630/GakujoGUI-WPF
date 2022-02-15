@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -229,7 +230,7 @@ namespace GakujoGUI
             return true;
         }
 
-        public void GetReports(out int diffCount)
+        public void GetReports(out List<Report> diffReports)
         {
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -247,7 +248,12 @@ namespace GakujoGUI
             htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            diffCount = reports.Count;
+            if (htmlDocument.GetElementbyId("searchList") == null)
+            {
+                diffReports = new();
+                return;
+            }
+            diffReports = new(reports);
             reports.Clear();
             int limitCount = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr").Count;
             for (int i = 0; i < limitCount; i++)
@@ -271,7 +277,7 @@ namespace GakujoGUI
                 report.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
                 reports.Add(report);
             }
-            diffCount = reports.Count - diffCount;
+            diffReports = reports.Except(diffReports).ToList();
             account.ReportDateTime = DateTime.Now;
             ApplyReportsClassTables();
             SaveJson();
@@ -305,7 +311,7 @@ namespace GakujoGUI
             }
         }
 
-        public void GetQuizzes(out int diffCount)
+        public void GetQuizzes(out List<Quiz> diffQuizzes)
         {
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -323,7 +329,12 @@ namespace GakujoGUI
             htmlDocument = new();
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             account.ApacheToken = htmlDocument.DocumentNode.SelectNodes("/html/body/div[1]/form[1]/div/input")[0].Attributes["value"].Value;
-            diffCount = quizzes.Count;
+            if (htmlDocument.GetElementbyId("searchList") == null)
+            {
+                diffQuizzes = new();
+                return;
+            }
+            diffQuizzes = new(quizzes);
             quizzes.Clear();
             int limitCount = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr").Count;
             for (int i = 0; i < limitCount; i++)
@@ -344,7 +355,7 @@ namespace GakujoGUI
                 quiz.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
                 quizzes.Add(quiz);
             }
-            diffCount = quizzes.Count - diffCount;
+            diffQuizzes = quizzes.Except(diffQuizzes).ToList();
             account.QuizDateTime = DateTime.Now;
             ApplyQuizzesClassTables();
             SaveJson();
@@ -655,7 +666,7 @@ namespace GakujoGUI
             return true;
         }
 
-        public void GetClassResults(out int diffCount)
+        public void GetClassResults(out List<ClassResult> diffClassResults)
         {
             SetAcademicSystem();
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/seisekiSearchStudentInit.do?mainMenuCode=008&parentMenuCode=007");
@@ -665,10 +676,10 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
             {
-                diffCount = 0;
+                diffClassResults = new();
                 return;
             }
-            diffCount = classResults.Count;
+            diffClassResults = new(classResults);
             classResults.Clear();
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
             {
@@ -692,7 +703,7 @@ namespace GakujoGUI
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
                 classResults.Add(classResult);
             }
-            diffCount = classResults.Count - diffCount;
+            diffClassResults = classResults.Except(diffClassResults).ToList();
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();

@@ -202,10 +202,10 @@ namespace GakujoGUI
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             });
             gakujoAPI.GetClassContacts(out int classContactsDiffCount);
-            gakujoAPI.GetReports(out int reportsDiffCount);
-            gakujoAPI.GetQuizzes(out int quizzesDiffCount);
+            gakujoAPI.GetReports(out List<Report> diffReports);
+            gakujoAPI.GetQuizzes(out List<Quiz> diffQuizzes);
             gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
-            gakujoAPI.GetClassResults(out int classResultsDiffCount);
+            gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
             Dispatcher.Invoke(() =>
             {
                 ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
@@ -228,25 +228,25 @@ namespace GakujoGUI
                     NotifyToast(gakujoAPI.classContacts[i]);
                     notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
                 }
-                for (int i = 0; i < reportsDiffCount; i++)
+                foreach (Report report in diffReports)
                 {
-                    NotifyToast(gakujoAPI.reports[i]);
-                    notifyAPI.NotifyDiscord(gakujoAPI.reports[i]);
+                    NotifyToast(report);
+                    notifyAPI.NotifyDiscord(report);
                 }
-                for (int i = 0; i < quizzesDiffCount; i++)
+                foreach (Quiz quiz in diffQuizzes)
                 {
-                    NotifyToast(gakujoAPI.quizzes[i]);
-                    notifyAPI.NotifyDiscord(gakujoAPI.quizzes[i]);
+                    NotifyToast(quiz);
+                    notifyAPI.NotifyDiscord(quiz);
                 }
                 for (int i = 0; i < classSharedFilesDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classSharedFiles[i]);
                     notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
                 }
-                for (int i = 0; i < classResultsDiffCount; i++)
+                foreach (ClassResult classResult in diffClassResults)
                 {
-                    NotifyToast(gakujoAPI.classResults[i]);
-                    notifyAPI.NotifyDiscord(gakujoAPI.classResults[i], true);
+                    NotifyToast(classResult);
+                    notifyAPI.NotifyDiscord(classResult, true);
                 }
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
@@ -385,17 +385,17 @@ namespace GakujoGUI
             LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetReports(out int diffCount);
+                gakujoAPI.GetReports(out List<Report> diffReports);
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 Dispatcher.Invoke(() =>
                 {
                     ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
                     ReportsDataGrid.ItemsSource = gakujoAPI.reports;
                     ReportsDataGrid.Items.Refresh();
-                    for (int i = 0; i < diffCount; i++)
+                    foreach (Report report in diffReports)
                     {
-                        NotifyToast(gakujoAPI.reports[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.reports[i]);
+                        NotifyToast(report);
+                        notifyAPI.NotifyDiscord(report);
                     }
                     LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -430,17 +430,17 @@ namespace GakujoGUI
             LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetQuizzes(out int diffCount);
+                gakujoAPI.GetQuizzes(out List<Quiz> diffQuizzes);
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
                 Dispatcher.Invoke(() =>
                 {
                     QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
                     QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
                     QuizzesDataGrid.Items.Refresh();
-                    for (int i = 0; i < diffCount; i++)
+                    foreach (Quiz quiz in diffQuizzes)
                     {
-                        NotifyToast(gakujoAPI.quizzes[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.quizzes[i]);
+                        NotifyToast(quiz);
+                        notifyAPI.NotifyDiscord(quiz);
                     }
                     LoadQuizzesButtonFontIcon.Visibility = Visibility.Visible;
                     LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
@@ -566,16 +566,16 @@ namespace GakujoGUI
             LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassResults(out int diffCount);
+                gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
                 Dispatcher.Invoke(() =>
                 {
                     ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                     ClassResultsDataGrid.Items.Refresh();
-                    for (int i = 0; i < diffCount; i++)
+                    foreach (ClassResult classResult in diffClassResults)
                     {
-                        NotifyToast(gakujoAPI.classResults[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.classResults[i], true);
+                        NotifyToast(classResult);
+                        notifyAPI.NotifyDiscord(classResult, true);
                     }
                     LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
