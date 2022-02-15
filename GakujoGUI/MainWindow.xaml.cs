@@ -54,7 +54,7 @@ namespace GakujoGUI
             {
                 if (process.Id != processId)
                 {
-                    ShowWindow(process.MainWindowHandle, 1);
+                    _ = ShowWindow(process.MainWindowHandle, 1);
                     SetForegroundWindow(process.MainWindowHandle);
                     Application.Current.Shutdown();
                 }
