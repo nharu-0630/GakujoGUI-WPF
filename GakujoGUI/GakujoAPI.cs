@@ -32,8 +32,8 @@ namespace GakujoGUI
 
         public bool loginStatus = false;
 
-        private readonly string cookiesPath = Path.Combine(Environment.CurrentDirectory, "Cookies");
-        private readonly string downloadPath = Path.Combine(Environment.CurrentDirectory, @"Download\");
+        private readonly string cookiesPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "Cookies");
+        private readonly string downloadPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @"Download\");
 
         private readonly string schoolYear = "";
         private readonly int semesterCode;
@@ -49,7 +49,7 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            return Path.Combine(Environment.CurrentDirectory, @$"Json\{value}.json");
+            return Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @$"Json\{value}.json");
         }
 
         public GakujoAPI(string schoolYear, int semesterCode, string userAgent)

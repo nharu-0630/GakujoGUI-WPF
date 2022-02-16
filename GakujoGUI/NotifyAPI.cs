@@ -34,7 +34,7 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            return Path.Combine(Environment.CurrentDirectory, @$"Json\{value}.json");
+            return Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @$"Json\{value}.json");
         }
 
         public NotifyAPI()
