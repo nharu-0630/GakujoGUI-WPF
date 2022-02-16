@@ -121,7 +121,7 @@ namespace GakujoGUI
                 {
                     autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
                     autoLoadTimer.Tick += new EventHandler(LoadEvent);
-                    autoLoadTimer.Start();
+                    if (settings.AutoLoadEnable) { autoLoadTimer.Start(); }
                 });
             });
         }
