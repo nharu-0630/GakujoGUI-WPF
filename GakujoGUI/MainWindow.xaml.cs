@@ -905,8 +905,6 @@ namespace GakujoGUI
             e.Handled = true;
         }
 
-        #endregion
-
         private void LoadAllClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.loginStatus)
@@ -952,6 +950,9 @@ namespace GakujoGUI
                 });
             });
         }
+
+        #endregion
+
     }
 
     public class Settings
