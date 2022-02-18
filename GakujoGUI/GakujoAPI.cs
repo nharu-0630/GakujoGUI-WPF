@@ -653,14 +653,14 @@ namespace GakujoGUI
 
         private bool SetAcademicSystem()
         {
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/systemCooperationLink/initializeShibboleth?renkeiType=kyoumu");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
-            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
-            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            //httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
+            //httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            //httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            //httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/systemCooperationLink/initializeShibboleth?renkeiType=kyoumu");
+            //httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            //httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
+            //httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            //httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/sso/loginStudent.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent("loginID=");
