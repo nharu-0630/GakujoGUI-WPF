@@ -21,6 +21,25 @@ namespace GakujoGUI
         public List<ClassContact> classContacts = new() { };
         public List<ClassSharedFile> classSharedFiles = new() { };
         public List<ClassResult> classResults = new() { };
+        public List<ClassResultCredit> classResultsCredit
+        {
+            get
+            {
+                List<ClassResultCredit> classResultCredits = new();
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "秀", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "秀").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "優", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "優").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "良", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "良").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "可", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "可").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "合", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "合").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "認定", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "認定").Select(classResult => classResult.SchoolCredit).Sum() });
+                classResultCredits.Add(new ClassResultCredit() { Evaluation = "合計", SchoolCredit = classResults.Select(classResult => classResult.SchoolCredit).Sum() });
+                return classResultCredits;
+            }
+        }
+        public double classResultsGPA
+        {
+            get { return 1.0 * classResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / classResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum(); }
+        }
         public ClassTableRow[]? classTables = null;
 
         private CookieContainer cookieContainer = new();
@@ -653,14 +672,14 @@ namespace GakujoGUI
 
         private bool SetAcademicSystem()
         {
-            //httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
-            //httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            //httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
-            //httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/systemCooperationLink/initializeShibboleth?renkeiType=kyoumu");
-            //httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            //httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
-            //httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
-            //httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/systemCooperationLink/initializeShibboleth?renkeiType=kyoumu");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/sso/loginStudent.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent("loginID=");
@@ -1100,6 +1119,32 @@ namespace GakujoGUI
         public override int GetHashCode()
         {
             return Subjects.GetHashCode() ^ AcquisitionYear.GetHashCode();
+        }
+    }
+
+    public class ClassResultCredit
+    {
+        public string Evaluation { get; set; } = "";
+        public int SchoolCredit { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Evaluation} {SchoolCredit}";
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+            {
+                return false;
+            }
+            ClassResultCredit objClassResultCredit = (ClassResultCredit)obj;
+            return Evaluation == objClassResultCredit.Evaluation && SchoolCredit == objClassResultCredit.SchoolCredit;
+        }
+
+        public override int GetHashCode()
+        {
+            return Evaluation.GetHashCode() ^ SchoolCredit.GetHashCode();
         }
     }
 

@@ -104,6 +104,7 @@ namespace GakujoGUI
             ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
             ClassResultsDataGrid.Items.Refresh();
+            ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -223,6 +224,7 @@ namespace GakujoGUI
                 ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
                 ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                 ClassResultsDataGrid.Items.Refresh();
+                ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classContacts[i]);
@@ -572,6 +574,7 @@ namespace GakujoGUI
                     ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
                     ClassResultsDataGrid.Items.Refresh();
+                    ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
                     foreach (ClassResult classResult in diffClassResults)
                     {
                         NotifyToast(classResult);
@@ -953,6 +956,12 @@ namespace GakujoGUI
 
         #endregion
 
+        private void ClassResultsCreditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            ClassResultsCreditsDataGrid.ItemsSource = gakujoAPI.classResultsCredit;
+            ClassResultsCreditsDataGrid.Items.Refresh();
+            Flyout.ShowAttachedFlyout(sender as FrameworkElement);
+        }
     }
 
     public class Settings
