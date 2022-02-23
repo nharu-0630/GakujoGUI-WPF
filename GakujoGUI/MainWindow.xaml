@@ -713,8 +713,7 @@
                             </ui:Flyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </Button>
-                    <Button Margin="6" Content="学部内GPA" />
-                    <Button Margin="6" Content="学科等内GPA" />
+                    <Button Margin="6" Content="学部学科等内GPA" />
                     <Button Margin="6" Content="年別単位" />
                     <Label
                         x:Name="ClassResultsGPALabel"

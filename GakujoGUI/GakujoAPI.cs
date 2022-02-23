@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -685,6 +686,21 @@ namespace GakujoGUI
             httpRequestMessage.Content = new StringContent("loginID=");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            if (httpResponse.Content.ReadAsStringAsync().Result.Contains("Since your browser does not support JavaScript,"))
+            {
+                HtmlDocument htmlDocument = new();
+                htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+                string relayState = htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[1]")[0].Attributes["value"].Value;
+                relayState = relayState.Replace("&#x3a;", ":");
+                string SAMLResponse = htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[2]")[0].Attributes["value"].Value;
+                relayState = Uri.EscapeDataString(relayState);
+                SAMLResponse = Uri.EscapeDataString(SAMLResponse);
+                httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
+                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={SAMLResponse}");
+                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+                httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            }
             SaveJson();
             SaveCookies();
             return true;
