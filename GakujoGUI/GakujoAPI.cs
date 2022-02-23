@@ -21,26 +21,7 @@ namespace GakujoGUI
         public List<Quiz> quizzes = new();
         public List<ClassContact> classContacts = new() { };
         public List<ClassSharedFile> classSharedFiles = new() { };
-        public List<ClassResult> classResults = new() { };
-        public List<ClassResultCredit> classResultsCredit
-        {
-            get
-            {
-                List<ClassResultCredit> classResultCredits = new();
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "秀", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "秀").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "優", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "優").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "良", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "良").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "可", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "可").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "合", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "合").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "認定", SchoolCredit = classResults.FindAll(classResult => classResult.Evaluation == "認定").Select(classResult => classResult.SchoolCredit).Sum() });
-                classResultCredits.Add(new ClassResultCredit() { Evaluation = "合計", SchoolCredit = classResults.Select(classResult => classResult.SchoolCredit).Sum() });
-                return classResultCredits;
-            }
-        }
-        public double classResultsGPA
-        {
-            get { return 1.0 * classResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / classResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum(); }
-        }
+        public SchoolGrade schoolGrade = new();
         public ClassTableRow[]? classTables = null;
 
         private CookieContainer cookieContainer = new();
@@ -138,9 +119,9 @@ namespace GakujoGUI
             {
                 classSharedFiles = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix)))!;
             }
-            if (File.Exists(GetJsonPath("ClassResults")))
+            if (File.Exists(GetJsonPath("SchoolGrade")))
             {
-                classResults = JsonConvert.DeserializeObject<List<ClassResult>>(File.ReadAllText(GetJsonPath("ClassResults")))!;
+                schoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))!;
             }
             if (File.Exists(GetJsonPath("ClassTables")))
             {
@@ -169,7 +150,7 @@ namespace GakujoGUI
             { File.WriteAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented)); }
             catch { }
             try
-            { File.WriteAllText(GetJsonPath("ClassResults"), JsonConvert.SerializeObject(classResults, Formatting.Indented)); }
+            { File.WriteAllText(GetJsonPath("SchoolGrade"), JsonConvert.SerializeObject(schoolGrade, Formatting.Indented)); }
             catch { }
             try
             { File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented)); }
@@ -719,8 +700,8 @@ namespace GakujoGUI
                 diffClassResults = new();
                 return;
             }
-            diffClassResults = new(classResults);
-            classResults.Clear();
+            diffClassResults = new(schoolGrade.ClassResults);
+            schoolGrade.ClassResults.Clear();
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
             {
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
@@ -741,9 +722,28 @@ namespace GakujoGUI
                 }
                 classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
-                classResults.Add(classResult);
+                schoolGrade.ClassResults.Add(classResult);
             }
-            diffClassResults = classResults.Except(diffClassResults).ToList();
+            diffClassResults = schoolGrade.ClassResults.Except(diffClassResults).ToList();
+
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/gpa.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            schoolGrade.DepartmentGPA.Grade = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[1]/td[2]").InnerText.Replace("年", ""));
+            schoolGrade.DepartmentGPA.GPA = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[2]/td[2]").InnerText);
+            schoolGrade.DepartmentGPA.SemesterGPAs.Clear();
+            for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 3; i++)
+            {
+                SemesterGPA semesterGPA = new();
+                semesterGPA.Year = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[0].InnerText.Split('　')[0].Replace("\n", "").Replace(" ", "");
+                semesterGPA.Semester = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[0].InnerText.Split('　')[1].Replace("\n", "").Replace(" ", "");
+                semesterGPA.GPA = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[1].InnerText);
+                schoolGrade.DepartmentGPA.SemesterGPAs.Add(semesterGPA);
+            }
+            schoolGrade.DepartmentGPA.CalculationDate = DateTime.ParseExact(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Last().SelectNodes("td")[1].InnerText, "yyyy年 MM月 dd日", null);
+
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
@@ -1138,7 +1138,7 @@ namespace GakujoGUI
         }
     }
 
-    public class ClassResultCredit
+    public class EvaluationCredit
     {
         public string Evaluation { get; set; } = "";
         public int SchoolCredit { get; set; }
@@ -1147,21 +1147,49 @@ namespace GakujoGUI
         {
             return $"{Evaluation} {SchoolCredit}";
         }
+    }
 
-        public override bool Equals(object? obj)
+    public class SemesterGPA
+    {
+        public string Year { get; set; } = "";
+        public string Semester { get; set; } = "";
+        public double GPA { get; set; }
+    }
+
+    public class DepartmentGPA
+    {
+        public int Grade { get; set; }
+        public double GPA { get; set; }
+        public List<SemesterGPA> SemesterGPAs { get; set; } = new() { };
+        public DateTime CalculationDate { get; set; }
+        public int[] DepartmentRank { get; set; } = new int[2];
+        public int[] CourseRank { get; set; } = new int[2];
+    }
+
+    public class SchoolGrade
+    {
+        public List<ClassResult> ClassResults { get; set; } = new() { };
+        public List<EvaluationCredit> EvaluationCredits
         {
-            if (obj == null || GetType() != obj.GetType())
+            get
             {
-                return false;
+                List<EvaluationCredit> evaluationCredits = new();
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "秀", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "秀").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "優", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "優").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "良", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "良").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "可", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "可").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "合", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "合").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "認定", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "認定").Select(classResult => classResult.SchoolCredit).Sum() });
+                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "合計", SchoolCredit = ClassResults.Select(classResult => classResult.SchoolCredit).Sum() });
+                return evaluationCredits;
             }
-            ClassResultCredit objClassResultCredit = (ClassResultCredit)obj;
-            return Evaluation == objClassResultCredit.Evaluation && SchoolCredit == objClassResultCredit.SchoolCredit;
+        }
+        public double ClassResultPreliminaryGPA
+        {
+            get { return 1.0 * ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum(); }
         }
 
-        public override int GetHashCode()
-        {
-            return Evaluation.GetHashCode() ^ SchoolCredit.GetHashCode();
-        }
+        public DepartmentGPA DepartmentGPA { get; set; } = new();
     }
 
     public class ClassTableRow

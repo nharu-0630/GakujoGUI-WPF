@@ -674,14 +674,14 @@
                         VerticalAlignment="Center"
                         Content="最終更新" />
                     <Button
-                        Name="ClassResultsCreditsButton"
+                        Name="EvaluationCreditsButton"
                         Margin="6"
-                        Click="ClassResultsCreditsButton_Click"
+                        Click="EvaluationCreditsButton_Click"
                         Content="評価別単位">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:Flyout Placement="Bottom">
                                 <DataGrid
-                                    x:Name="ClassResultsCreditsDataGrid"
+                                    x:Name="EvaluationCreditsDataGrid"
                                     Margin="6"
                                     AreRowDetailsFrozen="True"
                                     AutoGenerateColumns="False"
@@ -713,7 +713,22 @@
                             </ui:Flyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </Button>
-                    <Button Margin="6" Content="学部学科等内GPA" />
+                    <Button
+                        Name="DepartmentGPAButton"
+                        Margin="6"
+                        Click="DepartmentGPAButton_Click"
+                        Content="学部学科等内GPA">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:Flyout Placement="Bottom">
+                                <StackPanel Margin="6" Orientation="Vertical">
+                                    <Label Name="DepartmentGPAGradeLabel" Content="学年" />
+                                    <Label Name="DepartmentGPAGPALabel" Content="累積GPA" />
+                                    <Label Name="DepartmentGPASemesterGPALabel" Content="学期GPA" />
+                                    <Label Name="DepartmentGPACalculationDateLabel" Content="最終算出日" />
+                                </StackPanel>
+                            </ui:Flyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </Button>
                     <Button Margin="6" Content="年別単位" />
                     <Label
                         x:Name="ClassResultsGPALabel"

@@ -102,9 +102,9 @@ namespace GakujoGUI
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
             ClassSharedFilesDataGrid.Items.Refresh();
             ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
-            ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+            ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
             ClassResultsDataGrid.Items.Refresh();
-            ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
+            ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -222,9 +222,9 @@ namespace GakujoGUI
                 ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
                 ClassSharedFilesDataGrid.Items.Refresh();
                 ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
-                ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                 ClassResultsDataGrid.Items.Refresh();
-                ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
+                ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classContacts[i]);
@@ -572,9 +572,9 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
-                    ClassResultsDataGrid.ItemsSource = gakujoAPI.classResults;
+                    ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                     ClassResultsDataGrid.Items.Refresh();
-                    ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.classResultsGPA:N3}";
+                    ClassResultsGPALabel.Content = $"最終累積GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
                     foreach (ClassResult classResult in diffClassResults)
                     {
                         NotifyToast(classResult);
@@ -755,7 +755,7 @@ namespace GakujoGUI
 
         private void NotifyToast(ClassResult classResult)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.classResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.schoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
         }
 
         #endregion
@@ -956,10 +956,19 @@ namespace GakujoGUI
 
         #endregion
 
-        private void ClassResultsCreditsButton_Click(object sender, RoutedEventArgs e)
+        private void EvaluationCreditsButton_Click(object sender, RoutedEventArgs e)
         {
-            ClassResultsCreditsDataGrid.ItemsSource = gakujoAPI.classResultsCredit;
-            ClassResultsCreditsDataGrid.Items.Refresh();
+            EvaluationCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.EvaluationCredits;
+            EvaluationCreditsDataGrid.Items.Refresh();
+            Flyout.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
+        {
+            DepartmentGPAGradeLabel.Content = $"学年 {gakujoAPI.schoolGrade.DepartmentGPA.Grade}年";
+            DepartmentGPAGPALabel.Content = $"累積GPA {gakujoAPI.schoolGrade.DepartmentGPA.GPA}";
+            DepartmentGPASemesterGPALabel.Content = $"学期GPA {gakujoAPI.schoolGrade.DepartmentGPA.SemesterGPAs}";
+            DepartmentGPACalculationDateLabel.Content = $"最終算出日 {gakujoAPI.schoolGrade.DepartmentGPA.CalculationDate:yyyy/MM/dd}";
             Flyout.ShowAttachedFlyout(sender as FrameworkElement);
         }
     }
