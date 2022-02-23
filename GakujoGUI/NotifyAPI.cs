@@ -53,7 +53,7 @@ namespace GakujoGUI
             tokens.DiscordToken = discordToken;
             try
             {
-                File.WriteAllText(GetJsonPath("Token"), JsonConvert.SerializeObject(tokens, Formatting.Indented));
+                File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(tokens, Formatting.Indented));
             }
             catch { }
         }
