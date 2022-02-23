@@ -725,7 +725,6 @@ namespace GakujoGUI
                 schoolGrade.ClassResults.Add(classResult);
             }
             diffClassResults = schoolGrade.ClassResults.Except(diffClassResults).ToList();
-
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/gpa.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
@@ -743,7 +742,15 @@ namespace GakujoGUI
                 schoolGrade.DepartmentGPA.SemesterGPAs.Add(semesterGPA);
             }
             schoolGrade.DepartmentGPA.CalculationDate = DateTime.ParseExact(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Last().SelectNodes("td")[1].InnerText, "yyyy年 MM月 dd日", null);
-
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/departmentGpa.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            schoolGrade.DepartmentGPA.DepartmentRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
+            schoolGrade.DepartmentGPA.DepartmentRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
+            schoolGrade.DepartmentGPA.CourseRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
+            schoolGrade.DepartmentGPA.CourseRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
