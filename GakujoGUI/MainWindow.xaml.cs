@@ -10,14 +10,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
+using Image = System.Drawing.Image;
 
 namespace GakujoGUI
 {
@@ -966,7 +967,18 @@ namespace GakujoGUI
         private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
         {
             DepartmentGPALabel.Content = gakujoAPI.schoolGrade.DepartmentGPA;
+            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.DepartmentImage);
+            CourseGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.CourseImage);
             Flyout.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private BitmapImage Base64ToBitmapImage(string base64)
+        {
+            BitmapImage bitmapImage = new();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = new MemoryStream(Convert.FromBase64String(base64));
+            bitmapImage.EndInit();
+            return bitmapImage;
         }
     }
 

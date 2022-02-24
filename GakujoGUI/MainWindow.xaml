@@ -722,6 +722,14 @@
                             <ui:Flyout Placement="Bottom">
                                 <StackPanel Margin="6" Orientation="Vertical">
                                     <Label Name="DepartmentGPALabel" />
+                                    <TabControl Margin="0,6,0,0">
+                                        <TabItem Header="学部内">
+                                            <Image Name="DepartmentGPAImage" />
+                                        </TabItem>
+                                        <TabItem Header="学科内">
+                                            <Image Name="CourseGPAImage" />
+                                        </TabItem>
+                                    </TabControl>
                                 </StackPanel>
                             </ui:Flyout>
                         </ui:FlyoutBase.AttachedFlyout>
