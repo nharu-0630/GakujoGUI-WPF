@@ -18,7 +18,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
-using Image = System.Drawing.Image;
 
 namespace GakujoGUI
 {
