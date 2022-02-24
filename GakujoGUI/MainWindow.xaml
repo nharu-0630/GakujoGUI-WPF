@@ -976,8 +976,8 @@
                     <Label Margin="6" Content="UserAgent" />
                     <TextBox
                         Name="UserAgentTextBox"
-                        MinHeight="128"
-                        MaxHeight="128"
+                        MinHeight="96"
+                        MaxHeight="96"
                         Margin="6"
                         TextWrapping="Wrap"
                         VerticalScrollBarVisibility="Auto" />
