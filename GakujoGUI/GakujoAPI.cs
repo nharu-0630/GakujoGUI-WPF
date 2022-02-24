@@ -256,7 +256,7 @@ namespace GakujoGUI
                 report.Subjects = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\r", "").Replace("\n", "").Trim();
                 report.Subjects = Regex.Replace(report.Subjects, @"\s+", " ");
                 report.Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim();
-                report.ReportId = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                report.Id = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                 report.SchoolYear = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[3].Replace("'", "").Trim();
                 report.SubjectCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[4].Replace("'", "").Trim();
                 report.ClassCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[5].Replace("'", "").Replace(");", "").Trim();
@@ -337,7 +337,7 @@ namespace GakujoGUI
                 quiz.Subjects = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\r", "").Replace("\n", "").Trim();
                 quiz.Subjects = Regex.Replace(quiz.Subjects, @"\s+", " ");
                 quiz.Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim();
-                quiz.QuizId = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
+                quiz.Id = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                 quiz.SchoolYear = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[3].Replace("'", "").Trim();
                 quiz.SubjectCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[4].Replace("'", "").Trim();
                 quiz.ClassCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[5].Replace("'", "").Replace(");", "").Trim();
@@ -703,7 +703,7 @@ namespace GakujoGUI
                 classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
                 classResult.SubjectsSection = htmlNode.SelectNodes("td")[2].InnerText.Trim();
                 classResult.SelectionSection = htmlNode.SelectNodes("td")[3].InnerText.Trim();
-                classResult.SchoolCredit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
+                classResult.Credit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
                 classResult.Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim();
                 if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "")
                 {
@@ -715,9 +715,20 @@ namespace GakujoGUI
                 }
                 classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
                 classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
+                classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
                 schoolGrade.ClassResults.Add(classResult);
             }
             diffClassResults = schoolGrade.ClassResults.Except(diffClassResults).ToList();
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/hyoukabetuTaniSearch.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            schoolGrade.EvaluationCredits.Clear();
+            for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count; i++)
+            {
+                schoolGrade.EvaluationCredits.Add(new() { Evaluation = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\n", "").Replace("\t", ""), Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText) });
+            }
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/gpa.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
@@ -755,6 +766,13 @@ namespace GakujoGUI
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/nenbetuTaniSearch.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
+            htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
+            schoolGrade.YearCredits.Clear();
+            for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count; i++)
+            {
+                schoolGrade.YearCredits.Add(new() { Year = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\n", "").Trim(), Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText) });
+            }
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
@@ -848,7 +866,7 @@ namespace GakujoGUI
             classTableCell.TeacherName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.SchoolCredit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
+            classTableCell.Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
             return classTableCell;
         }
     }
@@ -881,7 +899,7 @@ namespace GakujoGUI
         public DateTime SubmittedDateTime { get; set; }
         public string ImplementationFormat { get; set; } = "";
         public string Operation { get; set; } = "";
-        public string ReportId { get; set; } = "";
+        public string Id { get; set; } = "";
         public string SchoolYear { get; set; } = "";
         public string SubjectCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
@@ -903,12 +921,12 @@ namespace GakujoGUI
                 return false;
             }
             Report objReport = (Report)obj;
-            return SubjectCode == objReport.SubjectCode && ClassCode == objReport.ClassCode && ReportId == objReport.ReportId;
+            return SubjectCode == objReport.SubjectCode && ClassCode == objReport.ClassCode && Id == objReport.Id;
         }
 
         public override int GetHashCode()
         {
-            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ ReportId.GetHashCode();
+            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
         }
     }
 
@@ -922,7 +940,7 @@ namespace GakujoGUI
         public string SubmissionStatus { get; set; } = "";
         public string ImplementationFormat { get; set; } = "";
         public string Operation { get; set; } = "";
-        public string QuizId { get; set; } = "";
+        public string Id { get; set; } = "";
         public string SchoolYear { get; set; } = "";
         public string SubjectCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
@@ -944,12 +962,12 @@ namespace GakujoGUI
                 return false;
             }
             Quiz objQuiz = (Quiz)obj;
-            return SubjectCode == objQuiz.SubjectCode && ClassCode == objQuiz.ClassCode && QuizId == objQuiz.QuizId;
+            return SubjectCode == objQuiz.SubjectCode && ClassCode == objQuiz.ClassCode && Id == objQuiz.Id;
         }
 
         public override int GetHashCode()
         {
-            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ QuizId.GetHashCode();
+            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
         }
 
         //public int CompareTo(Object obj)
@@ -1014,42 +1032,6 @@ namespace GakujoGUI
         }
     }
 
-    public class SchoolContact
-    {
-        public string Category { get; set; } = "";
-        public string Title { get; set; } = "";
-        public string Content { get; set; } = "";
-        public string ContactSource { get; set; } = "";
-        public string[] Files { get; set; } = Array.Empty<string>();
-        public string FileLinkRelease { get; set; } = "";
-        public string ReferenceURL { get; set; } = "";
-        public string Severity { get; set; } = "";
-        public DateTime ContactDateTime { get; set; }
-        public string WebReplyRequest { get; set; } = "";
-        public string ManagementAffiliation { get; set; } = "";
-        public string SchoolContactId { get; set; } = "";
-
-        public override string ToString()
-        {
-            return $"{Category} {Title} {ContactDateTime.ToShortDateString()}";
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-            SchoolContact objSchoolContact = (SchoolContact)obj;
-            return ContactSource == objSchoolContact.ContactSource && Title == objSchoolContact.Title && ContactDateTime == objSchoolContact.ContactDateTime;
-        }
-
-        public override int GetHashCode()
-        {
-            return ContactSource.GetHashCode() ^ Title.GetHashCode() ^ ContactDateTime.GetHashCode();
-        }
-    }
-
     public class ClassSharedFile
     {
         public string Subjects { get; set; } = "";
@@ -1081,46 +1063,13 @@ namespace GakujoGUI
         }
     }
 
-    public class SchoolSharedFile
-    {
-        public string Category { get; set; } = "";
-        public string Title { get; set; } = "";
-        public int DownloadCount { get; set; }
-        public string Size { get; set; } = "";
-        public string[] Files { get; set; } = Array.Empty<string>();
-        public string Description { get; set; } = "";
-        public string PublicPeriod { get; set; } = "";
-        public DateTime UpdateDateTime { get; set; }
-        public string SchoolSharedFileId { get; set; } = "";
-
-        public override string ToString()
-        {
-            return $"{Category} {Title} {UpdateDateTime.ToShortDateString()}";
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (obj == null || GetType() != obj.GetType())
-            {
-                return false;
-            }
-            SchoolSharedFile objSchoolSharedFile = (SchoolSharedFile)obj;
-            return Category == objSchoolSharedFile.Category && Title == objSchoolSharedFile.Title && UpdateDateTime == objSchoolSharedFile.UpdateDateTime;
-        }
-
-        public override int GetHashCode()
-        {
-            return Category.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
-        }
-    }
-
     public class ClassResult
     {
         public string Subjects { get; set; } = "";
         public string TeacherName { get; set; } = "";
         public string SubjectsSection { get; set; } = "";
         public string SelectionSection { get; set; } = "";
-        public int SchoolCredit { get; set; }
+        public int Credit { get; set; }
         public string Evaluation { get; set; } = "";
         public double Score { get; set; }
         public double GP { get; set; }
@@ -1152,11 +1101,22 @@ namespace GakujoGUI
     public class EvaluationCredit
     {
         public string Evaluation { get; set; } = "";
-        public int SchoolCredit { get; set; }
+        public int Credit { get; set; }
 
         public override string ToString()
         {
-            return $"{Evaluation} {SchoolCredit}";
+            return $"{Evaluation} {Credit}";
+        }
+    }
+
+    public class YearCredit
+    {
+        public string Year { get; set; } = "";
+        public int Credit { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Year} {Credit}";
         }
     }
 
@@ -1204,23 +1164,10 @@ namespace GakujoGUI
     public class SchoolGrade
     {
         public List<ClassResult> ClassResults { get; set; } = new() { };
-        public List<EvaluationCredit> EvaluationCredits
-        {
-            get
-            {
-                List<EvaluationCredit> evaluationCredits = new();
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "秀", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "秀").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "優", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "優").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "良", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "良").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "可", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "可").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "合", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "合").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "認定", SchoolCredit = ClassResults.FindAll(classResult => classResult.Evaluation == "認定").Select(classResult => classResult.SchoolCredit).Sum() });
-                evaluationCredits.Add(new EvaluationCredit() { Evaluation = "合計", SchoolCredit = ClassResults.Select(classResult => classResult.SchoolCredit).Sum() });
-                return evaluationCredits;
-            }
-        }
-        public double PreliminaryGPA => 1.0 * ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum();
+        public List<EvaluationCredit> EvaluationCredits { get; set; } = new() { };
+        public double PreliminaryGPA => 1.0 * ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.Credit).Sum() / ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.Credit).Sum();
         public DepartmentGPA DepartmentGPA { get; set; } = new();
+        public List<YearCredit> YearCredits { get; set; } = new() { };
     }
 
     public class ClassTableRow
@@ -1259,7 +1206,7 @@ namespace GakujoGUI
         public string TeacherName { get; set; } = "";
         public string SubjectsSection { get; set; } = "";
         public string SelectionSection { get; set; } = "";
-        public int SchoolCredit { get; set; }
+        public int Credit { get; set; }
         public string ClassName { get; set; } = "";
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";

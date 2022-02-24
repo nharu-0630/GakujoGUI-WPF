@@ -972,6 +972,13 @@ namespace GakujoGUI
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
+        private void YearCreditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            YearCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.YearCredits;
+            YearCreditsDataGrid.Items.Refresh();
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
         private static BitmapImage Base64ToBitmapImage(string base64)
         {
             BitmapImage bitmapImage = new();
@@ -980,6 +987,7 @@ namespace GakujoGUI
             bitmapImage.EndInit();
             return bitmapImage;
         }
+
     }
 
     public class Settings

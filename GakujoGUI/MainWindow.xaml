@@ -705,7 +705,7 @@
                                         <DataGridTextColumn
                                             Width="100"
                                             MinWidth="100"
-                                            Binding="{Binding SchoolCredit}"
+                                            Binding="{Binding Credit}"
                                             Header="単位数"
                                             IsReadOnly="True" />
                                     </DataGrid.Columns>
@@ -717,24 +717,63 @@
                         Name="DepartmentGPAButton"
                         Margin="6"
                         Click="DepartmentGPAButton_Click"
-                        Content="学部学科等内GPA">
+                        Content="学部学科内GPA">
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:Flyout Placement="Bottom">
-                                <StackPanel Margin="6" Orientation="Vertical">
-                                    <Label Name="DepartmentGPALabel" />
-                                    <TabControl Margin="0,6,0,0">
-                                        <TabItem Header="学部内">
-                                            <Image Name="DepartmentGPAImage" />
-                                        </TabItem>
-                                        <TabItem Header="学科内">
-                                            <Image Name="CourseGPAImage" />
-                                        </TabItem>
-                                    </TabControl>
-                                </StackPanel>
+                                <TabControl Margin="6">
+                                    <TabItem Header="学部学科内GPA">
+                                        <Label Name="DepartmentGPALabel" Margin="6" />
+                                    </TabItem>
+                                    <TabItem Header="学部内分布図">
+                                        <Image Name="DepartmentGPAImage" />
+                                    </TabItem>
+                                    <TabItem Header="学科内分布図">
+                                        <Image Name="CourseGPAImage" />
+                                    </TabItem>
+                                </TabControl>
                             </ui:Flyout>
                         </ui:FlyoutBase.AttachedFlyout>
                     </Button>
-                    <Button Margin="6" Content="年別単位" />
+                    <Button
+                        Name="YearCreditsButton"
+                        Margin="6"
+                        Click="YearCreditsButton_Click"
+                        Content="年別単位">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:Flyout Placement="Bottom">
+                                <DataGrid
+                                    x:Name="YearCreditsDataGrid"
+                                    Margin="6"
+                                    AreRowDetailsFrozen="True"
+                                    AutoGenerateColumns="False"
+                                    CanUserAddRows="False"
+                                    CanUserDeleteRows="False"
+                                    CanUserReorderColumns="False"
+                                    CanUserResizeRows="False"
+                                    CanUserSortColumns="False"
+                                    RowHeight="32"
+                                    ScrollViewer.CanContentScroll="True"
+                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                    SelectionMode="Single">
+                                    <DataGrid.Columns>
+                                        <DataGridTextColumn
+                                            Width="100"
+                                            MinWidth="100"
+                                            Binding="{Binding Year}"
+                                            Header="修得年度"
+                                            IsReadOnly="True" />
+                                        <DataGridTextColumn
+                                            Width="100"
+                                            MinWidth="100"
+                                            Binding="{Binding Credit}"
+                                            Header="単位数"
+                                            IsReadOnly="True" />
+                                    </DataGrid.Columns>
+                                </DataGrid>
+                            </ui:Flyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </Button>
                     <Label
                         x:Name="ClassResultsGPALabel"
                         Margin="6"
@@ -797,7 +836,7 @@
                         <DataGridTextColumn
                             Width="60"
                             MinWidth="60"
-                            Binding="{Binding SchoolCredit}"
+                            Binding="{Binding Credit}"
                             Header="単位"
                             IsReadOnly="True" />
                         <DataGridTextColumn
