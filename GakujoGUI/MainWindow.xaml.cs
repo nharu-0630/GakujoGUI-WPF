@@ -988,13 +988,21 @@ namespace GakujoGUI
             return bitmapImage;
         }
 
+        private void OpenJsonFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("explorer.exe")
+            {
+                Arguments = $"\"{Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @$"Json")}\"",
+                UseShellExecute = true
+            });
+        }
     }
 
     public class Settings
     {
         public bool AutoLoadEnable { get; set; } = true;
 
-        public int AutoLoadSpan { get; set; } = 10;
+        public int AutoLoadSpan { get; set; } = 20;
 
         public bool StartUpEnable { get; set; } = false;
 

@@ -1069,6 +1069,13 @@
                     <TextBlock Margin="12" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/xyzyxJP/GakujoGUI-WPF</Hyperlink>
                     </TextBlock>
+                    <Button
+                        x:Name="OpenJsonFolderButton"
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Click="OpenJsonFolderButton_Click">
+                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                    </Button>
                     <TextBlock Margin="12,80,12,0" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
                     </TextBlock>
