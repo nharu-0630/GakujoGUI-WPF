@@ -104,7 +104,7 @@ namespace GakujoGUI
             ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
             ClassResultsDataGrid.Items.Refresh();
-            ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
+            ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -224,7 +224,7 @@ namespace GakujoGUI
                 ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
                 ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                 ClassResultsDataGrid.Items.Refresh();
-                ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
+                ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classContacts[i]);
@@ -574,7 +574,7 @@ namespace GakujoGUI
                     ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
                     ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                     ClassResultsDataGrid.Items.Refresh();
-                    ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.ClassResultPreliminaryGPA:N3}";
+                    ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
                     foreach (ClassResult classResult in diffClassResults)
                     {
                         NotifyToast(classResult);
@@ -971,7 +971,7 @@ namespace GakujoGUI
             Flyout.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
-        private BitmapImage Base64ToBitmapImage(string base64)
+        private static BitmapImage Base64ToBitmapImage(string base64)
         {
             BitmapImage bitmapImage = new();
             bitmapImage.BeginInit();

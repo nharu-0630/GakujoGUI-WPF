@@ -37,14 +37,8 @@ namespace GakujoGUI
 
         private readonly string schoolYear = "";
         private readonly int semesterCode;
-        private string SchoolYearSemesterCodeSuffix
-        {
-            get { return $"_{schoolYear}_{(semesterCode < 2 ? 1 : 2)}"; }
-        }
-        private string ReportDateStart
-        {
-            get { return $"{schoolYear}/0{(semesterCode < 2 ? 3 : 8)}/01"; }
-        }
+        private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{(semesterCode < 2 ? 1 : 2)}";
+        private string ReportDateStart => $"{schoolYear}/0{(semesterCode < 2 ? 3 : 8)}/01";
         private readonly string userAgent = "";
 
         private static string GetJsonPath(string value)
@@ -1225,11 +1219,7 @@ namespace GakujoGUI
                 return evaluationCredits;
             }
         }
-        public double ClassResultPreliminaryGPA
-        {
-            get { return 1.0 * ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum(); }
-        }
-
+        public double PreliminaryGPA => 1.0 * ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.GP * classResult.SchoolCredit).Sum() / ClassResults.FindAll(classResult => classResult.Score != 0).Select(classResult => classResult.SchoolCredit).Sum();
         public DepartmentGPA DepartmentGPA { get; set; } = new();
     }
 
