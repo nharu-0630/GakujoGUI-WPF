@@ -1161,6 +1161,11 @@ namespace GakujoGUI
         public string Year { get; set; } = "";
         public string Semester { get; set; } = "";
         public double GPA { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Year}{Semester} {GPA}";
+        }
     }
 
     public class DepartmentGPA
@@ -1171,6 +1176,21 @@ namespace GakujoGUI
         public DateTime CalculationDate { get; set; }
         public int[] DepartmentRank { get; set; } = new int[2];
         public int[] CourseRank { get; set; } = new int[2];
+
+        public override string ToString()
+        {
+            string value = $"学年 {Grade}年";
+            value += $"\n累積GPA {GPA}";
+            value += $"\n学期GPA";
+            foreach (SemesterGPA semesterGPA in SemesterGPAs)
+            {
+                value += $"\n{semesterGPA}";
+            }
+            value += $"\n学科内順位 {DepartmentRank[0]}/{DepartmentRank[1]}";
+            value += $"\nコース内順位 {CourseRank[0]}/{CourseRank[1]}";
+            value += $"\n算出日 {CalculationDate:yyyy/MM/dd}";
+            return value;
+        }
     }
 
     public class SchoolGrade

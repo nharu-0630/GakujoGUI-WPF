@@ -721,10 +721,7 @@
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:Flyout Placement="Bottom">
                                 <StackPanel Margin="6" Orientation="Vertical">
-                                    <Label Name="DepartmentGPAGradeLabel" Content="学年" />
-                                    <Label Name="DepartmentGPAGPALabel" Content="累積GPA" />
-                                    <Label Name="DepartmentGPASemesterGPALabel" Content="学期GPA" />
-                                    <Label Name="DepartmentGPACalculationDateLabel" Content="最終算出日" />
+                                    <Label Name="DepartmentGPALabel" />
                                 </StackPanel>
                             </ui:Flyout>
                         </ui:FlyoutBase.AttachedFlyout>
@@ -734,7 +731,7 @@
                         x:Name="ClassResultsGPALabel"
                         Margin="6"
                         VerticalAlignment="Center"
-                        Content="最終累積GPA " />
+                        Content="推定GPA " />
                     <Label
                         Width="150"
                         Margin="6"
