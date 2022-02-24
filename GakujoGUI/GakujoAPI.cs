@@ -760,6 +760,9 @@ namespace GakujoGUI
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             schoolGrade.DepartmentGPA.CourseImage = Convert.ToBase64String(httpResponse.Content.ReadAsByteArrayAsync().Result);
+            httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/nenbetuTaniSearch.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
             account.ClassResultDateTime = DateTime.Now;
             SaveJson();
             SaveCookies();
