@@ -16,6 +16,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using ModernWpf.Controls.Primitives;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
 
@@ -960,7 +961,7 @@ namespace GakujoGUI
         {
             EvaluationCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.EvaluationCredits;
             EvaluationCreditsDataGrid.Items.Refresh();
-            Flyout.ShowAttachedFlyout(sender as FrameworkElement);
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
         private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
@@ -968,7 +969,7 @@ namespace GakujoGUI
             DepartmentGPALabel.Content = gakujoAPI.schoolGrade.DepartmentGPA;
             DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.DepartmentImage);
             CourseGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.CourseImage);
-            Flyout.ShowAttachedFlyout(sender as FrameworkElement);
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
         private static BitmapImage Base64ToBitmapImage(string base64)
