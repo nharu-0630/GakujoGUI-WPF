@@ -75,19 +75,17 @@
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
                         <Grid Style="{StaticResource ReportBadgeVisible}">
                             <Grid Style="{StaticResource ReportBadgeOneDigits}">
-                                <Border
-                                    BorderBrush="Black"
-                                    BorderThickness="1"
-                                    CornerRadius="10">
-                                    <Border.Effect>
-                                        <DropShadowEffect />
-                                    </Border.Effect>
-                                </Border>
                                 <Rectangle
                                     Fill="#e03131"
                                     RadiusX="5"
-                                    RadiusY="5"
-                                    StrokeThickness="1" />
+                                    RadiusY="5">
+                                    <Rectangle.Effect>
+                                        <DropShadowEffect>
+                                            <DropShadowEffect.ShadowDepth>2</DropShadowEffect.ShadowDepth>
+                                            <DropShadowEffect.Opacity>0.7</DropShadowEffect.Opacity>
+                                        </DropShadowEffect>
+                                    </Rectangle.Effect>
+                                </Rectangle>
                             </Grid>
                             <Label
                                 Margin="0,-13,-7,0"
@@ -107,19 +105,18 @@
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
                         <Grid Style="{StaticResource QuizBadgeVisible}">
                             <Grid Style="{StaticResource QuizBadgeOneDigits}">
-                                <Border
-                                    BorderBrush="Black"
-                                    BorderThickness="1"
-                                    CornerRadius="10">
-                                    <Border.Effect>
-                                        <DropShadowEffect />
-                                    </Border.Effect>
-                                </Border>
                                 <Rectangle
                                     Fill="#e03131"
                                     RadiusX="5"
                                     RadiusY="5"
-                                    StrokeThickness="1" />
+                                    StrokeThickness="1">
+                                    <Rectangle.Effect>
+                                        <DropShadowEffect>
+                                            <DropShadowEffect.ShadowDepth>2</DropShadowEffect.ShadowDepth>
+                                            <DropShadowEffect.Opacity>0.7</DropShadowEffect.Opacity>
+                                        </DropShadowEffect>
+                                    </Rectangle.Effect>
+                                </Rectangle>
                             </Grid>
                             <Label
                                 Margin="0,-13,-7,0"

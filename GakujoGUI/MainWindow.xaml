@@ -85,7 +85,7 @@
                     <Label
                         x:Name="LoginDateTimeLabel"
                         Margin="6"
-                        Content="最終更新" />
+                        Content="最終ログイン" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Column="1"

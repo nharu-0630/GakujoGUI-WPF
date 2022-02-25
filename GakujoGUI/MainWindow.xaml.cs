@@ -81,7 +81,7 @@ namespace GakujoGUI
         {
             UserIdTextBox.Text = gakujoAPI.account.UserId;
             PassWordPasswordBox.Password = gakujoAPI.account.PassWord;
-            LoginDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
+            LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
             TodoistTokenPasswordBox.Password = notifyAPI.tokens.TodoistToken;
             DiscordChannelTextBox.Text = notifyAPI.tokens.DiscordChannel.ToString();
             DiscordTokenPasswordBox.Password = notifyAPI.tokens.DiscordToken;
@@ -166,7 +166,7 @@ namespace GakujoGUI
                 gakujoAPI.GetClassTables();
                 Dispatcher.Invoke(() =>
                 {
-                    LoginDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
+                    LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
                     ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables![0..5];
                     ClassTablesDataGrid.Items.Refresh();
                 });
