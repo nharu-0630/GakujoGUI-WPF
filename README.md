@@ -22,13 +22,9 @@
 - 📝 未提出の課題をTodoistで管理
 - 🌙 ライト / ダークテーマに対応
 
-<br />  
-
 ## 📦️ Installation
 
 [Release](https://github.com/xyzyxJP/GakujoGUI-WPF/releases)
-
-<br />  
 
 ## ⚙️ Usage
 
@@ -37,13 +33,9 @@
 - 静大ID，パスワードをもとに学務情報システムへログインする
 - CSS，画像ファイルなどを取得しないため，ブラウザ上のログインより高速である
 
-<br />  
-
 ### 保存データ
 
 - 全てのデータはローカル内に保存され，外部にアップロードされることはない
-
-<br />  
 
 #### アカウント
 
@@ -53,8 +45,6 @@
 - 学籍番号
 - トークン
 - 更新日時
-
-<br />  
 
 #### 授業連絡
 
@@ -70,8 +60,6 @@
 - 連絡日時
 - WEB返信要求
 
-<br />  
-
 #### レポート
 
 - 授業科目 学期/曜日時限
@@ -85,8 +73,6 @@
 - `SchoolYear`
 - `SubjectCode`
 - `ClassCode`
-
-<br />  
 
 #### 小テスト
 
@@ -102,8 +88,6 @@
 - `SubjectCode`
 - `ClassCode`
 
-<br />  
-
 #### 授業共有ファイル
 
 - 授業科目 学期/曜日時限
@@ -113,8 +97,6 @@
 - ファイル説明
 - 公開期間
 - 更新日時
-
-<br />  
 
 #### 成績情報
 
@@ -137,13 +119,9 @@
 - 学科等内GPA
 - 年別単位
 
-<br />  
-
 ## ☑️ Todo
 
 [Projects](https://github.com/xyzyxJP/GakujoGUI-WPF/projects/2)
-
-<br />  
 
 ## 📜 License
 
