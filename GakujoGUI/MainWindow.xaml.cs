@@ -37,7 +37,11 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            return Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @$"Json\{value}.json");
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")))
+            {
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI"));
+            }
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -992,7 +996,7 @@ namespace GakujoGUI
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
             {
-                Arguments = $"\"{Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @$"Json")}\"",
+                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"",
                 UseShellExecute = true
             });
         }
