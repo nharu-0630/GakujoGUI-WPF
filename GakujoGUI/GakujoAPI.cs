@@ -256,7 +256,7 @@ namespace GakujoGUI
 
         public void GetReports(out List<Report> diffReports)
         {
-            logger.Info("Start GetReports.");
+            logger.Info("Start Get Reports.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=授業サポート&menuCode=A02&nextPath=/report/student/searchList/initialize");
@@ -280,7 +280,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("searchList") == null)
             {
                 diffReports = new();
-                logger.Info("Return GetReports by not found list.");
+                logger.Info("Return Get Reports by not found list.");
                 return;
             }
             diffReports = new(reports);
@@ -310,7 +310,7 @@ namespace GakujoGUI
             }
             diffReports = reports.Except(diffReports).ToList();
             account.ReportDateTime = DateTime.Now;
-            logger.Info("End GetReports.");
+            logger.Info("End Get Reports.");
             ApplyReportsClassTables();
             SaveJsons();
             SaveCookies();
@@ -318,8 +318,8 @@ namespace GakujoGUI
 
         private void ApplyReportsClassTables()
         {
-            logger.Info("Start ApplyReportsClassTables");
-            if (classTables == null) { logger.Info("Return ApplyReportsClassTables by ClassTables is null."); return; }
+            logger.Info("Start Apply Reports ClassTables");
+            if (classTables == null) { logger.Info("Return Apply Reports ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 classTableRow.Monday.ReportCount = 0;
@@ -342,12 +342,12 @@ namespace GakujoGUI
                     }
                 }
             }
-            logger.Info("End ApplyReportsClassTables");
+            logger.Info("End Apply Reports ClassTables");
         }
 
         public void GetQuizzes(out List<Quiz> diffQuizzes)
         {
-            logger.Info("Start GetQuizzes.");
+            logger.Info("Start Get Quizzes.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=小テスト一覧&menuCode=A03&nextPath=/test/student/searchList/initialize");
@@ -371,7 +371,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("searchList") == null)
             {
                 diffQuizzes = new();
-                logger.Info("Return GetQuizzes by not found list.");
+                logger.Info("Return Get Quizzes by not found list.");
                 return;
             }
             diffQuizzes = new(quizzes);
@@ -398,7 +398,7 @@ namespace GakujoGUI
             }
             diffQuizzes = quizzes.Except(diffQuizzes).ToList();
             account.QuizDateTime = DateTime.Now;
-            logger.Info("End GetQuizzes.");
+            logger.Info("End Get Quizzes.");
             ApplyQuizzesClassTables();
             SaveJsons();
             SaveCookies();
@@ -406,8 +406,8 @@ namespace GakujoGUI
 
         private void ApplyQuizzesClassTables()
         {
-            logger.Info("Start ApplyQuizzesClassTables.");
-            if (classTables == null) { logger.Info("Return ApplyQuizzesClassTables by ClassTables is null."); return; }
+            logger.Info("Start Apply Quizzes ClassTables.");
+            if (classTables == null) { logger.Info("Return Apply Quizzes ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 if (classTableRow == null) { continue; }
@@ -432,12 +432,12 @@ namespace GakujoGUI
                     }
                 }
             }
-            logger.Info("End ApplyQuizzesClassTables.");
+            logger.Info("End Apply Quizzes ClassTables.");
         }
 
         public void GetClassContacts(out int diffCount, int maxCount = 10)
         {
-            logger.Info("Start GetClassContacts.");
+            logger.Info("Start Get ClassContacts.");
             ClassContact? lastClassContact = classContacts.Count > 0 ? classContacts[0] : null;
             List<ClassContact> diffClassContacts = new() { };
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
@@ -463,11 +463,11 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("tbl_A01_01") == null)
             {
                 diffCount = 0;
-                logger.Info("Return GetClassContacts by not found list.");
+                logger.Info("Return Get ClassContacts by not found list.");
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr").Count;
-            logger.Info($"Found {limitCount} classContacts.");
+            logger.Info($"Found {limitCount} ClassContacts.");
             for (int i = 0; i < limitCount; i++)
             {
                 ClassContact classContact = new();
@@ -482,13 +482,13 @@ namespace GakujoGUI
                 classContact.ContactDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim());
                 if (classContact.Equals(lastClassContact))
                 {
-                    logger.Info("Break by equals lastClassContact.");
+                    logger.Info("Break by equals last ClassContact.");
                     break;
                 }
                 diffClassContacts.Add(classContact);
             }
             diffCount = diffClassContacts.Count;
-            logger.Info($"Found {diffCount} new classContacts.");
+            logger.Info($"Found {diffCount} new ClassContacts.");
             for (int i = 0; i < diffCount; i++)
             {
                 classContacts.Insert(i, diffClassContacts[i]);
@@ -499,14 +499,14 @@ namespace GakujoGUI
                 GetClassContact(i);
             }
             account.ClassContactDateTime = DateTime.Now;
-            logger.Info("End GetClassContacts.");
+            logger.Info("End Get ClassContacts.");
             SaveJsons();
             SaveCookies();
         }
 
         public void GetClassContact(int indexCount)
         {
-            logger.Info($"Start GetClassContact indexCount={indexCount}.");
+            logger.Info($"Start Get ClassContact indexCount={indexCount}.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=授業連絡一覧&menuCode=A01&nextPath=/classcontact/classContactList/initialize");
@@ -572,14 +572,14 @@ namespace GakujoGUI
                     classContacts[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
                 }
             }
-            logger.Info($"End GetClassContact indexCount={indexCount}.");
+            logger.Info($"End Get ClassContact indexCount={indexCount}.");
             SaveJsons();
             SaveCookies();
         }
 
         public void GetClassSharedFiles(out int diffCount, int maxCount = 10)
         {
-            logger.Info("Start GetClassSharedFiles.");
+            logger.Info("Start Get ClassSharedFiles.");
             ClassSharedFile? lastClassSharedFile = (classSharedFiles.Count > 0) ? classSharedFiles[0] : null;
             List<ClassSharedFile> diffClassSharedFiles = new() { };
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
@@ -605,11 +605,11 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("tbl_classFile") == null)
             {
                 diffCount = 0;
-                logger.Info("Return GetClassSharedFiles by not found list.");
+                logger.Info("Return Get ClassSharedFiles by not found list.");
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr").Count;
-            logger.Info($"Found {limitCount} classSharedFiles.");
+            logger.Info($"Found {limitCount} ClassSharedFiles.");
             for (int i = 0; i < limitCount; i++)
             {
                 ClassSharedFile classSharedFile = new();
@@ -620,13 +620,13 @@ namespace GakujoGUI
                 classSharedFile.UpdateDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText);
                 if (classSharedFile.Equals(lastClassSharedFile))
                 {
-                    logger.Info("Break by equals lastClassSharedFile.");
+                    logger.Info("Break by equals last ClassSharedFile.");
                     break;
                 }
                 diffClassSharedFiles.Add(classSharedFile);
             }
             diffCount = diffClassSharedFiles.Count;
-            logger.Info($"Found {diffCount} new classSharedFiles.");
+            logger.Info($"Found {diffCount} new ClassSharedFiles.");
             for (int i = 0; i < diffCount; i++)
             {
                 classSharedFiles.Insert(i, diffClassSharedFiles[i]);
@@ -637,14 +637,14 @@ namespace GakujoGUI
                 GetClassSharedFile(i);
             }
             account.ClassSharedFileDateTime = DateTime.Now;
-            logger.Info("End GetClassSharedFiles.");
+            logger.Info("End Get ClassSharedFiles.");
             SaveJsons();
             SaveCookies();
         }
 
         public void GetClassSharedFile(int indexCount)
         {
-            logger.Info($"Start GetClassSharedFile indexCount={indexCount}.");
+            logger.Info($"Start Get ClassSharedFile indexCount={indexCount}.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=授業共有ファイル&menuCode=A08&nextPath=/classfile/classFile/initialize");
@@ -703,14 +703,14 @@ namespace GakujoGUI
                     classSharedFiles[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
                 }
             }
-            logger.Info($"End GetClassSharedFile indexCount={indexCount}.");
+            logger.Info($"End Get ClassSharedFile indexCount={indexCount}.");
             SaveJsons();
             SaveCookies();
         }
 
         private bool CheckConnection()
         {
-            logger.Info("Start CheckConnection.");
+            logger.Info("Start Check connection.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={account.ApacheToken}&headTitle=ホーム&menuCode=Z07&nextPath=/home/home/initialize&_screenIdentifier=&_screenInfoDisp=&_scrollTop=0");
@@ -729,11 +729,11 @@ namespace GakujoGUI
                     CookieContainer = cookieContainer
                 };
                 httpClient = new HttpClient(httpClientHandler);
-                logger.Warn("Return CheckConnection by not found token.");
+                logger.Warn("Return Check connection by not found token.");
                 return false;
             }
             account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form[1]/div/input").Attributes["value"].Value;
-            logger.Info("End CheckConnection.");
+            logger.Info("End Check connection.");
             SaveJsons();
             SaveCookies();
             loginStatus = true;
@@ -742,7 +742,7 @@ namespace GakujoGUI
 
         private bool SetAcademicSystem()
         {
-            logger.Info("Start SetAcademicSystem.");
+            logger.Info("Start Set AcademicSystem.");
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponse = httpClient.SendAsync(httpRequestMessage).Result;
@@ -780,7 +780,7 @@ namespace GakujoGUI
                 logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
                 logger.Trace(httpResponse.Content.ReadAsStringAsync().Result);
             }
-            logger.Info("End SetAcademicSystem.");
+            logger.Info("End Set AcademicSystem.");
             SaveJsons();
             SaveCookies();
             return true;
@@ -788,7 +788,7 @@ namespace GakujoGUI
 
         public void GetClassResults(out List<ClassResult> diffClassResults)
         {
-            logger.Info("Start GetClassResults.");
+            logger.Info("Start Get ClassResults.");
             SetAcademicSystem();
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/seisekiSearchStudentInit.do?mainMenuCode=008&parentMenuCode=007");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -800,12 +800,12 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
             {
                 diffClassResults = new();
-                logger.Info("Return GetClassResults by not found list.");
+                logger.Info("Return Get ClassResults by not found list.");
                 return;
             }
             diffClassResults = new(schoolGrade.ClassResults);
             schoolGrade.ClassResults.Clear();
-            logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count - 1} classResults.");
+            logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count - 1} ClassResults.");
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
             {
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
@@ -897,14 +897,14 @@ namespace GakujoGUI
                 schoolGrade.YearCredits.Add(new() { Year = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\n", "").Trim(), Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText) });
             }
             account.ClassResultDateTime = DateTime.Now;
-            logger.Info("End GetClassResults.");
+            logger.Info("End Get ClassResults.");
             SaveJsons();
             SaveCookies();
         }
 
         public void GetClassTables()
         {
-            logger.Info("Start GetClassTables.");
+            logger.Info("Start Get ClassTables.");
             SetAcademicSystem();
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=005&parentMenuCode=004");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -915,7 +915,7 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null)
             {
-                logger.Info("Return GetClassTables by not found list.");
+                logger.Info("Return Get ClassTables by not found list.");
                 return;
             }
             classTables = new ClassTableRow[7];
@@ -974,7 +974,7 @@ namespace GakujoGUI
                     }
                 }
             }
-            logger.Info("End GetClassTables.");
+            logger.Info("End Get ClassTables.");
             ApplyReportsClassTables();
             ApplyQuizzesClassTables();
             SaveJsons();
@@ -983,7 +983,7 @@ namespace GakujoGUI
 
         private ClassTableCell GetClassTableCell(string detailKamokuCode, string detailClassCode)
         {
-            logger.Info($"Start GetClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
+            logger.Info($"Start Get ClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
             ClassTableCell classTableCell = new();
             httpRequestMessage = new HttpRequestMessage(new HttpMethod("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/detailKamoku.do?detailKamokuCode=" + $"{detailKamokuCode}&detailClassCode={detailClassCode}&gamen=jikanwari");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
@@ -999,7 +999,7 @@ namespace GakujoGUI
             classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
-            logger.Info($"End GetClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
+            logger.Info($"End Get ClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
             return classTableCell;
         }
     }
