@@ -96,7 +96,6 @@ namespace GakujoGUI
                 logger.Info("Startup minimized");
             }
             gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-            logger.Info("Initialize GakujoAPI.");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -850,10 +849,7 @@ namespace GakujoGUI
                 File.WriteAllText(GetJsonPath("Settings"), JsonConvert.SerializeObject(settings, Formatting.Indented));
                 logger.Info("Save Settings.");
             }
-            catch (Exception exception)
-            {
-                logger.Error(exception, "Error Save Settings.");
-            }
+            catch (Exception exception) { logger.Error(exception, "Error Save Settings."); }
         }
 
         private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
