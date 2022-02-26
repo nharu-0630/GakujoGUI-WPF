@@ -113,7 +113,7 @@ namespace GakujoGUI
             SchoolYearNumberBox.Value = settings.SchoolYear;
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
-            VersionLabel.Content = Assembly.GetExecutingAssembly().GetName().Version;
+            VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
             Task.Run(() =>
             {
                 gakujoAPI.LoadJson();

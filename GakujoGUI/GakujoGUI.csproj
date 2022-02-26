@@ -6,10 +6,25 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ApplicationIcon>Resources\GakujoGUI.ico</ApplicationIcon>
+    <DebugType>portable</DebugType>
+    <Copyright>xyzyxJP</Copyright>
+    <PackageProjectUrl>https://github.com/xyzyxJP/GakujoGUI-WPF</PackageProjectUrl>
+    <PackageIcon>GakujoGUI.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/xyzyxJP/GakujoGUI-WPF</RepositoryUrl>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\GakujoGUI.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -25,6 +40,13 @@
     <PackageReference Include="ModernWpfUI" Version="0.9.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Todoist.Net" Version="2.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\GakujoGUI.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
