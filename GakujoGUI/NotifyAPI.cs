@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,25 +42,26 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
 
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public NotifyAPI()
         {
             if (File.Exists(GetJsonPath("Tokens")))
             {
                 tokens = JsonConvert.DeserializeObject<Tokens>(File.ReadAllText(GetJsonPath("Tokens")))!;
+                logger.Info("Load Tokens.");
             }
             Login();
         }
+
 
         public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
             tokens.TodoistToken = todoistToken;
             tokens.DiscordChannel = ulong.Parse(discordChannel);
             tokens.DiscordToken = discordToken;
-            try
-            {
-                File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(tokens, Formatting.Indented));
-            }
-            catch { }
+            try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(tokens, Formatting.Indented)); }
+            catch (Exception exception) { logger.Error(exception, "Error Save Tokens."); }
         }
 
 
@@ -68,15 +70,17 @@ namespace GakujoGUI
             try
             {
                 todoistClient = new(tokens.TodoistToken);
+                logger.Info("Login Todoist.");
             }
-            catch { }
+            catch (Exception exception) { logger.Error(exception, "Error Login Todoist."); }
             try
             {
                 discordSocketClient = new();
                 discordSocketClient.LoginAsync(TokenType.Bot, tokens.DiscordToken).Wait();
                 discordSocketClient.StartAsync().Wait();
+                logger.Info("Login Discord.");
             }
-            catch { }
+            catch (Exception exception) { logger.Error(exception, "Error Login Discord."); }
         }
 
         #region Todoist
@@ -108,9 +112,11 @@ namespace GakujoGUI
                 if (!ExistsTodoistTask(content, dateTime))
                 {
                     todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Wait();
+                    logger.Info("Add Todoist Task.");
                 }
+                else { logger.Info("Exists Todoist Task."); }
             }
-            catch { }
+            catch (Exception exception) { logger.Error(exception, "Error Add Todoist Task."); }
         }
 
         private void ArchiveTodoistTask(string content, DateTime dateTime)
@@ -119,22 +125,20 @@ namespace GakujoGUI
             {
                 foreach (Item item in TodoistResources.Items)
                 {
-                    if (item.DueDate == null)
-                    {
-                        continue;
-                    }
+                    if (item.DueDate == null) { continue; }
                     if (item.Content == content && item.DueDate.Date == dateTime && item.IsArchived == false)
                     {
                         todoistClient!.Items.ArchiveAsync(item.Id).Wait();
+                        logger.Info("Archive Todoist Task.");
                     }
                 }
             }
-            catch { }
+            catch (Exception exception) { logger.Error(exception, "Error Archive Todoist Task."); }
         }
 
         public void SetTodoistTask(List<Report> reports)
         {
-            if (TodoistResources == null) { return; }
+            if (TodoistResources == null) { logger.Info("Return SetTodoistTask reports by resource is null."); return; }
             foreach (Report report in reports)
             {
                 if (report.Status == "受付中" && report.SubmittedDateTime == new DateTime())
@@ -150,7 +154,7 @@ namespace GakujoGUI
 
         public void SetTodoistTask(List<Quiz> quizzes)
         {
-            if (TodoistResources == null) { return; }
+            if (TodoistResources == null) { logger.Info("Return SetTodoistTask quizzes by resource is null."); return; }
             foreach (Quiz quiz in quizzes)
             {
                 if (quiz.Status == "受付中" && quiz.SubmissionStatus == "未提出")
@@ -178,6 +182,7 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classContact.Subjects);
                 embedBuilder.WithTimestamp(classContact.ContactDateTime);
                 (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                logger.Info("Notify Discord ClassContact.");
             }
             catch { }
         }
@@ -192,6 +197,7 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(report.Subjects);
                 embedBuilder.WithTimestamp(report.StartDateTime);
                 (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                logger.Info("Notify Discord Report.");
             }
             catch { }
         }
@@ -206,6 +212,7 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(quiz.Subjects);
                 embedBuilder.WithTimestamp(quiz.StartDateTime);
                 (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                logger.Info("Notify Discord Quiz.");
             }
             catch { }
         }
@@ -220,6 +227,7 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classSharedFile.Subjects);
                 embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
                 (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                logger.Info("Notify Discord ClassSharedFile.");
             }
             catch { }
         }
@@ -234,6 +242,7 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classResult.TeacherName);
                 embedBuilder.WithTimestamp(classResult.ReportDate);
                 (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                logger.Info("Notify Discord ClassResult.");
             }
             catch { }
         }

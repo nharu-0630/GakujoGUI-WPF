@@ -252,6 +252,7 @@ namespace GakujoGUI
                 ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                 ClassResultsDataGrid.Items.Refresh();
                 ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
+                logger.Info("Set MainForm text.");
                 for (int i = 0; i < classContactsDiffCount; i++)
                 {
                     NotifyToast(gakujoAPI.classContacts[i]);
@@ -763,31 +764,31 @@ namespace GakujoGUI
         private void NotifyToast(ClassContact classContact)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassContact").AddArgument("Index", gakujoAPI.classContacts.IndexOf(classContact)).AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
-            logger.Info("Notiy toast ClassContact.");
+            logger.Info("Notiy Toast ClassContact.");
         }
 
         private void NotifyToast(Report report)
         {
             new ToastContentBuilder().AddArgument("Type", "Report").AddArgument("Index", gakujoAPI.reports.IndexOf(report)).AddText(report.Title).AddText($"{report.StartDateTime} -> {report.EndDateTime}").AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
-            logger.Info("Notiy toast Report.");
+            logger.Info("Notiy Toast Report.");
         }
 
         private void NotifyToast(Quiz quiz)
         {
             new ToastContentBuilder().AddArgument("Type", "Quiz").AddArgument("Index", gakujoAPI.quizzes.IndexOf(quiz)).AddText(quiz.Title).AddText($"{quiz.StartDateTime} -> {quiz.EndDateTime}").AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
-            logger.Info("Notify toast Quiz.");
+            logger.Info("Notify Toast Quiz.");
         }
 
         private void NotifyToast(ClassSharedFile classSharedFile)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddArgument("Index", gakujoAPI.classSharedFiles.IndexOf(classSharedFile)).AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
-            logger.Info("Notify toast ClassSharedFile.");
+            logger.Info("Notify Toast ClassSharedFile.");
         }
 
         private void NotifyToast(ClassResult classResult)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.schoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
-            logger.Info("Notify toast ClassResult.");
+            logger.Info("Notify Toast ClassResult.");
         }
 
         #endregion

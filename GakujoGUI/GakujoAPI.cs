@@ -68,7 +68,7 @@ namespace GakujoGUI
             account.UserId = userId;
             account.PassWord = passWord;
             logger.Info($"Set Account.");
-            SaveJson();
+            SaveJsons();
         }
 
         private void SaveCookies()
@@ -148,49 +148,22 @@ namespace GakujoGUI
             return false;
         }
 
-        private void SaveJson()
+        private void SaveJsons()
         {
-            try
-            {
-                File.WriteAllText(GetJsonPath("Reports" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(reports, Formatting.Indented));
-                logger.Info("Save Reports.");
-            }
+            logger.Info("Save Jsons.");
+            try { File.WriteAllText(GetJsonPath("Reports" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(reports, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Reports."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("Quizzes" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(quizzes, Formatting.Indented));
-                logger.Info("Save Quizzes.");
-            }
+            try { File.WriteAllText(GetJsonPath("Quizzes" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(quizzes, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Quizzes."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassContacts" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(classContacts, Formatting.Indented));
-                logger.Info("Save ClassContacts.");
-            }
+            try { File.WriteAllText(GetJsonPath("ClassContacts" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(classContacts, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save ClassContacts."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented));
-                logger.Info("Save ClassSharedFiles.");
-            }
+            try { File.WriteAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(classSharedFiles, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save ClassSharedFiles."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("SchoolGrade"), JsonConvert.SerializeObject(schoolGrade, Formatting.Indented));
-                logger.Info("Save SchoolGrade.");
-            }
+            try { File.WriteAllText(GetJsonPath("SchoolGrade"), JsonConvert.SerializeObject(schoolGrade, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save SchoolGrade."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented));
-                logger.Info("Save ClassTables.");
-            }
+            try { File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(classTables, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save ClassTables."); }
-            try
-            {
-                File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account, Formatting.Indented));
-                logger.Info("Save Account.");
-            }
+            try { File.WriteAllText(GetJsonPath("Account"), JsonConvert.SerializeObject(account, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Account."); }
         }
 
@@ -275,7 +248,7 @@ namespace GakujoGUI
             }
             account.LoginDateTime = DateTime.Now;
             logger.Info("End Login.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
             loginStatus = true;
             return true;
@@ -339,7 +312,7 @@ namespace GakujoGUI
             account.ReportDateTime = DateTime.Now;
             logger.Info("End GetReports.");
             ApplyReportsClassTables();
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -427,7 +400,7 @@ namespace GakujoGUI
             account.QuizDateTime = DateTime.Now;
             logger.Info("End GetQuizzes.");
             ApplyQuizzesClassTables();
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -527,7 +500,7 @@ namespace GakujoGUI
             }
             account.ClassContactDateTime = DateTime.Now;
             logger.Info("End GetClassContacts.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -600,7 +573,7 @@ namespace GakujoGUI
                 }
             }
             logger.Info($"End GetClassContact indexCount={indexCount}.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -665,7 +638,7 @@ namespace GakujoGUI
             }
             account.ClassSharedFileDateTime = DateTime.Now;
             logger.Info("End GetClassSharedFiles.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -731,7 +704,7 @@ namespace GakujoGUI
                 }
             }
             logger.Info($"End GetClassSharedFile indexCount={indexCount}.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -761,7 +734,7 @@ namespace GakujoGUI
             }
             account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form[1]/div/input").Attributes["value"].Value;
             logger.Info("End CheckConnection.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
             loginStatus = true;
             return true;
@@ -808,7 +781,7 @@ namespace GakujoGUI
                 logger.Trace(httpResponse.Content.ReadAsStringAsync().Result);
             }
             logger.Info("End SetAcademicSystem.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
             return true;
         }
@@ -925,7 +898,7 @@ namespace GakujoGUI
             }
             account.ClassResultDateTime = DateTime.Now;
             logger.Info("End GetClassResults.");
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
@@ -1004,7 +977,7 @@ namespace GakujoGUI
             logger.Info("End GetClassTables.");
             ApplyReportsClassTables();
             ApplyQuizzesClassTables();
-            SaveJson();
+            SaveJsons();
             SaveCookies();
         }
 
