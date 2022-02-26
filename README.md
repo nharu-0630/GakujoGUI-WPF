@@ -53,6 +53,9 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 <img src="https://user-images.githubusercontent.com/8305330/155840055-42d9f776-0ead-4550-89f5-69b3bcd50669.png" width="640">
 
+<details>
+<summary>詳細</summary>
+
 - 授業科目 学期/曜日時限
 - 担当教員氏名
 - 連絡種別
@@ -64,10 +67,14 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - 重要度
 - 連絡日時
 - WEB返信要求
+</details>
 
 #### レポート
 
 <img src="https://user-images.githubusercontent.com/8305330/155840075-97eba8ee-8688-499c-a98b-354d4761625a.png" width="640">
+
+<details>
+<summary>詳細</summary>
 
 - 授業科目 学期/曜日時限
 - タイトル
@@ -80,10 +87,14 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - `SchoolYear`
 - `SubjectCode`
 - `ClassCode`
+</details>
 
 #### 小テスト
 
 <img src="https://user-images.githubusercontent.com/8305330/155840084-70c474f6-34d0-4a03-8672-e1919ec60ba1.png" width="640">
+
+<details>
+<summary>詳細</summary>
 
 - 授業科目 学期/曜日時限
 - タイトル
@@ -96,10 +107,14 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - `SchoolYear`
 - `SubjectCode`
 - `ClassCode`
+</details>
 
 #### 授業共有ファイル
 
 <img src="https://user-images.githubusercontent.com/8305330/155840102-ba833a9d-4a44-4d7a-81ec-510d7401dbed.png" width="640">
+
+<details>
+<summary>詳細</summary>
 
 - 授業科目 学期/曜日時限
 - タイトル
@@ -108,10 +123,14 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - ファイル説明
 - 公開期間
 - 更新日時
+</details>
 
 #### 成績情報
 
 <img src="https://user-images.githubusercontent.com/8305330/155840121-d9d5b2b3-3a59-4a71-ab94-c00df1cba112.png" width="640">
+
+<details>
+<summary>詳細</summary>
 
 - 科目名
 - 担当教員名
@@ -131,6 +150,7 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - 学部内GPA
 - 学科等内GPA
 - 年別単位
+</details>
 
 
 ## ⚠️ Troubleshooting
