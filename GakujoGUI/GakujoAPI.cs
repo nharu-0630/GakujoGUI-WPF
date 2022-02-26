@@ -32,8 +32,8 @@ namespace GakujoGUI
 
         public bool loginStatus = false;
 
-        private readonly string cookiesPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, "Cookies");
-        private readonly string downloadPath = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath!)!, @"Download\");
+        private readonly string cookiesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\Cookies");
+        private readonly string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\Download\");
 
         private readonly string schoolYear = "";
         private readonly int semesterCode;
