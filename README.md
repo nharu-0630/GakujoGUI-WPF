@@ -161,7 +161,11 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 <img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="320">
 
-上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．  
+上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．
+
+<details>
+<summary>解決方法</summary>
+
 [https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime](https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime)  
 上記リンクよりランタイムをインストールしてください．
 
@@ -174,6 +178,8 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 インストールをクリックし，下記画像のメッセージが表示されれば完了です．
 
 <img src="https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png" width="320">
+
+</details>
 
 ## ☑️ Todo
 
