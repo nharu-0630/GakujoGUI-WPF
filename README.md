@@ -26,8 +26,6 @@
 
 [Release](https://github.com/xyzyxJP/GakujoGUI-WPF/releases)
 
-![image](https://user-images.githubusercontent.com/8305330/155837127-97902d39-1612-4132-8d77-db1747f46b68.png)
-
 Zipファイルをダウンロードし，すべて展開を行ったあとに，`GakujoGUI.exe`を実行してください．
 
 ## ⚙️ Usage
@@ -126,7 +124,7 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 ## ⚠️ Troubleshooting
 
-![image](https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png)
+<img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="320">
 
 上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．
 
@@ -134,15 +132,15 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 上記リンクよりランタイムをインストールしてください．
 
-![image](https://user-images.githubusercontent.com/8305330/155836978-a9be93bb-2636-47bc-9ac6-b73293c4bb22.png)
+<img src="https://user-images.githubusercontent.com/8305330/155836978-a9be93bb-2636-47bc-9ac6-b73293c4bb22.png" width="640">
 
 ページ中央にある`デスクトップアプリを実行する`の`X64のダウンロード`をクリックしてください．
 
-![image](https://user-images.githubusercontent.com/8305330/155836991-0ec624ee-5141-4dcb-9451-7d1d6b9a8385.png)
+<img src="https://user-images.githubusercontent.com/8305330/155836991-0ec624ee-5141-4dcb-9451-7d1d6b9a8385.png" width="320">
 
 インストールをクリックし，下記画像のメッセージが表示されれば完了です．
 
-![image](https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png)
+<img src="https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png" width="320">
 
 ## ☑️ Todo
 
