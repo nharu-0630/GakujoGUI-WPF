@@ -52,7 +52,7 @@ namespace GakujoGUI
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        public static Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public MainWindow()
         {
@@ -66,6 +66,7 @@ namespace GakujoGUI
             LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
             loggingConfiguration.LoggingRules.Add(loggingRule);
             LogManager.Configuration = loggingConfiguration;
+            logger.Info("MainWindow");
             Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
             int processId = Environment.ProcessId;
             foreach (Process process in processes)

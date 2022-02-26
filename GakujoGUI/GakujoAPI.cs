@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,8 +51,11 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
 
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
         public GakujoAPI(string schoolYear, int semesterCode, string userAgent)
         {
+            logger.Info("GakujoAPI");
             this.schoolYear = schoolYear;
             this.semesterCode = semesterCode;
             this.userAgent = userAgent;
