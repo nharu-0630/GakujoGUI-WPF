@@ -66,7 +66,7 @@ namespace GakujoGUI
             LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
             loggingConfiguration.LoggingRules.Add(loggingRule);
             LogManager.Configuration = loggingConfiguration;
-            logger.Info("MainWindow");
+            logger.Info("Start Logging.");
             Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
             int processId = Environment.ProcessId;
             foreach (Process process in processes)
@@ -75,6 +75,7 @@ namespace GakujoGUI
                 {
                     _ = ShowWindow(process.MainWindowHandle, 1);
                     SetForegroundWindow(process.MainWindowHandle);
+                    logger.Warn("Shutdown by double activation.");
                     Application.Current.Shutdown();
                 }
             }
@@ -82,6 +83,7 @@ namespace GakujoGUI
             if (File.Exists(GetJsonPath("Settings")))
             {
                 settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
+                logger.Info("Load Settings.");
             }
             if (settings.StartUpMinimize)
             {
@@ -91,8 +93,10 @@ namespace GakujoGUI
                 Visibility = Visibility.Hidden;
                 Hide();
                 new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
+                logger.Info("Startup minimized");
             }
             gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
+            logger.Info("Initialize GakujoAPI.");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -132,6 +136,7 @@ namespace GakujoGUI
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+            logger.Info("Set MainForm text.");
             Task.Run(() =>
             {
                 gakujoAPI.LoadJson();
@@ -141,7 +146,11 @@ namespace GakujoGUI
                 {
                     autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
                     autoLoadTimer.Tick += new EventHandler(LoadEvent);
-                    if (settings.AutoLoadEnable) { autoLoadTimer.Start(); }
+                    if (settings.AutoLoadEnable)
+                    {
+                        autoLoadTimer.Start();
+                        logger.Info("Start AutoLoadTimer.");
+                    }
                 });
             });
         }
@@ -755,26 +764,31 @@ namespace GakujoGUI
         private void NotifyToast(ClassContact classContact)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassContact").AddArgument("Index", gakujoAPI.classContacts.IndexOf(classContact)).AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
+            logger.Info("Notiy toast ClassContact.");
         }
 
         private void NotifyToast(Report report)
         {
             new ToastContentBuilder().AddArgument("Type", "Report").AddArgument("Index", gakujoAPI.reports.IndexOf(report)).AddText(report.Title).AddText($"{report.StartDateTime} -> {report.EndDateTime}").AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
+            logger.Info("Notiy toast Report.");
         }
 
         private void NotifyToast(Quiz quiz)
         {
             new ToastContentBuilder().AddArgument("Type", "Quiz").AddArgument("Index", gakujoAPI.quizzes.IndexOf(quiz)).AddText(quiz.Title).AddText($"{quiz.StartDateTime} -> {quiz.EndDateTime}").AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
+            logger.Info("Notify toast Quiz.");
         }
 
         private void NotifyToast(ClassSharedFile classSharedFile)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddArgument("Index", gakujoAPI.classSharedFiles.IndexOf(classSharedFile)).AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
+            logger.Info("Notify toast ClassSharedFile.");
         }
 
         private void NotifyToast(ClassResult classResult)
         {
             new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.schoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+            logger.Info("Notify toast ClassResult.");
         }
 
         #endregion
@@ -789,6 +803,7 @@ namespace GakujoGUI
             Topmost = true;
             SystemCommands.RestoreWindow(this);
             Topmost = false;
+            logger.Info("Activate MainForm.");
         }
 
         private void LoadMenuItem_Click(object sender, RoutedEventArgs e)
@@ -809,6 +824,7 @@ namespace GakujoGUI
             Topmost = true;
             SystemCommands.RestoreWindow(this);
             Topmost = false;
+            logger.Info("Activate MainForm.");
         }
 
         private void Window_Deactivated(object sender, EventArgs e)
@@ -819,6 +835,7 @@ namespace GakujoGUI
                 TaskBarIcon.Visibility = Visibility.Visible;
                 Visibility = Visibility.Hidden;
                 Hide();
+                logger.Info("Minimized MainForm.");
             }
         }
 
@@ -831,8 +848,12 @@ namespace GakujoGUI
             try
             {
                 File.WriteAllText(GetJsonPath("Settings"), JsonConvert.SerializeObject(settings, Formatting.Indented));
+                logger.Info("Save Settings.");
             }
-            catch { }
+            catch (Exception exception)
+            {
+                logger.Error(exception, "Error Save Settings.");
+            }
         }
 
         private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
