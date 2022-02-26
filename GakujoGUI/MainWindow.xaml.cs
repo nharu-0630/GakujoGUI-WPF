@@ -19,6 +19,9 @@ using System.Windows.Threading;
 using ModernWpf.Controls.Primitives;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace GakujoGUI
 {
@@ -31,7 +34,6 @@ namespace GakujoGUI
         private readonly NotifyAPI notifyAPI = new();
 
         private readonly Settings settings = new();
-
 
         private readonly DispatcherTimer autoLoadTimer = new();
 
@@ -50,9 +52,20 @@ namespace GakujoGUI
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
+        public static Logger logger = LogManager.GetCurrentClassLogger();
+
         public MainWindow()
         {
             InitializeComponent();
+            LoggingConfiguration loggingConfiguration = new();
+            FileTarget fileTarget = new();
+            loggingConfiguration.AddTarget("file", fileTarget);
+            fileTarget.Name = "fileTarget";
+            fileTarget.FileName = "${basedir}/Logs/${shortdate}.log";
+            fileTarget.Layout = "${longdate} [${uppercase:${level}}] ${message}"; ;
+            LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
+            loggingConfiguration.LoggingRules.Add(loggingRule);
+            LogManager.Configuration = loggingConfiguration;
             Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
             int processId = Environment.ProcessId;
             foreach (Process process in processes)
