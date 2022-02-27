@@ -1054,24 +1054,24 @@ namespace GakujoGUI
             }
         }
 
-        private static bool GetLatestVersion()
+        private bool GetLatestVersion()
         {
             logger.Info("Start Get Latest Version.");
             HttpClient httpClient = new();
-            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
             HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            logger.Info("GET https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases/latest");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            string latestVersion = htmlDocument.DocumentNode.SelectSingleNode("/html/head/title").InnerText.Split(' ')[1].Replace("v", "");
+            ReleaseAPI releaseAPI = JsonConvert.DeserializeObject<ReleaseAPI>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
+            string latestVersion = releaseAPI.name.TrimStart('v');
             logger.Info($"latestVersion={latestVersion}");
             if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == latestVersion)
             {
                 logger.Info("Return Get Latest Version by the same version.");
-                return false;
+                //return false;
             }
-            string latestZipUrl = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[6]/div/main/div[2]/div/div/div/div[2]/div[1]/details/div/div/ul/li[1]/a").Attributes["href"].Value;
+            string latestZipUrl = releaseAPI.assets[0].browser_download_url;
             logger.Info($"latestZipUrl={latestZipUrl}");
             logger.Info("Start Download Latest Version.");
             httpRequestMessage = new(new("GET"), latestZipUrl);
@@ -1081,6 +1081,7 @@ namespace GakujoGUI
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download Latest Version.");
+
             logger.Info("End Get Latest Version.");
             return true;
         }
@@ -1102,4 +1103,89 @@ namespace GakujoGUI
 
         public string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36 Edg/91.0.864.71";
     }
+
+#pragma warning disable IDE1006 // 命名スタイル
+    public class ReleaseAPI
+    {
+        public string url { get; set; } = "";
+        public string assets_url { get; set; } = "";
+        public string upload_url { get; set; } = "";
+        public string html_url { get; set; } = "";
+        public int id { get; set; }
+        public Author author { get; set; } = new();
+        public string node_id { get; set; } = "";
+        public string tag_name { get; set; } = "";
+        public string target_commitish { get; set; } = "";
+        public string name { get; set; } = "";
+        public bool draft { get; set; }
+        public bool prerelease { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime published_at { get; set; }
+        public Asset[] assets { get; set; } = Array.Empty<Asset>();
+        public string tarball_url { get; set; } = "";
+        public string zipball_url { get; set; } = "";
+        public string body { get; set; } = "";
+    }
+
+    public class Author
+    {
+        public string login { get; set; } = "";
+        public int id { get; set; }
+        public string node_id { get; set; } = "";
+        public string avatar_url { get; set; } = "";
+        public string gravatar_id { get; set; } = "";
+        public string url { get; set; } = "";
+        public string html_url { get; set; } = "";
+        public string followers_url { get; set; } = "";
+        public string following_url { get; set; } = "";
+        public string gists_url { get; set; } = "";
+        public string starred_url { get; set; } = "";
+        public string subscriptions_url { get; set; } = "";
+        public string organizations_url { get; set; } = "";
+        public string repos_url { get; set; } = "";
+        public string events_url { get; set; } = "";
+        public string received_events_url { get; set; } = "";
+        public string type { get; set; } = "";
+        public bool site_admin { get; set; }
+    }
+
+    public class Asset
+    {
+        public string url { get; set; } = "";
+        public int id { get; set; }
+        public string node_id { get; set; } = "";
+        public string name { get; set; } = "";
+        public object label { get; set; } = new();
+        public Uploader uploader { get; set; } = new();
+        public string content_type { get; set; } = "";
+        public string state { get; set; } = "";
+        public int size { get; set; }
+        public int download_count { get; set; }
+        public DateTime created_at { get; set; }
+        public DateTime updated_at { get; set; }
+        public string browser_download_url { get; set; } = "";
+    }
+
+    public class Uploader
+    {
+        public string login { get; set; } = "";
+        public int id { get; set; }
+        public string node_id { get; set; } = "";
+        public string avatar_url { get; set; } = "";
+        public string gravatar_id { get; set; } = "";
+        public string url { get; set; } = "";
+        public string html_url { get; set; } = "";
+        public string followers_url { get; set; } = "";
+        public string following_url { get; set; } = "";
+        public string gists_url { get; set; } = "";
+        public string starred_url { get; set; } = "";
+        public string subscriptions_url { get; set; } = "";
+        public string organizations_url { get; set; } = "";
+        public string repos_url { get; set; } = "";
+        public string events_url { get; set; } = "";
+        public string received_events_url { get; set; } = "";
+        public string type { get; set; } = "";
+        public bool site_admin { get; set; }
+    }
+#pragma warning restore IDE1006 // 命名スタイル
 }

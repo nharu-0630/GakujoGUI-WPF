@@ -29,7 +29,6 @@ namespace GakujoGUI
         private HttpClient httpClient = new();
         private HttpRequestMessage httpRequestMessage = new();
         private HttpResponseMessage httpResponseMessage = new();
-        // private readonly HtmlDocument htmlDocument = new();
 
         public bool loginStatus = false;
 
@@ -1305,11 +1304,11 @@ namespace GakujoGUI
 
     public class ClassTableRow
     {
-        public ClassTableCell Monday { get; set; } = new ClassTableCell();
-        public ClassTableCell Tuesday { get; set; } = new ClassTableCell();
-        public ClassTableCell Wednesday { get; set; } = new ClassTableCell();
-        public ClassTableCell Thursday { get; set; } = new ClassTableCell();
-        public ClassTableCell Friday { get; set; } = new ClassTableCell();
+        public ClassTableCell Monday { get; set; } = new();
+        public ClassTableCell Tuesday { get; set; } = new();
+        public ClassTableCell Wednesday { get; set; } = new();
+        public ClassTableCell Thursday { get; set; } = new();
+        public ClassTableCell Friday { get; set; } = new();
 
         public override string ToString()
         {
