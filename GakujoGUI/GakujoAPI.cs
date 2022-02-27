@@ -280,7 +280,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("searchList") == null)
             {
                 diffReports = new();
-                logger.Info("Return Get Reports by not found list.");
+                logger.Warn("Return Get Reports by not found list.");
                 return;
             }
             diffReports = new(reports);
@@ -319,7 +319,7 @@ namespace GakujoGUI
         private void ApplyReportsClassTables()
         {
             logger.Info("Start Apply Reports ClassTables");
-            if (classTables == null) { logger.Info("Return Apply Reports ClassTables by ClassTables is null."); return; }
+            if (classTables == null) { logger.Warn("Return Apply Reports ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 classTableRow.Monday.ReportCount = 0;
@@ -371,7 +371,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("searchList") == null)
             {
                 diffQuizzes = new();
-                logger.Info("Return Get Quizzes by not found list.");
+                logger.Warn("Return Get Quizzes by not found list.");
                 return;
             }
             diffQuizzes = new(quizzes);
@@ -407,7 +407,7 @@ namespace GakujoGUI
         private void ApplyQuizzesClassTables()
         {
             logger.Info("Start Apply Quizzes ClassTables.");
-            if (classTables == null) { logger.Info("Return Apply Quizzes ClassTables by ClassTables is null."); return; }
+            if (classTables == null) { logger.Warn("Return Apply Quizzes ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 if (classTableRow == null) { continue; }
@@ -463,7 +463,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("tbl_A01_01") == null)
             {
                 diffCount = 0;
-                logger.Info("Return Get ClassContacts by not found list.");
+                logger.Warn("Return Get ClassContacts by not found list.");
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -605,7 +605,7 @@ namespace GakujoGUI
             if (htmlDocument.GetElementbyId("tbl_classFile") == null)
             {
                 diffCount = 0;
-                logger.Info("Return Get ClassSharedFiles by not found list.");
+                logger.Warn("Return Get ClassSharedFiles by not found list.");
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -800,7 +800,7 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
             {
                 diffClassResults = new();
-                logger.Info("Return Get ClassResults by not found list.");
+                logger.Warn("Return Get ClassResults by not found list.");
                 return;
             }
             diffClassResults = new(schoolGrade.ClassResults);
@@ -915,7 +915,7 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponse.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null)
             {
-                logger.Info("Return Get ClassTables by not found list.");
+                logger.Warn("Return Get ClassTables by not found list.");
                 return;
             }
             classTables = new ClassTableRow[7];

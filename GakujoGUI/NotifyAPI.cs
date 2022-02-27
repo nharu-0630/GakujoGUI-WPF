@@ -138,7 +138,7 @@ namespace GakujoGUI
 
         public void SetTodoistTask(List<Report> reports)
         {
-            if (TodoistResources == null) { logger.Info("Return Set Todoist task reports by resource is null."); return; }
+            if (TodoistResources == null) { logger.Warn("Return Set Todoist task reports by resource is null."); return; }
             foreach (Report report in reports)
             {
                 if (report.Status == "受付中" && report.SubmittedDateTime == new DateTime())
@@ -154,7 +154,7 @@ namespace GakujoGUI
 
         public void SetTodoistTask(List<Quiz> quizzes)
         {
-            if (TodoistResources == null) { logger.Info("Return Set Todoist task quizzes by resource is null."); return; }
+            if (TodoistResources == null) { logger.Warn("Return Set Todoist task quizzes by resource is null."); return; }
             foreach (Quiz quiz in quizzes)
             {
                 if (quiz.Status == "受付中" && quiz.SubmissionStatus == "未提出")
