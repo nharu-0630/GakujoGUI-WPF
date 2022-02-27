@@ -1052,7 +1052,7 @@
                 <StackPanel Grid.Column="2" Margin="6">
                     <Image
                         Width="100"
-                        Margin="6,120,6,0"
+                        Margin="6,120,6,6"
                         Source="Resources/GakujoGUI.ico" />
                     <Label
                         Margin="6"
@@ -1060,25 +1060,30 @@
                         Content="GakujoGUI"
                         FontSize="28" />
                     <Label
-                        Margin="6,0,6,0"
+                        Margin="6"
                         HorizontalAlignment="Center"
                         Content="WPF Version" />
                     <Label
                         Name="VersionLabel"
-                        Margin="6,0,6,0"
+                        Margin="6"
                         HorizontalAlignment="Center"
                         Content="Version" />
-                    <TextBlock Margin="12" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">https://github.com/xyzyxJP/GakujoGUI-WPF</Hyperlink>
-                    </TextBlock>
+                    <Button
+                        x:Name="GetLatestVersionButton"
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Click="GetLatestVersionButton_Click"
+                        Content="更新を確認する " />
                     <Button
                         x:Name="OpenJsonFolderButton"
                         Margin="6"
                         HorizontalAlignment="Center"
-                        Click="OpenJsonFolderButton_Click">
-                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                    </Button>
-                    <TextBlock Margin="12,80,12,0" HorizontalAlignment="Center">
+                        Click="OpenJsonFolderButton_Click"
+                        Content="設定フォルダを開く" />
+                    <TextBlock Margin="6" HorizontalAlignment="Center">
+                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>
+                    </TextBlock>
+                    <TextBlock Margin="6" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
                     </TextBlock>
                 </StackPanel>

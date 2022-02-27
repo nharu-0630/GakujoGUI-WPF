@@ -22,6 +22,10 @@ using Path = System.IO.Path;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using HtmlAgilityPack;
 
 namespace GakujoGUI
 {
@@ -1033,6 +1037,52 @@ namespace GakujoGUI
                 Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"",
                 UseShellExecute = true
             });
+        }
+
+        private void GetLatestVersionButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!GetLatestVersion())
+            {
+                MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                if (MessageBox.Show("更新があります．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+
+                }
+            }
+        }
+
+        private static bool GetLatestVersion()
+        {
+            logger.Info("Start Get Latest Version.");
+            HttpClient httpClient = new();
+            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            string latestVersion = htmlDocument.DocumentNode.SelectSingleNode("/html/head/title").InnerText.Split(' ')[1].Replace("v", "");
+            logger.Info($"latestVersion={latestVersion}");
+            if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == latestVersion)
+            {
+                logger.Info("Return Get Latest Version by the same version.");
+                return false;
+            }
+            string latestZipUrl = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[6]/div/main/div[2]/div/div/div/div[2]/div[1]/details/div/div/ul/li[1]/a").Attributes["href"].Value;
+            logger.Info($"latestZipUrl={latestZipUrl}");
+            logger.Info("Start Download Latest Version.");
+            httpRequestMessage = new(new("GET"), latestZipUrl);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
+            using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
+            }
+            logger.Info("End Download Latest Version.");
+            logger.Info("End Get Latest Version.");
+            return true;
         }
     }
 
