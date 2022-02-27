@@ -54,7 +54,6 @@ namespace GakujoGUI
             Login();
         }
 
-
         public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
             tokens.TodoistToken = todoistToken;
@@ -63,7 +62,6 @@ namespace GakujoGUI
             try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(tokens, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Tokens."); }
         }
-
 
         public void Login()
         {

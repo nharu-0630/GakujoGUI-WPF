@@ -64,7 +64,8 @@ namespace GakujoGUI
             fileTarget.FileName = "${basedir}/Logs/${shortdate}.log";
             fileTarget.Layout = "${longdate} [${uppercase:${level}}] ${message}"; ;
             LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
-            //LoggingRule loggingRule = new("*", LogLevel.Trace, fileTarget);
+            if (Environment.GetCommandLineArgs().Contains("-trace"))
+            { loggingRule = new("*", LogLevel.Trace, fileTarget); }
             loggingConfiguration.LoggingRules.Add(loggingRule);
             LogManager.Configuration = loggingConfiguration;
             logger.Info("Start Logging.");
