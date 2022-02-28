@@ -13,7 +13,7 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/xyzyxJP/GakujoGUI-WPF</RepositoryUrl>
     <AssemblyVersion>1.0.2.1</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <FileVersion>1.0.2.1</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
