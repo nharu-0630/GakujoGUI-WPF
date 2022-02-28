@@ -761,11 +761,11 @@ namespace GakujoGUI
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/sso/loginStudent.do");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (httpResponseMessage.Content.ReadAsStringAsync().Result.Contains("Since your browser does not support JavaScript,"))
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[1]") != null && htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[2]") != null)
             {
                 logger.Warn("Additional transition.");
-                HtmlDocument htmlDocument = new();
-                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
                 string relayState = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value;
                 relayState = relayState.Replace("&#x3a;", ":");
                 string SAMLResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
