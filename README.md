@@ -162,6 +162,15 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - 年別単位
 </details>
 
+### 設定
+
+#### 外部連携
+
+- Todoist  
+
+
+- Discord  
+
 
 ## ⚠️ Troubleshooting
 
