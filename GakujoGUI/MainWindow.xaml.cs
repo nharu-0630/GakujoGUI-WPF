@@ -26,6 +26,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using HtmlAgilityPack;
+using System.IO.Compression;
 
 namespace GakujoGUI
 {
@@ -1041,17 +1042,41 @@ namespace GakujoGUI
 
         private void GetLatestVersionButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!GetLatestVersion())
+            Task.Run(() =>
             {
-                MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                if (MessageBox.Show("更新があります．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                if (!GetLatestVersion())
                 {
-
+                    Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information));
                 }
-            }
+                else
+                {
+                    MessageBoxResult? messageBoxResult = MessageBoxResult.No;
+                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show("更新があります．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
+                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
+                    {
+                        logger.Info("Start Update bat file.");
+                        Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
+                        Dispatcher.Invoke(() => Application.Current.Shutdown());
+                    }
+                    else
+                    {
+                        if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
+                        {
+                            File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"));
+                            logger.Info("Delete Download Latest Version.");
+                        }
+                        if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
+                        {
+                            foreach (FileInfo fileInfo in new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")).GetFiles())
+                            {
+                                fileInfo.Delete();
+                            }
+                            Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
+                            logger.Info("Delete Extract Latest Version.");
+                        }
+                    }
+                }
+            });
         }
 
         private bool GetLatestVersion()
@@ -1069,7 +1094,7 @@ namespace GakujoGUI
             if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == latestVersion)
             {
                 logger.Info("Return Get Latest Version by the same version.");
-                //return false;
+                return false;
             }
             string latestZipUrl = releaseAPI.assets[0].browser_download_url;
             logger.Info($"latestZipUrl={latestZipUrl}");
@@ -1081,7 +1106,21 @@ namespace GakujoGUI
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download Latest Version.");
-
+            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
+            {
+                logger.Warn("Return Get Latest Version by the file is missing.");
+                return false;
+            }
+            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
+            {
+                foreach (FileInfo fileInfo in new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")).GetFiles())
+                {
+                    fileInfo.Delete();
+                }
+                Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
+            }
+            ZipFile.ExtractToDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
+            logger.Info("Extract Latest Version.");
             logger.Info("End Get Latest Version.");
             return true;
         }
