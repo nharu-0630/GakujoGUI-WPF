@@ -33,8 +33,8 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 ### ログイン
 
-- 静大ID，パスワードをもとに学務情報システムへログインする
-- CSS，画像ファイルなどを取得しないため，ブラウザ上のログインより高速である
+静大ID，パスワードをもとに学務情報システムへログインします．  
+CSS，画像ファイルなどを取得しないため，ブラウザ上のログインより高速です．
 
 ### 起動オプション
 
@@ -44,7 +44,7 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 
 ### 保存データ
 
-- 全てのデータはローカル内に保存され，外部にアップロードされることはない
+全てのデータはローカル内に保存され，外部にアップロードされることはありません．
 
 #### アカウント
 
@@ -162,24 +162,61 @@ Zipファイルをダウンロードし，すべて展開を行ったあとに�
 - 年別単位
 </details>
 
-### 設定
+### 外部連携
 
-#### 外部連携
+#### Todoist
 
-- Todoist  
+<details>
+<summary>連携方法</summary>
 
+[https://todoist.com/app/settings/integrations](https://todoist.com/app/settings/integrations)
 
-- Discord  
+<img src="https://user-images.githubusercontent.com/8305330/155987366-b9ea2412-4bfd-4bb1-9aec-81aab80a1a0f.png" width="640">
 
+`APIトークン`を`Todoistトークン`へ貼り付けてください．
+
+</details>
+
+#### Discord
+
+<details>
+<summary>連携方法</summary>
+
+[https://discord.com/developers/applications](https://discord.com/developers/applications)
+
+<img src="https://user-images.githubusercontent.com/8305330/155987712-ae77b2f0-6be2-4125-ab4c-f0fe5e9dff26.png" width="640">
+
+<img src="https://user-images.githubusercontent.com/8305330/155987840-6400fcae-bd1c-4b16-9510-bc34521bf1f6.png" width="320">
+
+`New Application`をクリックし，名前を入力して`Create`をクリックしてください．
+
+<img src="https://user-images.githubusercontent.com/8305330/155988096-0cd08506-7331-4a32-b61a-49f29f7a74f6.png" width="640">
+
+`Bot`をクリックし，`TOKEN`を`Discordトークン`へ貼り付けてください．
+
+<img src="https://user-images.githubusercontent.com/8305330/155988479-6203c14e-b964-4fb4-b08a-df7852c07f86.png" width="640">
+
+`OAuth2`の`URL Generator`をクリックし，`bot`にチェックを入れ`GENERATED URL`にアクセスしてください．
+
+<img src="https://user-images.githubusercontent.com/8305330/155988809-9fcb503d-8174-446b-8026-b247f32f7ca8.png" width="320">
+
+連携するチャンネルがあるサーバーを選択して，認証してください．  
+
+Discordを開き，`設定`の`詳細設定`より`開発者モード`を有効にしてください．  
+連携するチャンネルを右クリックし，`IDをコピー`をクリックし，`Discordチャンネル`へ貼り付けてください．  
+
+</details>
 
 ## ⚠️ Troubleshooting
+
+### ランタイムエラー
+
+<details>
+<summary>解決方法</summary>
 
 <img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="320">
 
 上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．
-
-<details>
-<summary>解決方法</summary>
 
 [https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime](https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime)  
 上記リンクよりランタイムをインストールしてください．
