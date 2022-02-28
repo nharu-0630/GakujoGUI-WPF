@@ -889,7 +889,12 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Margin="6">
-                    <Label Margin="6" Content="外部連携" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label Margin="6" Content="外部連携" />
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E5%A4%96%E9%83%A8%E9%80%A3%E6%90%BA" RequestNavigate="Hyperlink_RequestNavigate">連携方法</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
                     <PasswordBox
                         x:Name="TodoistTokenPasswordBox"
                         Width="Auto"
