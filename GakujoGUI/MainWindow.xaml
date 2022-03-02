@@ -15,6 +15,7 @@
     ui:WindowHelper.UseModernWindowStyle="True"
     Deactivated="Window_Deactivated"
     Loaded="Window_Loaded"
+    Closing="Window_Closing"
     mc:Ignorable="d">
     <Window.Resources>
         <ContextMenu x:Key="ContextMenu">

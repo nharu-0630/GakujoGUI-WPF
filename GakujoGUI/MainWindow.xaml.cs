@@ -820,7 +820,7 @@ namespace GakujoGUI
 
         private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            Application.Current.Shutdown();
         }
 
         private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
@@ -836,14 +836,25 @@ namespace GakujoGUI
 
         private void Window_Deactivated(object sender, EventArgs e)
         {
-            if (WindowState == WindowState.Minimized)
-            {
-                ShowInTaskbar = false;
-                TaskBarIcon.Visibility = Visibility.Visible;
-                Visibility = Visibility.Hidden;
-                Hide();
-                logger.Info("Minimized MainForm.");
-            }
+            //if (WindowState == WindowState.Minimized)
+            //{
+            //    ShowInTaskbar = false;
+            //    TaskBarIcon.Visibility = Visibility.Visible;
+            //    Visibility = Visibility.Hidden;
+            //    Hide();
+            //    logger.Info("Minimized MainForm.");
+            //}
+        }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true;
+            ShowInTaskbar = false;
+            TaskBarIcon.Visibility = Visibility.Visible;
+            Visibility = Visibility.Hidden;
+            Hide();
+            new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
+            logger.Info("Minimized MainForm.");
         }
 
         #endregion
@@ -1124,6 +1135,7 @@ namespace GakujoGUI
             logger.Info("End Get Latest Version.");
             return true;
         }
+
     }
 
     public class Settings
