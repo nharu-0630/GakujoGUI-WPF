@@ -618,6 +618,37 @@ namespace GakujoGUI
             });
         }
 
+        private void EvaluationCreditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            EvaluationCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.EvaluationCredits;
+            EvaluationCreditsDataGrid.Items.Refresh();
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
+        {
+            DepartmentGPALabel.Content = gakujoAPI.schoolGrade.DepartmentGPA;
+            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.DepartmentImage);
+            CourseGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.CourseImage);
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private void YearCreditsButton_Click(object sender, RoutedEventArgs e)
+        {
+            YearCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.YearCredits;
+            YearCreditsDataGrid.Items.Refresh();
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private static BitmapImage Base64ToBitmapImage(string base64)
+        {
+            BitmapImage bitmapImage = new();
+            bitmapImage.BeginInit();
+            bitmapImage.StreamSource = new MemoryStream(Convert.FromBase64String(base64));
+            bitmapImage.EndInit();
+            return bitmapImage;
+        }
+
         #endregion
 
         #region 個人時間割
@@ -1033,39 +1064,6 @@ namespace GakujoGUI
             });
         }
 
-        #endregion
-
-        private void EvaluationCreditsButton_Click(object sender, RoutedEventArgs e)
-        {
-            EvaluationCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.EvaluationCredits;
-            EvaluationCreditsDataGrid.Items.Refresh();
-            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
-
-        private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
-        {
-            DepartmentGPALabel.Content = gakujoAPI.schoolGrade.DepartmentGPA;
-            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.DepartmentImage);
-            CourseGPAImage.Source = Base64ToBitmapImage(gakujoAPI.schoolGrade.DepartmentGPA.CourseImage);
-            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
-
-        private void YearCreditsButton_Click(object sender, RoutedEventArgs e)
-        {
-            YearCreditsDataGrid.ItemsSource = gakujoAPI.schoolGrade.YearCredits;
-            YearCreditsDataGrid.Items.Refresh();
-            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
-
-        private static BitmapImage Base64ToBitmapImage(string base64)
-        {
-            BitmapImage bitmapImage = new();
-            bitmapImage.BeginInit();
-            bitmapImage.StreamSource = new MemoryStream(Convert.FromBase64String(base64));
-            bitmapImage.EndInit();
-            return bitmapImage;
-        }
-
         private void OpenJsonFolderButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
@@ -1159,6 +1157,8 @@ namespace GakujoGUI
             logger.Info("End Get Latest Version.");
             return true;
         }
+
+        #endregion
 
     }
 
