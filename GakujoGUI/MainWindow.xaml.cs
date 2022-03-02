@@ -1,13 +1,19 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using ModernWpf.Controls;
+using ModernWpf.Controls.Primitives;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
@@ -16,14 +22,8 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using ModernWpf.Controls.Primitives;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using System.Net.Http;
-using System.IO.Compression;
 
 namespace GakujoGUI
 {
