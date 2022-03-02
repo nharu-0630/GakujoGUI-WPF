@@ -22,10 +22,7 @@ using Path = System.IO.Path;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using HtmlAgilityPack;
 using System.IO.Compression;
 
 namespace GakujoGUI
@@ -738,10 +735,12 @@ namespace GakujoGUI
                 Topmost = true;
                 SystemCommands.RestoreWindow(this);
                 Topmost = false;
+                logger.Info("Activate MainForm by Toast.");
                 if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
                 {
                     return;
                 }
+                logger.Info($"Click Toast Type={toastArguments.Get("Type")}, Index={toastArguments.GetInt("Index")}");
                 switch (toastArguments.Get("Type"))
                 {
                     case "ClassContact":
@@ -810,7 +809,7 @@ namespace GakujoGUI
             Topmost = true;
             SystemCommands.RestoreWindow(this);
             Topmost = false;
-            logger.Info("Activate MainForm.");
+            logger.Info("Activate MainForm by OpenMenuItem.");
         }
 
         private void LoadMenuItem_Click(object sender, RoutedEventArgs e)
@@ -821,6 +820,7 @@ namespace GakujoGUI
         private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
+            logger.Info("Shutdown by CloseMenuItem.");
         }
 
         private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
@@ -831,19 +831,38 @@ namespace GakujoGUI
             Topmost = true;
             SystemCommands.RestoreWindow(this);
             Topmost = false;
-            logger.Info("Activate MainForm.");
+            logger.Info("Activate MainForm by TaskBarIcon.");
         }
 
-        private void Window_Deactivated(object sender, EventArgs e)
+        private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
-            //if (WindowState == WindowState.Minimized)
-            //{
-            //    ShowInTaskbar = false;
-            //    TaskBarIcon.Visibility = Visibility.Visible;
-            //    Visibility = Visibility.Hidden;
-            //    Hide();
-            //    logger.Info("Minimized MainForm.");
-            //}
+            ReportMenuItem.Header = $"レポート {gakujoAPI.reports.Count(report => report.Unsubmitted)}";
+            QuizMenuItem.Header = $"小テスト {gakujoAPI.quizzes.Count(report => report.Unsubmitted)}";
+            logger.Info("Set MenuItem text.");
+        }
+
+        private void ReportMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowInTaskbar = true;
+            TaskBarIcon.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            Topmost = true;
+            SystemCommands.RestoreWindow(this);
+            Topmost = false;
+            ReportsTabItem.IsSelected = true;
+            logger.Info("Activate MainForm by ReportMenuItem.");
+        }
+
+        private void QuizMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            ShowInTaskbar = true;
+            TaskBarIcon.Visibility = Visibility.Collapsed;
+            Visibility = Visibility.Visible;
+            Topmost = true;
+            SystemCommands.RestoreWindow(this);
+            Topmost = false;
+            QuizzesTabItem.IsSelected = true;
+            logger.Info("Activate MainForm by QuizMenuItem.");
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
@@ -853,8 +872,8 @@ namespace GakujoGUI
             TaskBarIcon.Visibility = Visibility.Visible;
             Visibility = Visibility.Hidden;
             Hide();
-            new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
-            logger.Info("Minimized MainForm.");
+            //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
+            logger.Info("Minimized MainForm by window closing.");
         }
 
         #endregion
@@ -890,10 +909,12 @@ namespace GakujoGUI
             if (settings.AutoLoadEnable)
             {
                 autoLoadTimer.Start();
+                logger.Info("Start AutoLoadTimer.");
             }
             else
             {
                 autoLoadTimer.Stop();
+                logger.Info("Stop AutoLoadTimer.");
             }
         }
 
@@ -923,10 +944,12 @@ namespace GakujoGUI
             if (settings.StartUpEnable)
             {
                 registryKey.SetValue("GakujoGUI", Environment.ProcessPath!);
+                logger.Info("Set RegistryKey enable.");
             }
             else
             {
                 registryKey.DeleteValue("GakujoGUI", false);
+                logger.Info("Set RegistryKey disable.");
             }
             registryKey.Close();
         }
@@ -941,6 +964,7 @@ namespace GakujoGUI
                     settings.UserAgent = UserAgentTextBox.Text;
                     SaveJson();
                     Process.Start(Environment.ProcessPath!);
+                    logger.Info("Shutdown by apply Settings.");
                     Application.Current.Shutdown();
                     break;
                 case MessageBoxResult.No:

@@ -334,7 +334,7 @@ namespace GakujoGUI
             }
             foreach (Report report in reports)
             {
-                if (report.Status == "受付中" && report.SubmittedDateTime == new DateTime())
+                if (report.Unsubmitted)
                 {
                     foreach (ClassTableRow classTableRow in classTables)
                     {
@@ -428,7 +428,7 @@ namespace GakujoGUI
             }
             foreach (Quiz quiz in quizzes)
             {
-                if (quiz.Status == "受付中" && quiz.SubmissionStatus == "未提出")
+                if (quiz.Unsubmitted)
                 {
                     foreach (ClassTableRow classTableRow in classTables)
                     {
@@ -1056,6 +1056,8 @@ namespace GakujoGUI
         public string SubjectCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
 
+        public bool Unsubmitted => Status == "受付中" && SubmittedDateTime == new DateTime();
+
         public override string ToString()
         {
             return $"[{Status}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
@@ -1096,6 +1098,8 @@ namespace GakujoGUI
         public string SchoolYear { get; set; } = "";
         public string SubjectCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
+
+        public bool Unsubmitted => Status == "受付中" && SubmissionStatus == "未提出";
 
         public override string ToString()
         {

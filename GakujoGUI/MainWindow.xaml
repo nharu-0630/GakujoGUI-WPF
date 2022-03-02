@@ -13,38 +13,45 @@
     MinWidth="900"
     MinHeight="600"
     ui:WindowHelper.UseModernWindowStyle="True"
-    Deactivated="Window_Deactivated"
-    Loaded="Window_Loaded"
     Closing="Window_Closing"
+    Loaded="Window_Loaded"
     mc:Ignorable="d">
-    <Window.Resources>
-        <ContextMenu x:Key="ContextMenu">
-            <MenuItem
-                x:Name="OpenMenuItem"
-                Click="OpenMenuItem_Click"
-                Header="表示" />
-            <MenuItem
-                x:Name="LoadMenuItem"
-                Click="LoadMenuItem_Click"
-                Header="更新" />
-            <MenuItem
-                x:Name="CloseMenuItem"
-                Click="CloseMenuItem_Click"
-                Header="終了" />
-        </ContextMenu>
-    </Window.Resources>
     <Window.DataContext>
         <tb:TaskbarIcon
-            x:Name="TaskBarIcon"
-            ContextMenu="{StaticResource ContextMenu}"
+            Name="TaskBarIcon"
             IconSource="Resources/GakujoGUI.ico"
             ToolTipText="GakujoGUI"
             TrayMouseDoubleClick="TaskBarIcon_TrayMouseDoubleClick"
-            Visibility="Hidden" />
+            Visibility="Hidden">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem
+                        Name="ReportMenuItem"
+                        Click="ReportMenuItem_Click"
+                        Header="レポート (0)" />
+                    <MenuItem
+                        Name="QuizMenuItem"
+                        Click="QuizMenuItem_Click"
+                        Header="小テスト (0)" />
+                    <MenuItem
+                        Name="OpenMenuItem"
+                        Click="OpenMenuItem_Click"
+                        Header="表示" />
+                    <MenuItem
+                        Name="LoadMenuItem"
+                        Click="LoadMenuItem_Click"
+                        Header="更新" />
+                    <MenuItem
+                        Name="CloseMenuItem"
+                        Click="CloseMenuItem_Click"
+                        Header="終了" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
     </Window.DataContext>
     <TabControl>
         <TabItem
-            x:Name="LoginTabItem"
+            Name="LoginTabItem"
             Header="ログイン"
             IsSelected="True">
             <Grid>
@@ -58,33 +65,33 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Orientation="Vertical">
                     <TextBox
-                        x:Name="UserIdTextBox"
+                        Name="UserIdTextBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="静大ID" />
                     <PasswordBox
-                        x:Name="PassWordPasswordBox"
+                        Name="PassWordPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="パスワード" />
                     <Button
-                        x:Name="LoginButton"
+                        Name="LoginButton"
                         Margin="6"
                         Click="LoginButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoginButtonFontIcon"
+                                Name="LoginButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72A;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoginButtonProgressRing"
+                                Name="LoginButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="LoginDateTimeLabel"
+                        Name="LoginDateTimeLabel"
                         Margin="6"
                         Content="最終ログイン" />
                 </StackPanel>
@@ -93,7 +100,7 @@
                     Width="5"
                     HorizontalAlignment="Stretch" />
                 <DataGrid
-                    x:Name="ClassTablesDataGrid"
+                    Name="ClassTablesDataGrid"
                     Grid.Column="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -191,7 +198,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="ClassContactsTabItem" Header="授業連絡">
+        <TabItem Name="ClassContactsTabItem" Header="授業連絡">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -200,7 +207,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        x:Name="ClassContactsSearchAutoSuggestBox"
+                        Name="ClassContactsSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -208,23 +215,23 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="LoadClassContactsButton"
+                        Name="LoadClassContactsButton"
                         Margin="6"
                         Click="LoadClassContactsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoadClassContactsButtonFontIcon"
+                                Name="LoadClassContactsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoadClassContactsButtonProgressRing"
+                                Name="LoadClassContactsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="ClassContactsDateTimeLabel"
+                        Name="ClassContactsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -240,7 +247,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        x:Name="ClassContactsDataGrid"
+                        Name="ClassContactsDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -288,7 +295,7 @@
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
                                 <TextBox
-                                    x:Name="ClassContactContentTextBox"
+                                    Name="ClassContactContentTextBox"
                                     Text="内容"
                                     Visibility="Collapsed" />
                                 <TextBlock
@@ -298,21 +305,21 @@
                                     Text="{Binding Text, ElementName=ClassContactContentTextBox}"
                                     TextWrapping="Wrap" />
                                 <StackPanel
-                                    x:Name="ClassContactFilesStackPanel"
+                                    Name="ClassContactFilesStackPanel"
                                     Orientation="Horizontal"
                                     Visibility="Hidden">
                                     <ComboBox
-                                        x:Name="ClassContactFilesComboBox"
+                                        Name="ClassContactFilesComboBox"
                                         MaxWidth="360"
                                         Margin="6" />
                                     <Button
-                                        x:Name="OpenClassContactFileButton"
+                                        Name="OpenClassContactFileButton"
                                         Margin="6"
                                         Click="OpenClassContactFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        x:Name="OpenClassContactFolderButton"
+                                        Name="OpenClassContactFolderButton"
                                         Margin="6"
                                         Click="OpenClassContactFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
@@ -324,7 +331,7 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="ReportsTabItem" Header="レポート">
+        <TabItem Name="ReportsTabItem" Header="レポート">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -333,7 +340,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        x:Name="ReportsSearchAutoSuggestBox"
+                        Name="ReportsSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -341,23 +348,23 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="LoadReportsButton"
+                        Name="LoadReportsButton"
                         Margin="6"
                         Click="LoadReportsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoadReportsButtonFontIcon"
+                                Name="LoadReportsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoadReportsButtonProgressRing"
+                                Name="LoadReportsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="ReportsDateTimeLabel"
+                        Name="ReportsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -367,7 +374,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    x:Name="ReportsDataGrid"
+                    Name="ReportsDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -418,7 +425,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="QuizzesTabItem" Header="小テスト">
+        <TabItem Name="QuizzesTabItem" Header="小テスト">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -427,7 +434,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        x:Name="QuizzesSearchAutoSuggestBox"
+                        Name="QuizzesSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -435,23 +442,23 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="LoadQuizzesButton"
+                        Name="LoadQuizzesButton"
                         Margin="6"
                         Click="LoadQuizzesButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoadQuizzesButtonFontIcon"
+                                Name="LoadQuizzesButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoadQuizzesButtonProgressRing"
+                                Name="LoadQuizzesButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="QuizzesDateTimeLabel"
+                        Name="QuizzesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -461,7 +468,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    x:Name="QuizzesDataGrid"
+                    Name="QuizzesDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -518,7 +525,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
+        <TabItem Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -527,7 +534,7 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <ui:AutoSuggestBox
-                        x:Name="ClassSharedFilesSearchAutoSuggestBox"
+                        Name="ClassSharedFilesSearchAutoSuggestBox"
                         MinWidth="300"
                         Margin="6"
                         QueryIcon="Find"
@@ -535,23 +542,23 @@
                         SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
                         TextChanged="SearchAutoSuggestBox_TextChanged" />
                     <Button
-                        x:Name="LoadClassSharedFilesButton"
+                        Name="LoadClassSharedFilesButton"
                         Margin="6"
                         Click="LoadClassSharedFilesButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoadClassSharedFilesButtonFontIcon"
+                                Name="LoadClassSharedFilesButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoadClassSharedFilesButtonProgressRing"
+                                Name="LoadClassSharedFilesButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="ClassSharedFilesDateTimeLabel"
+                        Name="ClassSharedFilesDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -567,7 +574,7 @@
                         <ColumnDefinition Width="*" MinWidth="100" />
                     </Grid.ColumnDefinitions>
                     <DataGrid
-                        x:Name="ClassSharedFilesDataGrid"
+                        Name="ClassSharedFilesDataGrid"
                         Grid.Column="0"
                         Margin="6"
                         AreRowDetailsFrozen="True"
@@ -615,7 +622,7 @@
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
                                 <TextBox
-                                    x:Name="ClassSharedFileDescriptionTextBox"
+                                    Name="ClassSharedFileDescriptionTextBox"
                                     Text="ファイル説明"
                                     Visibility="Collapsed" />
                                 <TextBlock
@@ -625,15 +632,15 @@
                                     Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                     TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal">
-                                    <ComboBox x:Name="ClassSharedFileFilesComboBox" Margin="6" />
+                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
                                     <Button
-                                        x:Name="OpenClassSharedFileButton"
+                                        Name="OpenClassSharedFileButton"
                                         Margin="6"
                                         Click="OpenClassSharedFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
-                                        x:Name="OpenClassSharedFolderButton"
+                                        Name="OpenClassSharedFolderButton"
                                         Margin="6"
                                         Click="OpenClassSharedFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
@@ -645,7 +652,7 @@
                 </Grid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="ClassResultsTabItem" Header="成績情報">
+        <TabItem Name="ClassResultsTabItem" Header="成績情報">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -654,23 +661,23 @@
                 </Grid.RowDefinitions>
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button
-                        x:Name="LoadClassResultsButton"
+                        Name="LoadClassResultsButton"
                         Margin="6"
                         Click="LoadClassResultsButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="LoadClassResultsButtonFontIcon"
+                                Name="LoadClassResultsButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="LoadClassResultsButtonProgressRing"
+                                Name="LoadClassResultsButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
                     </Button>
                     <Label
-                        x:Name="ClassResultsDateTimeLabel"
+                        Name="ClassResultsDateTimeLabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
@@ -682,7 +689,7 @@
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:Flyout Placement="Bottom">
                                 <DataGrid
-                                    x:Name="EvaluationCreditsDataGrid"
+                                    Name="EvaluationCreditsDataGrid"
                                     Margin="6"
                                     AreRowDetailsFrozen="True"
                                     AutoGenerateColumns="False"
@@ -744,7 +751,7 @@
                         <ui:FlyoutBase.AttachedFlyout>
                             <ui:Flyout Placement="Bottom">
                                 <DataGrid
-                                    x:Name="YearCreditsDataGrid"
+                                    Name="YearCreditsDataGrid"
                                     Margin="6"
                                     AreRowDetailsFrozen="True"
                                     AutoGenerateColumns="False"
@@ -778,7 +785,7 @@
                         </ui:FlyoutBase.AttachedFlyout>
                     </Button>
                     <Label
-                        x:Name="ClassResultsGPALabel"
+                        Name="ClassResultsGPALabel"
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="推定GPA " />
@@ -796,7 +803,7 @@
                     Width="5"
                     VerticalAlignment="Stretch" />
                 <DataGrid
-                    x:Name="ClassResultsDataGrid"
+                    Name="ClassResultsDataGrid"
                     Grid.Row="2"
                     Margin="6"
                     AreRowDetailsFrozen="True"
@@ -882,7 +889,7 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem x:Name="SettingsTabItem" Header="設定">
+        <TabItem Name="SettingsTabItem" Header="設定">
             <Grid Margin="6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="220" />
@@ -897,32 +904,32 @@
                         </TextBlock>
                     </StackPanel>
                     <PasswordBox
-                        x:Name="TodoistTokenPasswordBox"
+                        Name="TodoistTokenPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Todoistトークン" />
                     <TextBox
-                        x:Name="DiscordChannelTextBox"
+                        Name="DiscordChannelTextBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordチャンネル" />
                     <PasswordBox
-                        x:Name="DiscordTokenPasswordBox"
+                        Name="DiscordTokenPasswordBox"
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordトークン" />
                     <Button
-                        x:Name="SaveTokensButton"
+                        Name="SaveTokensButton"
                         Margin="6"
                         Click="SaveTokensButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <ui:FontIcon
-                                x:Name="SaveTokensButtonFontIcon"
+                                Name="SaveTokensButtonFontIcon"
                                 FontFamily="Segoe MDL2 Assets"
                                 Glyph="&#xE72C;"
                                 Visibility="Visible" />
                             <ui:ProgressRing
-                                x:Name="SaveTokensButtonProgressRing"
+                                Name="SaveTokensButtonProgressRing"
                                 IsActive="True"
                                 Visibility="Collapsed" />
                         </StackPanel>
@@ -989,17 +996,17 @@
                         VerticalScrollBarVisibility="Auto" />
                     <StackPanel Orientation="Horizontal">
                         <Button
-                            x:Name="SaveGakujoButton"
+                            Name="SaveGakujoButton"
                             Margin="6"
                             Click="SaveGakujoButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <ui:FontIcon
-                                    x:Name="SaveGakujoButtonFontIcon"
+                                    Name="SaveGakujoButtonFontIcon"
                                     FontFamily="Segoe MDL2 Assets"
                                     Glyph="&#xE72C;"
                                     Visibility="Visible" />
                                 <ui:ProgressRing
-                                    x:Name="SaveGakujoButtonProgressRing"
+                                    Name="SaveGakujoButtonProgressRing"
                                     IsActive="True"
                                     Visibility="Collapsed" />
                             </StackPanel>
@@ -1075,13 +1082,13 @@
                         HorizontalAlignment="Center"
                         Content="Version" />
                     <Button
-                        x:Name="GetLatestVersionButton"
+                        Name="GetLatestVersionButton"
                         Margin="6"
                         HorizontalAlignment="Center"
                         Click="GetLatestVersionButton_Click"
                         Content="更新を確認する " />
                     <Button
-                        x:Name="OpenJsonFolderButton"
+                        Name="OpenJsonFolderButton"
                         Margin="6"
                         HorizontalAlignment="Center"
                         Click="OpenJsonFolderButton_Click"
