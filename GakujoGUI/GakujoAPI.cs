@@ -280,6 +280,11 @@ namespace GakujoGUI
             {
                 diffReports = new();
                 logger.Warn("Return Get Reports by not found list.");
+                account.ReportDateTime = DateTime.Now;
+                logger.Info("End Get Reports.");
+                ApplyReportsClassTables();
+                SaveJsons();
+                SaveCookies();
                 return;
             }
             diffReports = new(reports);
@@ -371,6 +376,11 @@ namespace GakujoGUI
             {
                 diffQuizzes = new();
                 logger.Warn("Return Get Quizzes by not found list.");
+                account.QuizDateTime = DateTime.Now;
+                logger.Info("End Get Quizzes.");
+                ApplyQuizzesClassTables();
+                SaveJsons();
+                SaveCookies();
                 return;
             }
             diffQuizzes = new(quizzes);
@@ -463,6 +473,10 @@ namespace GakujoGUI
             {
                 diffCount = 0;
                 logger.Warn("Return Get ClassContacts by not found list.");
+                account.ClassContactDateTime = DateTime.Now;
+                logger.Info("End Get ClassContacts.");
+                SaveJsons();
+                SaveCookies();
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -605,6 +619,10 @@ namespace GakujoGUI
             {
                 diffCount = 0;
                 logger.Warn("Return Get ClassSharedFiles by not found list.");
+                account.ClassSharedFileDateTime = DateTime.Now;
+                logger.Info("End Get ClassSharedFiles.");
+                SaveJsons();
+                SaveCookies();
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -799,36 +817,38 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
             {
                 diffClassResults = new();
-                logger.Warn("Return Get ClassResults by not found list.");
-                return;
+                logger.Warn("Not found ClassResults list.");
             }
-            diffClassResults = new(schoolGrade.ClassResults);
-            schoolGrade.ClassResults.Clear();
-            logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count - 1} ClassResults.");
-            for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
+            else
             {
-                HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
-                ClassResult classResult = new();
-                classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
-                classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
-                classResult.SubjectsSection = htmlNode.SelectNodes("td")[2].InnerText.Trim();
-                classResult.SelectionSection = htmlNode.SelectNodes("td")[3].InnerText.Trim();
-                classResult.Credit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
-                classResult.Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim();
-                if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "")
+                diffClassResults = new(schoolGrade.ClassResults);
+                schoolGrade.ClassResults.Clear();
+                logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count - 1} ClassResults.");
+                for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
                 {
-                    classResult.Score = double.Parse(htmlNode.SelectNodes("td")[6].InnerText.Trim());
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
+                    ClassResult classResult = new();
+                    classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
+                    classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
+                    classResult.SubjectsSection = htmlNode.SelectNodes("td")[2].InnerText.Trim();
+                    classResult.SelectionSection = htmlNode.SelectNodes("td")[3].InnerText.Trim();
+                    classResult.Credit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
+                    classResult.Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim();
+                    if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "")
+                    {
+                        classResult.Score = double.Parse(htmlNode.SelectNodes("td")[6].InnerText.Trim());
+                    }
+                    if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "")
+                    {
+                        classResult.GP = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim());
+                    }
+                    classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
+                    classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
+                    classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
+                    schoolGrade.ClassResults.Add(classResult);
                 }
-                if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "")
-                {
-                    classResult.GP = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim());
-                }
-                classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
-                classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
-                classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
-                schoolGrade.ClassResults.Add(classResult);
+                diffClassResults = schoolGrade.ClassResults.Except(diffClassResults).ToList();
             }
-            diffClassResults = schoolGrade.ClassResults.Except(diffClassResults).ToList();
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/hyoukabetuTaniSearch.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
