@@ -22,7 +22,7 @@ namespace GakujoGUI
         public List<ClassContact> classContacts = new() { };
         public List<ClassSharedFile> classSharedFiles = new() { };
         public SchoolGrade schoolGrade = new();
-        public ClassTableRow[]? classTables = null;
+        public ClassTableRow[] classTables = new ClassTableRow[7];
 
         private CookieContainer cookieContainer = new();
         private HttpClientHandler httpClientHandler = new();
@@ -937,42 +937,66 @@ namespace GakujoGUI
                 logger.Warn("Return Get ClassTables by not found list.");
                 return;
             }
-            classTables = new ClassTableRow[7];
             for (int i = 0; i < 7; i++)
             {
-                classTables[i] = new ClassTableRow();
                 for (int j = 0; j < 5; j++)
                 {
                     ClassTableCell classTableCell = new();
+                    switch (j)
+                    {
+                        case 0:
+                            classTableCell = classTables[i].Monday;
+                            break;
+                        case 1:
+                            classTableCell = classTables[i].Tuesday;
+                            break;
+                        case 2:
+                            classTableCell = classTables[i].Wednesday;
+                            break;
+                        case 3:
+                            classTableCell = classTables[i].Thursday;
+                            break;
+                        case 4:
+                            classTableCell = classTables[i].Friday;
+                            break;
+                    }
                     if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a") != null)
                     {
                         string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                         string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
-                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td").InnerHtml;
-                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                        {
+                            classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                            string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td").InnerHtml;
+                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        }
                     }
                     else if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a") != null && (semesterCode == 0 || semesterCode == 2))
                     {
                         string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                         string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
-                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").InnerHtml;
-                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                        {
+                            classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                            string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").InnerHtml;
+                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        }
                     }
                     else if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a") != null && (semesterCode == 1 || semesterCode == 3))
                     {
                         string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
                         string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
-                        classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                        string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").InnerHtml;
-                        classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                        {
+                            classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                            string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").InnerHtml;
+                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                        }
                     }
                     else
                     {
-                        continue;
+                        classTableCell = new();
                     }
-
                     switch (j)
                     {
                         case 0:
@@ -1018,6 +1042,8 @@ namespace GakujoGUI
             classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
             classTableCell.Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
+            classTableCell.KamokuCode = detailKamokuCode;
+            classTableCell.ClassCode = detailClassCode;
             logger.Info($"End Get ClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
             return classTableCell;
         }
@@ -1366,6 +1392,8 @@ namespace GakujoGUI
         public string ClassName { get; set; } = "";
         public string ClassRoom { get; set; } = "";
         public string SyllabusURL { get; set; } = "";
+        public string KamokuCode { get; set; } = "";
+        public string ClassCode { get; set; } = "";
 
         public bool ButtonsVisible => SubjectsName != "" && SubjectsId != "";
         public bool ReportBadgeVisible => ReportCount > 0;
