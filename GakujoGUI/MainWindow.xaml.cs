@@ -86,6 +86,7 @@ namespace GakujoGUI
                     logger.Warn("Shutdown by double activation.");
                     shutdownFlag = true;
                     Application.Current.Shutdown();
+                    return;
                 }
             }
             else
