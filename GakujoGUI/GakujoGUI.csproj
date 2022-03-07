@@ -12,8 +12,8 @@
     <PackageIcon>GakujoGUI.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/xyzyxJP/GakujoGUI-WPF</RepositoryUrl>
-    <AssemblyVersion>1.0.2.4</AssemblyVersion>
-    <FileVersion>1.0.2.4</FileVersion>
+    <AssemblyVersion>1.0.2.5</AssemblyVersion>
+    <FileVersion>1.0.2.5</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
