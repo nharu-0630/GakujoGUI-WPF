@@ -78,8 +78,9 @@ namespace GakujoGUI
             {
                 foreach (Process process in processes)
                 {
-                    _ = ShowWindow(process.MainWindowHandle, 9);
-                    SetForegroundWindow(process.MainWindowHandle);
+                    //_ = ShowWindow(process.MainWindowHandle, 5);
+                    //SetForegroundWindow(process.MainWindowHandle);
+                    MessageBox.Show("GakujoGUIはすでに起動しています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                     logger.Warn("Shutdown by double activation.");
                     shutdownFlag = true;
                     Application.Current.Shutdown();
