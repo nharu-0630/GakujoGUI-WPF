@@ -16,6 +16,7 @@ namespace GakujoGUI
         public static readonly RoutedEvent ClassContactButtonClickEvent = EventManager.RegisterRoutedEvent("ClassContactButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTablesCell));
         public static readonly RoutedEvent ReportButtonClickEvent = EventManager.RegisterRoutedEvent("ReportButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTablesCell));
         public static readonly RoutedEvent QuizButtonClickEvent = EventManager.RegisterRoutedEvent("QuizButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTablesCell));
+        public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCell));
 
         public event RoutedEventHandler ClassContactButtonClick
         {
@@ -25,14 +26,20 @@ namespace GakujoGUI
 
         public event RoutedEventHandler ReportButtonClick
         {
-            add { AddHandler(QuizButtonClickEvent, value); }
-            remove { RemoveHandler(QuizButtonClickEvent, value); }
+            add { AddHandler(ReportButtonClickEvent, value); }
+            remove { RemoveHandler(ReportButtonClickEvent, value); }
         }
 
         public event RoutedEventHandler QuizButtonClick
         {
-            add { RemoveHandler(QuizButtonClickEvent, value); }
+            add { AddHandler(QuizButtonClickEvent, value); }
             remove { RemoveHandler(QuizButtonClickEvent, value); }
+        }
+
+        public event RoutedEventHandler SyllabusMenuItemClick
+        {
+            add { AddHandler(SyllabusMenuItemClickEvent, value); }
+            remove { RemoveHandler(SyllabusMenuItemClickEvent, value); }
         }
 
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)
@@ -50,6 +57,12 @@ namespace GakujoGUI
         private void QuizButton_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(QuizButtonClickEvent);
+            RaiseEvent(routedEventArgs);
+        }
+
+        private void SyllabusMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            RoutedEventArgs routedEventArgs = new(SyllabusMenuItemClickEvent);
             RaiseEvent(routedEventArgs);
         }
     }

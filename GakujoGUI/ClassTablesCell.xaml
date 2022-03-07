@@ -7,15 +7,17 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     mc:Ignorable="d">
-    <StackPanel Orientation="Vertical">
+    <UserControl.Resources>
+        <Style x:Key="ButtonsVisible" TargetType="StackPanel">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ButtonsVisible}" Value="False">
+                    <Setter Property="Visibility" Value="Hidden" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+    <StackPanel Orientation="Vertical" Style="{StaticResource ButtonsVisible}">
         <StackPanel.Resources>
-            <Style x:Key="ButtonsVisible" TargetType="Grid">
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding ButtonsVisible}" Value="False">
-                        <Setter Property="Visibility" Value="Hidden" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
             <Style x:Key="ReportBadgeVisible" TargetType="Grid">
                 <Style.Triggers>
                     <DataTrigger Binding="{Binding ReportBadgeVisible}" Value="False">
@@ -55,9 +57,17 @@
                 </Style.Triggers>
             </Style>
         </StackPanel.Resources>
+        <StackPanel.ContextMenu>
+            <ContextMenu>
+                <MenuItem
+                    Name="SyllabusMenuItem"
+                    Click="SyllabusMenuItem_Click"
+                    Header="シラバス" />
+            </ContextMenu>
+        </StackPanel.ContextMenu>
         <Label Margin="6,6" Content="{Binding SubjectsName}" />
         <Label Margin="6,0" Content="{Binding ClassRoom}" />
-        <Grid Name="ButtonsGrid" Style="{StaticResource ButtonsVisible}">
+        <Grid Name="ButtonsGrid">
             <StackPanel Margin="0,3" Orientation="Horizontal">
                 <Button
                     Name="ClassContactButton"

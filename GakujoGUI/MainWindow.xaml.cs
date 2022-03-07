@@ -1,4 +1,5 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿using HtmlAgilityPack;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
@@ -673,70 +674,83 @@ namespace GakujoGUI
 
         #region 個人時間割
 
-        private string GetClassTablesCellSubjectsName()
+        private ClassTableCell? GetCurrentClassTablesCell()
         {
-            string suggestText = "";
+            ClassTableCell? classTableCell = null;
             if (gakujoAPI.classTables != null)
             {
                 switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
                 {
                     case 0:
-                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday.SubjectsName;
+                        classTableCell = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday;
                         break;
                     case 1:
-                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday.SubjectsName;
+                        classTableCell = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday;
                         break;
                     case 2:
-                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday.SubjectsName;
+                        classTableCell = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday;
                         break;
                     case 3:
-                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday.SubjectsName;
+                        classTableCell = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday;
                         break;
                     case 4:
-                        suggestText = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday.SubjectsName;
+                        classTableCell = gakujoAPI.classTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday;
                         break;
                 }
             }
-            return suggestText;
+            return classTableCell;
         }
 
         private void ClassTablesCell_ClassContactButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetClassTablesCellSubjectsName() != "")
-            {
-                ClassContactsSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
-                ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
-                collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
-                ClassContactsDataGrid.ItemsSource = collectionView;
-                e.Handled = true;
-                ClassContactsTabItem.IsSelected = true;
-            }
+            if (GetCurrentClassTablesCell() == null) { return; }
+            ClassContactsSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
+            collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
+            ClassContactsDataGrid.ItemsSource = collectionView;
+            e.Handled = true;
+            ClassContactsTabItem.IsSelected = true;
         }
 
         private void ClassTablesCell_ReportButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetClassTablesCellSubjectsName() != "")
-            {
-                ReportsSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
-                ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
-                collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text));
-                ReportsDataGrid.ItemsSource = collectionView;
-                e.Handled = true;
-                ReportsTabItem.IsSelected = true;
-            }
+            if (GetCurrentClassTablesCell() == null) { return; }
+            ReportsSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
+            collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text));
+            ReportsDataGrid.ItemsSource = collectionView;
+            e.Handled = true;
+            ReportsTabItem.IsSelected = true;
         }
 
         private void ClassTablesCell_QuizButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetClassTablesCellSubjectsName() != "")
-            {
-                QuizzesSearchAutoSuggestBox.Text = GetClassTablesCellSubjectsName();
-                ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
-                collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text));
-                QuizzesDataGrid.ItemsSource = collectionView;
-                e.Handled = true;
-                QuizzesTabItem.IsSelected = true;
-            }
+            if (GetCurrentClassTablesCell() == null) { return; }
+            QuizzesSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
+            collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text));
+            QuizzesDataGrid.ItemsSource = collectionView;
+            e.Handled = true;
+            QuizzesTabItem.IsSelected = true;
+        }
+
+        private void ClassTablesCell_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            if (GetCurrentClassTablesCell() == null) { return; }
+            logger.Info("Start Get Syllabus Token.");
+            HttpClient httpClient = new();
+            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
+            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            string syllabusToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@name=\"syllabusTitleID\"]").Attributes["onchange"].Value.Split("'")[1];
+            logger.Info($"syllabusToken={syllabusToken}");
+            logger.Info("End Get Syllabus Token.");
+            Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetCurrentClassTablesCell()!.SubjectsId}&classCD={GetCurrentClassTablesCell()!.ClassCode}") { UseShellExecute = true });
+            e.Handled = true;
         }
 
         #endregion
