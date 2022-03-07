@@ -257,30 +257,45 @@ namespace GakujoGUI
                 ClassResultsDataGrid.Items.Refresh();
                 ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
                 logger.Info("Set MainForm text.");
-                for (int i = 0; i < classContactsDiffCount; i++)
+                if (classContactsDiffCount != gakujoAPI.classContacts.Count)
                 {
-                    NotifyToast(gakujoAPI.classContacts[i]);
-                    notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
+                    for (int i = 0; i < classContactsDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classContacts[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.classContacts[i]);
+                    }
                 }
-                foreach (Report report in diffReports)
+                if (diffReports.Count != gakujoAPI.reports.Count)
                 {
-                    NotifyToast(report);
-                    notifyAPI.NotifyDiscord(report);
+                    foreach (Report report in diffReports)
+                    {
+                        NotifyToast(report);
+                        notifyAPI.NotifyDiscord(report);
+                    }
                 }
-                foreach (Quiz quiz in diffQuizzes)
+                if (diffQuizzes.Count != gakujoAPI.quizzes.Count)
                 {
-                    NotifyToast(quiz);
-                    notifyAPI.NotifyDiscord(quiz);
+                    foreach (Quiz quiz in diffQuizzes)
+                    {
+                        NotifyToast(quiz);
+                        notifyAPI.NotifyDiscord(quiz);
+                    }
                 }
-                for (int i = 0; i < classSharedFilesDiffCount; i++)
+                if (classSharedFilesDiffCount != gakujoAPI.classSharedFiles.Count)
                 {
-                    NotifyToast(gakujoAPI.classSharedFiles[i]);
-                    notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
+                    for (int i = 0; i < classSharedFilesDiffCount; i++)
+                    {
+                        NotifyToast(gakujoAPI.classSharedFiles[i]);
+                        notifyAPI.NotifyDiscord(gakujoAPI.classSharedFiles[i]);
+                    }
                 }
-                foreach (ClassResult classResult in diffClassResults)
+                if (diffClassResults.Count != gakujoAPI.schoolGrade.ClassResults.Count)
                 {
-                    NotifyToast(classResult);
-                    notifyAPI.NotifyDiscord(classResult, true);
+                    foreach (ClassResult classResult in diffClassResults)
+                    {
+                        NotifyToast(classResult);
+                        notifyAPI.NotifyDiscord(classResult, true);
+                    }
                 }
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
