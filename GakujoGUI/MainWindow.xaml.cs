@@ -54,7 +54,9 @@ namespace GakujoGUI
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+        private bool shutdownFlag = false;
 
         public MainWindow()
         {
@@ -71,35 +73,34 @@ namespace GakujoGUI
             loggingConfiguration.LoggingRules.Add(loggingRule);
             LogManager.Configuration = loggingConfiguration;
             logger.Info("Start Logging.");
-            Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName);
-            int processId = Environment.ProcessId;
-            foreach (Process process in processes)
+            Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Where(x => x.Id != Environment.ProcessId).ToArray();
+            if (processes.Length != 0)
             {
-                if (process.Id != processId)
+                foreach (Process process in processes)
                 {
-                    _ = ShowWindow(process.MainWindowHandle, 1);
+                    _ = ShowWindow(process.MainWindowHandle, 9);
                     SetForegroundWindow(process.MainWindowHandle);
                     logger.Warn("Shutdown by double activation.");
+                    shutdownFlag = true;
                     Application.Current.Shutdown();
                 }
             }
-            ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
-            if (File.Exists(GetJsonPath("Settings")))
+            else
             {
-                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
-                logger.Info("Load Settings.");
+                ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
+                if (File.Exists(GetJsonPath("Settings")))
+                {
+                    settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
+                    logger.Info("Load Settings.");
+                }
+                if (settings.StartUpMinimize)
+                {
+                    ChangeVisibility(Visibility.Hidden);
+                    new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
+                    logger.Info("Startup minimized");
+                }
+                gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
             }
-            if (settings.StartUpMinimize)
-            {
-                WindowState = WindowState.Minimized;
-                ShowInTaskbar = false;
-                TaskBarIcon.Visibility = Visibility.Visible;
-                Visibility = Visibility.Hidden;
-                Hide();
-                new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
-                logger.Info("Startup minimized");
-            }
-            gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -770,17 +771,37 @@ namespace GakujoGUI
 
         #region 通知
 
+        private void ChangeVisibility(Visibility visibility)
+        {
+            switch (visibility)
+            {
+                case Visibility.Visible:
+                    //_ = ShowWindow(Process.GetCurrentProcess().MainWindowHandle, 9);
+                    //SetForegroundWindow(Process.GetCurrentProcess().MainWindowHandle);
+                    //WindowState = WindowState.Normal;
+                    Visibility = Visibility.Visible;
+                    Activate();
+                    ShowInTaskbar = true;
+                    TaskBarIcon.Visibility = Visibility.Collapsed;
+                    logger.Info("Change visibility to Visible.");
+                    break;
+                case Visibility.Hidden:
+                    //WindowState = WindowState.Minimized;
+                    Visibility = Visibility.Hidden;
+                    Hide();
+                    ShowInTaskbar = false;
+                    TaskBarIcon.Visibility = Visibility.Visible;
+                    logger.Info("Change visibility to Hidden.");
+                    break;
+            }
+        }
+
         private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
         {
             ToastArguments toastArguments = ToastArguments.Parse(e.Argument);
             Dispatcher.Invoke(() =>
             {
-                ShowInTaskbar = true;
-                TaskBarIcon.Visibility = Visibility.Collapsed;
-                Visibility = Visibility.Visible;
-                Topmost = true;
-                SystemCommands.RestoreWindow(this);
-                Topmost = false;
+                ChangeVisibility(Visibility.Visible);
                 logger.Info("Activate MainForm by Toast.");
                 if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
                 {
@@ -849,12 +870,7 @@ namespace GakujoGUI
 
         private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ShowInTaskbar = true;
-            TaskBarIcon.Visibility = Visibility.Collapsed;
-            Visibility = Visibility.Visible;
-            Topmost = true;
-            SystemCommands.RestoreWindow(this);
-            Topmost = false;
+            ChangeVisibility(Visibility.Visible);
             logger.Info("Activate MainForm by OpenMenuItem.");
         }
 
@@ -865,18 +881,14 @@ namespace GakujoGUI
 
         private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
         {
+            shutdownFlag = true;
             Application.Current.Shutdown();
             logger.Info("Shutdown by CloseMenuItem.");
         }
 
         private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            ShowInTaskbar = true;
-            TaskBarIcon.Visibility = Visibility.Collapsed;
-            Visibility = Visibility.Visible;
-            Topmost = true;
-            SystemCommands.RestoreWindow(this);
-            Topmost = false;
+            ChangeVisibility(Visibility.Visible);
             logger.Info("Activate MainForm by TaskBarIcon.");
         }
 
@@ -889,37 +901,31 @@ namespace GakujoGUI
 
         private void ReportMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ShowInTaskbar = true;
-            TaskBarIcon.Visibility = Visibility.Collapsed;
-            Visibility = Visibility.Visible;
-            Topmost = true;
-            SystemCommands.RestoreWindow(this);
-            Topmost = false;
+            ChangeVisibility(Visibility.Visible);
             ReportsTabItem.IsSelected = true;
             logger.Info("Activate MainForm by ReportMenuItem.");
         }
 
         private void QuizMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ShowInTaskbar = true;
-            TaskBarIcon.Visibility = Visibility.Collapsed;
-            Visibility = Visibility.Visible;
-            Topmost = true;
-            SystemCommands.RestoreWindow(this);
-            Topmost = false;
+            ChangeVisibility(Visibility.Visible);
             QuizzesTabItem.IsSelected = true;
             logger.Info("Activate MainForm by QuizMenuItem.");
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            e.Cancel = true;
-            ShowInTaskbar = false;
-            TaskBarIcon.Visibility = Visibility.Visible;
-            Visibility = Visibility.Hidden;
-            Hide();
-            //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
-            logger.Info("Minimized MainForm by window closing.");
+            if (!shutdownFlag)
+            {
+                e.Cancel = true;
+                ChangeVisibility(Visibility.Hidden);
+                //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
+                logger.Info("Minimized MainForm by window closing.");
+            }
+            else
+            {
+                logger.Info("Continue window closing.");
+            }
         }
 
         #endregion
@@ -1011,6 +1017,7 @@ namespace GakujoGUI
                     SaveJson();
                     Process.Start(Environment.ProcessPath!);
                     logger.Info("Shutdown by apply Settings.");
+                    shutdownFlag = true;
                     Application.Current.Shutdown();
                     break;
                 case MessageBoxResult.No:
@@ -1104,6 +1111,7 @@ namespace GakujoGUI
                     {
                         logger.Info("Start Update bat file.");
                         Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
+                        shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
                     }
                     else
