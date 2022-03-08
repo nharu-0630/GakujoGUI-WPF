@@ -149,7 +149,6 @@ namespace GakujoGUI
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
-            logger.Info("Set MainForm text.");
             Task.Run(() =>
             {
                 gakujoAPI.LoadJson();
@@ -266,7 +265,6 @@ namespace GakujoGUI
                 ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
                 ClassResultsDataGrid.Items.Refresh();
                 ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
-                logger.Info("Set MainForm text.");
                 if (classContactsDiffCount != gakujoAPI.classContacts.Count)
                 {
                     for (int i = 0; i < classContactsDiffCount; i++)
@@ -741,7 +739,7 @@ namespace GakujoGUI
         private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
             if (GetSelectedClassTableCell() == null) { return; }
-            logger.Info("Start Get Syllabus Token.");
+            logger.Info("Start Get syllabus token.");
             HttpClient httpClient = new();
             HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
@@ -752,14 +750,16 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             string syllabusToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@name=\"syllabusTitleID\"]").Attributes["onchange"].Value.Split("'")[1];
             logger.Info($"syllabusToken={syllabusToken}");
-            logger.Info("End Get Syllabus Token.");
+            logger.Info("End Get syllabus token.");
             Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}") { UseShellExecute = true });
+            logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}");
             e.Handled = true;
         }
 
         private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)
         {
             if ((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext is not ClassTableCell classTableCell) { return; }
+            logger.Info($"Start Add Favorites to {classTableCell.SubjectsName}.");
             List<string> favorites = new();
             if (e.Data.GetDataPresent(DataFormats.FileDrop, false)) { favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false)); }
             if (e.Data.GetDataPresent(DataFormats.Text, false))
@@ -772,23 +772,25 @@ namespace GakujoGUI
             favorites = favorites.Except(classTableCell.Favorites).ToList();
             if (favorites.Count == 0)
             {
+                logger.Warn("Return Add Favorites by already exists.");
                 MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 classTableCell.Favorites.AddRange(favorites);
-                logger.Info($"Add {favorites.Count} favorites to {classTableCell.SubjectsName}");
+                logger.Info($"Add {favorites.Count} Favorites to {classTableCell.SubjectsName}");
                 gakujoAPI.SaveJsons();
             }
+            else { logger.Warn("Return Add Favorites by user rejection."); }
         }
 
         public void RefreshClassTablesDataGrid()
         {
-            logger.Info("Refresh ClassTablesDataGrid.");
             gakujoAPI.SaveJsons();
             ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
             ClassTablesDataGrid.Items.Refresh();
+            logger.Info("Refresh ClassTablesDataGrid.");
         }
 
 #pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
@@ -1023,7 +1025,6 @@ namespace GakujoGUI
         {
             ReportMenuItem.Header = $"レポート {gakujoAPI.reports.Count(report => report.Unsubmitted)}";
             QuizMenuItem.Header = $"小テスト {gakujoAPI.quizzes.Count(report => report.Unsubmitted)}";
-            logger.Info("Set MenuItem text.");
         }
 
         private void ReportMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1236,7 +1237,7 @@ namespace GakujoGUI
                     Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show("更新があります．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
                     if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
                     {
-                        logger.Info("Start Update bat file.");
+                        logger.Info("Start Process update bat file.");
                         Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
                         shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
@@ -1246,7 +1247,7 @@ namespace GakujoGUI
                         if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
                         {
                             File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"));
-                            logger.Info("Delete Download Latest Version.");
+                            logger.Info("Delete Download latest version.");
                         }
                         if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
                         {
@@ -1255,7 +1256,7 @@ namespace GakujoGUI
                                 fileInfo.Delete();
                             }
                             Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
-                            logger.Info("Delete Extract Latest Version.");
+                            logger.Info("Delete Extract latest version.");
                         }
                     }
                 }
@@ -1264,7 +1265,7 @@ namespace GakujoGUI
 
         private bool GetLatestVersion()
         {
-            logger.Info("Start Get Latest Version.");
+            logger.Info("Start Get latest version.");
             HttpClient httpClient = new();
             HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases/latest");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
@@ -1276,22 +1277,22 @@ namespace GakujoGUI
             logger.Info($"latestVersion={latestVersion}");
             if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == latestVersion)
             {
-                logger.Info("Return Get Latest Version by the same version.");
+                logger.Info("Return Get latest version by the same version.");
                 return false;
             }
             string latestZipUrl = releaseAPI.assets[0].browser_download_url;
             logger.Info($"latestZipUrl={latestZipUrl}");
-            logger.Info("Start Download Latest Version.");
+            logger.Info("Start Download latest version.");
             httpRequestMessage = new(new("GET"), latestZipUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
             using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
-            logger.Info("End Download Latest Version.");
+            logger.Info("End Download latest version.");
             if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
             {
-                logger.Warn("Return Get Latest Version by the file is missing.");
+                logger.Warn("Return Get latest version by the file is missing.");
                 return false;
             }
             if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
@@ -1303,8 +1304,8 @@ namespace GakujoGUI
                 Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
             }
             ZipFile.ExtractToDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
-            logger.Info("Extract Latest Version.");
-            logger.Info("End Get Latest Version.");
+            logger.Info("Extract latest version.");
+            logger.Info("End Get latest version.");
             return true;
         }
 

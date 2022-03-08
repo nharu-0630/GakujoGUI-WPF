@@ -322,8 +322,8 @@ namespace GakujoGUI
 
         private void ApplyReportsClassTables()
         {
-            logger.Info("Start Apply Reports ClassTables");
-            if (classTables == null) { logger.Warn("Return Apply Reports ClassTables by ClassTables is null."); return; }
+            logger.Info("Start Apply Reports to ClassTables.");
+            if (classTables == null) { logger.Warn("Return Apply Reports to ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 classTableRow.Monday.ReportCount = 0;
@@ -346,7 +346,7 @@ namespace GakujoGUI
                     }
                 }
             }
-            logger.Info("End Apply Reports ClassTables");
+            logger.Info("End Apply Reports to ClassTables");
         }
 
         public void GetQuizzes(out List<Quiz> diffQuizzes)
@@ -415,8 +415,8 @@ namespace GakujoGUI
 
         private void ApplyQuizzesClassTables()
         {
-            logger.Info("Start Apply Quizzes ClassTables.");
-            if (classTables == null) { logger.Warn("Return Apply Quizzes ClassTables by ClassTables is null."); return; }
+            logger.Info("Start Apply Quizzes to ClassTables.");
+            if (classTables == null) { logger.Warn("Return Apply Quizzes to ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in classTables)
             {
                 if (classTableRow == null) { continue; }
@@ -441,7 +441,7 @@ namespace GakujoGUI
                     }
                 }
             }
-            logger.Info("End Apply Quizzes ClassTables.");
+            logger.Info("End Apply Quizzes to ClassTables.");
         }
 
         public void GetClassContacts(out int diffCount, int maxCount = 10)

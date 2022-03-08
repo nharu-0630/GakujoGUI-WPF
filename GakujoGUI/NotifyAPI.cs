@@ -112,7 +112,6 @@ namespace GakujoGUI
                     todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Wait();
                     logger.Info("Add Todoist task.");
                 }
-                else { logger.Info("Exists Todoist task."); }
             }
             catch (Exception exception) { logger.Error(exception, "Error Add Todoist task."); }
         }

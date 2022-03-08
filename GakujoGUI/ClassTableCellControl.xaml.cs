@@ -96,7 +96,7 @@ namespace GakujoGUI
             if (e.Key == Key.Delete || e.Key == Key.Back)
             {
                 (DataContext as ClassTableCell)!.Favorites.Remove((string)(e.OriginalSource as MenuItem)!.Header);
-                logger.Info($"Delete favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
+                logger.Info($"Delete {(string)(e.OriginalSource as MenuItem)!.Header} favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
                 (Window.GetWindow(this) as MainWindow)!.RefreshClassTablesDataGrid();
             }
         }
