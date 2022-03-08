@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+﻿using NLog;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace GakujoGUI
 {
@@ -21,6 +23,9 @@ namespace GakujoGUI
         public static readonly RoutedEvent QuizButtonClickEvent = EventManager.RegisterRoutedEvent("QuizButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         //public static readonly RoutedEvent FavoritesMenuItemClickEvent = EventManager.RegisterRoutedEvent("FavoritesMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
 
         public event RoutedEventHandler ClassContactButtonClick
         {
@@ -52,6 +57,7 @@ namespace GakujoGUI
         //    remove { RemoveHandler(FavoritesMenuItemClickEvent, value); }
         //}
 
+
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(ClassContactButtonClickEvent);
@@ -82,6 +88,16 @@ namespace GakujoGUI
             if (Regex.IsMatch(header, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)") || File.Exists(header) || Directory.Exists(header))
             {
                 Process.Start(new ProcessStartInfo((string)(e.OriginalSource as MenuItem)!.Header) { UseShellExecute = true });
+            }
+        }
+
+        private void FavoritesMenuItem_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Delete || e.Key == Key.Back)
+            {
+                (DataContext as ClassTableCell)!.Favorites.Remove((string)(e.OriginalSource as MenuItem)!.Header);
+                logger.Info($"Delete favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
+                (Window.GetWindow(this) as MainWindow)!.RefreshClassTablesDataGrid();
             }
         }
     }

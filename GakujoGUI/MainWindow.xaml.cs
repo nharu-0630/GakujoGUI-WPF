@@ -23,6 +23,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -780,6 +781,14 @@ namespace GakujoGUI
                 logger.Info($"Add {favorites.Count} favorites to {classTableCell.SubjectsName}");
                 gakujoAPI.SaveJsons();
             }
+        }
+
+        public void RefreshClassTablesDataGrid()
+        {
+            logger.Info("Refresh ClassTablesDataGrid.");
+            gakujoAPI.SaveJsons();
+            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+            ClassTablesDataGrid.Items.Refresh();
         }
 
 #pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する

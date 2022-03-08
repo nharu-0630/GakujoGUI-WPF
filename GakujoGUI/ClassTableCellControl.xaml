@@ -67,7 +67,8 @@
                     Name="FavoritesMenuItem"
                     Click="FavoritesMenuItem_Click"
                     Header="お気に入り"
-                    ItemsSource="{Binding Favorites}" />
+                    ItemsSource="{Binding Favorites}"
+                    KeyDown="FavoritesMenuItem_KeyDown" />
             </ContextMenu>
         </StackPanel.ContextMenu>
         <Label Margin="6,6" Content="{Binding SubjectsName}" />
