@@ -8,15 +8,15 @@
     xmlns:ui="http://schemas.modernwpf.com/2019"
     mc:Ignorable="d">
     <UserControl.Resources>
-        <Style x:Key="ButtonsVisible" TargetType="StackPanel">
+        <Style x:Key="StackPanelVisible" TargetType="StackPanel">
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ButtonsVisible}" Value="False">
+                <DataTrigger Binding="{Binding StackPanelVisible}" Value="False">
                     <Setter Property="Visibility" Value="Hidden" />
                 </DataTrigger>
             </Style.Triggers>
         </Style>
     </UserControl.Resources>
-    <StackPanel Orientation="Vertical" Style="{StaticResource ButtonsVisible}">
+    <StackPanel Orientation="Vertical" Style="{StaticResource StackPanelVisible}">
         <StackPanel.Resources>
             <Style x:Key="ReportBadgeVisible" TargetType="Grid">
                 <Style.Triggers>

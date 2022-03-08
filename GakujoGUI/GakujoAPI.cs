@@ -1395,7 +1395,7 @@ namespace GakujoGUI
         public string KamokuCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
 
-        public bool ButtonsVisible => SubjectsName != "" && SubjectsId != "";
+        public bool StackPanelVisible => SubjectsName != "" && SubjectsId != "";
         public bool ReportBadgeVisible => ReportCount > 0;
         public bool ReportBadgeOneDigits => ReportCount < 10;
         public int ReportCount { get; set; }
