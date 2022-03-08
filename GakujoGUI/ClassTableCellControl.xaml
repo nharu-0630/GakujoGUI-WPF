@@ -63,6 +63,11 @@
                     Name="SyllabusMenuItem"
                     Click="SyllabusMenuItem_Click"
                     Header="シラバス" />
+                <MenuItem
+                    Name="FavoritesMenuItem"
+                    Click="FavoritesMenuItem_Click"
+                    Header="お気に入り"
+                    ItemsSource="{Binding Favorites}" />
             </ContextMenu>
         </StackPanel.ContextMenu>
         <Label Margin="6,6" Content="{Binding SubjectsName}" />

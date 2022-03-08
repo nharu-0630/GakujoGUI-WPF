@@ -147,7 +147,7 @@ namespace GakujoGUI
             return false;
         }
 
-        private void SaveJsons()
+        public void SaveJsons()
         {
             logger.Info("Save Jsons.");
             try { File.WriteAllText(GetJsonPath("Reports" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(reports, Formatting.Indented)); }
@@ -1394,6 +1394,7 @@ namespace GakujoGUI
         public string SyllabusURL { get; set; } = "";
         public string KamokuCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
+        public List<string> Favorites { get; set; } = new();
 
         public bool StackPanelVisible => SubjectsName != "" && SubjectsId != "";
         public bool ReportBadgeVisible => ReportCount > 0;

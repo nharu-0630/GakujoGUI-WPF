@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace GakujoGUI
@@ -17,6 +20,7 @@ namespace GakujoGUI
         public static readonly RoutedEvent ReportButtonClickEvent = EventManager.RegisterRoutedEvent("ReportButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent QuizButtonClickEvent = EventManager.RegisterRoutedEvent("QuizButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
+        //public static readonly RoutedEvent FavoritesMenuItemClickEvent = EventManager.RegisterRoutedEvent("FavoritesMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
 
         public event RoutedEventHandler ClassContactButtonClick
         {
@@ -42,6 +46,12 @@ namespace GakujoGUI
             remove { RemoveHandler(SyllabusMenuItemClickEvent, value); }
         }
 
+        //public event RoutedEventHandler FavoritesMenuItemClick
+        //{
+        //    add { AddHandler(FavoritesMenuItemClickEvent, value); }
+        //    remove { RemoveHandler(FavoritesMenuItemClickEvent, value); }
+        //}
+
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(ClassContactButtonClickEvent);
@@ -64,6 +74,15 @@ namespace GakujoGUI
         {
             RoutedEventArgs routedEventArgs = new(SyllabusMenuItemClickEvent);
             RaiseEvent(routedEventArgs);
+        }
+
+        private void FavoritesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            string header = (string)(e.OriginalSource as MenuItem)!.Header;
+            if (Regex.IsMatch(header, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)") || File.Exists(header) || Directory.Exists(header))
+            {
+                Process.Start(new ProcessStartInfo((string)(e.OriginalSource as MenuItem)!.Header) { UseShellExecute = true });
+            }
         }
     }
 }

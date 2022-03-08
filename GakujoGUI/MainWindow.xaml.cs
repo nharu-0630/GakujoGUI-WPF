@@ -758,14 +758,28 @@ namespace GakujoGUI
 
         private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)
         {
-            //List<string> favorites = new();
-            //favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false));
-            //if (Regex.IsMatch((string)e.Data.GetData(DataFormats.Text, false), @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
-            //{
-            //    favorites.Add((string)e.Data.GetData(DataFormats.Text, false));
-            //}
-            logger.Info((string)e.Data.GetData(DataFormats.Text, false));
-            logger.Info(((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext as ClassTableCell)!.SubjectsName);
+            if ((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext is not ClassTableCell classTableCell) { return; }
+            List<string> favorites = new();
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false)) { favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false)); }
+            if (e.Data.GetDataPresent(DataFormats.Text, false))
+            {
+                if (Regex.IsMatch((string)e.Data.GetData(DataFormats.Text, false), @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
+                {
+                    favorites.Add((string)e.Data.GetData(DataFormats.Text, false));
+                }
+            }
+            favorites = favorites.Except(classTableCell.Favorites).ToList();
+            if (favorites.Count == 0)
+            {
+                MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+            if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            {
+                classTableCell.Favorites.AddRange(favorites);
+                logger.Info($"Add {favorites.Count} favorites to {classTableCell.SubjectsName}");
+                gakujoAPI.SaveJsons();
+            }
         }
 
 #pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
@@ -834,7 +848,7 @@ namespace GakujoGUI
 
         private void ClassTablesDataGrid_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.Text, false)) { e.Effects = DragDropEffects.All; }
+            if (e.Data.GetDataPresent(DataFormats.Text, false) || e.Data.GetDataPresent(DataFormats.FileDrop, false)) { e.Effects = DragDropEffects.All; }
             else { e.Effects = DragDropEffects.None; }
             e.Handled = true;
         }
