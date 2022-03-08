@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using MessageBox = ModernWpf.MessageBox;
 
 namespace GakujoGUI
 {
@@ -95,9 +96,12 @@ namespace GakujoGUI
         {
             if (e.Key == Key.Delete || e.Key == Key.Back)
             {
-                (DataContext as ClassTableCell)!.Favorites.Remove((string)(e.OriginalSource as MenuItem)!.Header);
-                logger.Info($"Delete {(string)(e.OriginalSource as MenuItem)!.Header} favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
-                (Window.GetWindow(this) as MainWindow)!.RefreshClassTablesDataGrid();
+                if (MessageBox.Show($"{(DataContext as ClassTableCell)!.SubjectsName}のお気に入りから削除しますか．\n{(string)(e.OriginalSource as MenuItem)!.Header}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
+                {
+                    (DataContext as ClassTableCell)!.Favorites.Remove((string)(e.OriginalSource as MenuItem)!.Header);
+                    logger.Info($"Delete {(string)(e.OriginalSource as MenuItem)!.Header} favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
+                    (Window.GetWindow(this) as MainWindow)!.RefreshClassTablesDataGrid();
+                }
             }
         }
     }

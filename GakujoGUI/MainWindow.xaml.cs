@@ -782,7 +782,9 @@ namespace GakujoGUI
                 logger.Info($"Add {favorites.Count} Favorites to {classTableCell.SubjectsName}");
                 gakujoAPI.SaveJsons();
             }
-            else { logger.Warn("Return Add Favorites by user rejection."); }
+            else { logger.Warn("Return Add Favorites by user rejection."); return; }
+            logger.Info($"End Add Favorites to {classTableCell.SubjectsName}.");
+            RefreshClassTablesDataGrid();
         }
 
         public void RefreshClassTablesDataGrid()
