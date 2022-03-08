@@ -1069,6 +1069,9 @@
                             <AccessText Text="操作には10分以上かかる場合があります．" TextWrapping="Wrap" />
                         </Label.Content>
                     </Label>
+                    <TextBlock Margin="6" HorizontalAlignment="Center">
+                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
+                    </TextBlock>
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="6">
                     <Image
