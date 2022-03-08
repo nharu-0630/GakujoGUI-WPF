@@ -103,6 +103,7 @@
                     Name="ClassTablesDataGrid"
                     Grid.Column="2"
                     Margin="6"
+                    AllowDrop="True"
                     AreRowDetailsFrozen="True"
                     AutoGenerateColumns="False"
                     CanUserAddRows="False"
@@ -111,7 +112,9 @@
                     CanUserResizeColumns="False"
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
+                    DragOver="ClassTablesDataGrid_DragOver"
                     MinRowHeight="96"
+                    PreviewDrop="ClassTablesDataGrid_PreviewDrop"
                     ScrollViewer.CanContentScroll="False"
                     ScrollViewer.HorizontalScrollBarVisibility="Auto"
                     ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -126,12 +129,12 @@
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell
-                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                    <local:ClassTableCellControl
+                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
                                         DataContext="{Binding Monday}"
-                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
-                                        ReportButtonClick="ClassTablesCell_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTablesCell_SyllabusMenuItemClick" />
+                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -142,12 +145,12 @@
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell
-                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                    <local:ClassTableCellControl
+                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
                                         DataContext="{Binding Tuesday}"
-                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
-                                        ReportButtonClick="ClassTablesCell_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTablesCell_SyllabusMenuItemClick" />
+                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -158,12 +161,12 @@
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell
-                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                    <local:ClassTableCellControl
+                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
                                         DataContext="{Binding Wednesday}"
-                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
-                                        ReportButtonClick="ClassTablesCell_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTablesCell_SyllabusMenuItemClick" />
+                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -174,12 +177,12 @@
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell
-                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                    <local:ClassTableCellControl
+                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
                                         DataContext="{Binding Thursday}"
-                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
-                                        ReportButtonClick="ClassTablesCell_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTablesCell_SyllabusMenuItemClick" />
+                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -190,12 +193,12 @@
                             IsReadOnly="True">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <local:ClassTablesCell
-                                        ClassContactButtonClick="ClassTablesCell_ClassContactButtonClick"
+                                    <local:ClassTableCellControl
+                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
                                         DataContext="{Binding Friday}"
-                                        QuizButtonClick="ClassTablesCell_QuizButtonClick"
-                                        ReportButtonClick="ClassTablesCell_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTablesCell_SyllabusMenuItemClick" />
+                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

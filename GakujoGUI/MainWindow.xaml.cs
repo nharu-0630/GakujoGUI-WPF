@@ -17,10 +17,13 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
@@ -674,7 +677,7 @@ namespace GakujoGUI
 
         #region 個人時間割
 
-        private ClassTableCell? GetCurrentClassTablesCell()
+        private ClassTableCell? GetSelectedClassTableCell()
         {
             ClassTableCell? classTableCell = null;
             if (gakujoAPI.classTables != null)
@@ -701,10 +704,10 @@ namespace GakujoGUI
             return classTableCell;
         }
 
-        private void ClassTablesCell_ClassContactButtonClick(object sender, RoutedEventArgs e)
+        private void ClassTableCellControl_ClassContactButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetCurrentClassTablesCell() == null) { return; }
-            ClassContactsSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            if (GetSelectedClassTableCell() == null) { return; }
+            ClassContactsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
             collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
             ClassContactsDataGrid.ItemsSource = collectionView;
@@ -712,10 +715,10 @@ namespace GakujoGUI
             ClassContactsTabItem.IsSelected = true;
         }
 
-        private void ClassTablesCell_ReportButtonClick(object sender, RoutedEventArgs e)
+        private void ClassTableCellControl_ReportButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetCurrentClassTablesCell() == null) { return; }
-            ReportsSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            if (GetSelectedClassTableCell() == null) { return; }
+            ReportsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
             collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text));
             ReportsDataGrid.ItemsSource = collectionView;
@@ -723,10 +726,10 @@ namespace GakujoGUI
             ReportsTabItem.IsSelected = true;
         }
 
-        private void ClassTablesCell_QuizButtonClick(object sender, RoutedEventArgs e)
+        private void ClassTableCellControl_QuizButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetCurrentClassTablesCell() == null) { return; }
-            QuizzesSearchAutoSuggestBox.Text = GetCurrentClassTablesCell()!.SubjectsName;
+            if (GetSelectedClassTableCell() == null) { return; }
+            QuizzesSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
             collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text));
             QuizzesDataGrid.ItemsSource = collectionView;
@@ -734,9 +737,9 @@ namespace GakujoGUI
             QuizzesTabItem.IsSelected = true;
         }
 
-        private void ClassTablesCell_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
+        private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
-            if (GetCurrentClassTablesCell() == null) { return; }
+            if (GetSelectedClassTableCell() == null) { return; }
             logger.Info("Start Get Syllabus Token.");
             HttpClient httpClient = new();
             HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
@@ -749,7 +752,90 @@ namespace GakujoGUI
             string syllabusToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@name=\"syllabusTitleID\"]").Attributes["onchange"].Value.Split("'")[1];
             logger.Info($"syllabusToken={syllabusToken}");
             logger.Info("End Get Syllabus Token.");
-            Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetCurrentClassTablesCell()!.SubjectsId}&classCD={GetCurrentClassTablesCell()!.ClassCode}") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}") { UseShellExecute = true });
+            e.Handled = true;
+        }
+
+        private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)
+        {
+            //List<string> favorites = new();
+            //favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false));
+            //if (Regex.IsMatch((string)e.Data.GetData(DataFormats.Text, false), @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
+            //{
+            //    favorites.Add((string)e.Data.GetData(DataFormats.Text, false));
+            //}
+            logger.Info((string)e.Data.GetData(DataFormats.Text, false));
+            logger.Info(((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext as ClassTableCell)!.SubjectsName);
+        }
+
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
+        private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
+        {
+            if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
+            DataGridRow dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
+            if (dataGridRow == null) { return null; }
+            DataGridCellsPresenter dataGridCellPresenter = GetVisualChild<DataGridCellsPresenter>(dataGridRow)!;
+            if (dataGridCellPresenter == null) { return null; }
+            DataGridCell dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
+            if (dataGridCell == null)
+            {
+                dataGrid.UpdateLayout();
+                dataGrid.ScrollIntoView(dataGridRow, dataGrid.Columns[columnIndex]);
+                dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
+            }
+            return dataGridCell;
+        }
+
+        private static DataGridRow? GetDataGridRow(DataGrid dataGrid, int index)
+        {
+            if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
+            DataGridRow dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
+            if (dataGridRow == null)
+            {
+                dataGrid.UpdateLayout();
+                dataGrid.ScrollIntoView(dataGrid.Items[index]);
+                dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
+            }
+            return dataGridRow;
+        }
+
+        private T? GetVisualChild<T>(Visual parent) where T : Visual
+        {
+            T? result = default;
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                Visual visual = (VisualTreeHelper.GetChild(parent, i) as Visual)!;
+                if ((visual as T) != null) { break; }
+                result = GetVisualChild<T>((visual as T)!);
+            }
+            return result;
+        }
+
+        private static T? GetDataGridCell<T>(DataGrid dataGrid, Point point)
+        {
+            T? result = default;
+            HitTestResult hitTestResult = VisualTreeHelper.HitTest(dataGrid, point);
+            if (hitTestResult != null)
+            {
+                DependencyObject visualHit = hitTestResult.VisualHit;
+                while (visualHit != null)
+                {
+                    if (visualHit is T)
+                    {
+                        result = (T)(object)visualHit;
+                        break;
+                    }
+                    visualHit = VisualTreeHelper.GetParent(visualHit);
+                }
+            }
+            return result;
+        }
+
+        private void ClassTablesDataGrid_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.Text, false)) { e.Effects = DragDropEffects.All; }
+            else { e.Effects = DragDropEffects.None; }
             e.Handled = true;
         }
 
