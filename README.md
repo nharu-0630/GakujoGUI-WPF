@@ -233,6 +233,22 @@ Discordを開き，`設定`の`詳細設定`より`開発者モード`を有効�
 
 </details>
 
+### ログインメール
+
+<details>
+<summary>解決方法</summary>
+
+自動的にアーカイブ，既読もしくは削除することで，すべてのログインメールを非表示にすることが可能です．  
+ログインメール以外の重要なメールが削除されることはありません．  
+Gmailのフィルタ機能を使用するため，他のメールサービスの場合はできない可能性があります．
+
+[https://mail.google.com/mail/u/0/#settings/filters](https://mail.google.com/mail/u/0/#settings/filters)  
+上記リンクより新しいフィルタを作成します．
+
+
+
+</details>
+
 ## ☑️ Todo
 
 [Projects](https://github.com/xyzyxJP/GakujoGUI-WPF/projects/2)
