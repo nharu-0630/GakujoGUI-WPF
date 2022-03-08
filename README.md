@@ -186,7 +186,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 <img src="https://user-images.githubusercontent.com/8305330/155987712-ae77b2f0-6be2-4125-ab4c-f0fe5e9dff26.png" width="640">
 
-<img src="https://user-images.githubusercontent.com/8305330/155987840-6400fcae-bd1c-4b16-9510-bc34521bf1f6.png" width="320">
+<img src="https://user-images.githubusercontent.com/8305330/155987840-6400fcae-bd1c-4b16-9510-bc34521bf1f6.png" width="640">
 
 `New Application`をクリックし，名前を入力して`Create`をクリックしてください．
 
@@ -198,7 +198,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 `OAuth2`の`URL Generator`をクリックし，`bot`にチェックを入れ`GENERATED URL`にアクセスしてください．
 
-<img src="https://user-images.githubusercontent.com/8305330/155988809-9fcb503d-8174-446b-8026-b247f32f7ca8.png" width="320">
+<img src="https://user-images.githubusercontent.com/8305330/155988809-9fcb503d-8174-446b-8026-b247f32f7ca8.png" width="640">
 
 連携するチャンネルがあるサーバーを選択して，認証してください．  
 
@@ -214,7 +214,7 @@ Discordを開き，`設定`の`詳細設定`より`開発者モード`を有効�
 <details>
 <summary>解決方法</summary>
 
-<img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="320">
+<img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="640">
 
 上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．
 
@@ -225,11 +225,11 @@ Discordを開き，`設定`の`詳細設定`より`開発者モード`を有効�
 
 ページ中央にある`デスクトップアプリを実行する`の`X64のダウンロード`をクリックしてください．
 
-<img src="https://user-images.githubusercontent.com/8305330/155836991-0ec624ee-5141-4dcb-9451-7d1d6b9a8385.png" width="320">
+<img src="https://user-images.githubusercontent.com/8305330/155836991-0ec624ee-5141-4dcb-9451-7d1d6b9a8385.png" width="640">
 
 インストールをクリックし，下記画像のメッセージが表示されれば完了です．
 
-<img src="https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png" width="320">
+<img src="https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png" width="640">
 
 </details>
 
@@ -245,8 +245,18 @@ Gmailのフィルタ機能を使用するため，他のメールサービスの
 [https://mail.google.com/mail/u/0/#settings/filters](https://mail.google.com/mail/u/0/#settings/filters)  
 上記リンクより新しいフィルタを作成します．
 
+<img src="https://user-images.githubusercontent.com/8305330/157242172-6ed3b042-9124-406c-ab43-205e3485c362.png" width="640">
 
+`新しいフィルタを作成`をクリックします．
 
+<img src="https://user-images.githubusercontent.com/8305330/157242481-f915fc52-9d46-4fb7-bb39-c0efe7b723dc.png" width="640">
+	
+`From`に`gakujo@adb.shizuoka.ac.jp`，`件名`に`学務情報システムからログインのお知らせ`と入力し，`フィルタを作成`をクリックします．
+	
+<img src="https://user-images.githubusercontent.com/8305330/157242607-05663ed4-0cae-4634-a007-4101fe2df04e.png" width="640">
+
+実行する処理にチェックを入れ，`フィルタを作成`をクリックすれば完了です．
+	
 </details>
 
 ## ☑️ Todo
