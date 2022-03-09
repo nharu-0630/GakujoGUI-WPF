@@ -172,7 +172,7 @@ namespace GakujoGUI
             });
         }
 
-        private void LoadEvent(object sender, EventArgs e)
+        private void LoadEvent(object? sender, EventArgs? e)
         {
             Task.Run(() => Load());
         }
