@@ -500,6 +500,7 @@ namespace GakujoGUI
             ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassSharedFilesDataGrid.ItemsSource = collectionView;
             ClassSharedFilesDataGrid.Items.Refresh();
+            logger.Info("Refresh ClassSharedFilesDataGrid.");
         }
 
         private void ClassSharedFilesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -567,6 +568,7 @@ namespace GakujoGUI
             ClassResultsDataGrid.ItemsSource = gakujoAPI.schoolGrade.ClassResults;
             ClassResultsDataGrid.Items.Refresh();
             ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.schoolGrade.PreliminaryGPA:N3}";
+            logger.Info("Refresh ClassResultsDataGrid.");
         }
 
         private void LoadClassResultsButton_Click(object sender, RoutedEventArgs e)
