@@ -659,9 +659,7 @@ namespace GakujoGUI
         {
             if (GetSelectedClassTableCell() == null) { return; }
             ClassContactsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.classContacts }.View;
-            collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
-            ClassContactsDataGrid.ItemsSource = collectionView;
+            RefreshClassContactsDataGrid();
             e.Handled = true;
             ClassContactsTabItem.IsSelected = true;
         }
@@ -670,9 +668,7 @@ namespace GakujoGUI
         {
             if (GetSelectedClassTableCell() == null) { return; }
             ReportsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
-            collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text));
-            ReportsDataGrid.ItemsSource = collectionView;
+            RefreshReportsDataGrid();
             e.Handled = true;
             ReportsTabItem.IsSelected = true;
         }
