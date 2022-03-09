@@ -120,20 +120,12 @@ namespace GakujoGUI
             TodoistTokenPasswordBox.Password = notifyAPI.tokens.TodoistToken;
             DiscordChannelTextBox.Text = notifyAPI.tokens.DiscordChannel.ToString();
             DiscordTokenPasswordBox.Password = notifyAPI.tokens.DiscordToken;
-            if (gakujoAPI.classTables != null)
-            {
-                ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
-                ClassTablesDataGrid.Items.Refresh();
-            }
+            RefreshClassTablesDataGrid();
             ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
             ClassContactsDataGrid.Items.Refresh();
-            ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
-            ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-            ReportsDataGrid.Items.Refresh();
-            QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
-            QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-            QuizzesDataGrid.Items.Refresh();
+            RefreshReportsDataGrid();
+            RefreshQuizzesDataGrid();
             ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
             ClassSharedFilesDataGrid.Items.Refresh();
@@ -206,8 +198,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoAPI.account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
-                    ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables![0..5];
-                    ClassTablesDataGrid.Items.Refresh();
+                    RefreshClassTablesDataGrid();
                 });
             }
             notifyAPI.Login();
@@ -252,12 +243,8 @@ namespace GakujoGUI
                 ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
                 ClassContactsDataGrid.ItemsSource = gakujoAPI.classContacts;
                 ClassContactsDataGrid.Items.Refresh();
-                ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
-                ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-                ReportsDataGrid.Items.Refresh();
-                QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
-                QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-                QuizzesDataGrid.Items.Refresh();
+                RefreshReportsDataGrid();
+                RefreshQuizzesDataGrid();
                 ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
                 ClassSharedFilesDataGrid.ItemsSource = gakujoAPI.classSharedFiles;
                 ClassSharedFilesDataGrid.Items.Refresh();
@@ -426,9 +413,7 @@ namespace GakujoGUI
 
         private void ReportsSearchAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
-            collectionView.Filter = new Predicate<object>(item => ((Report)item).Subjects.Contains(sender.Text) || ((Report)item).Title.Contains(sender.Text));
-            ReportsDataGrid.ItemsSource = collectionView;
+            RefreshReportsDataGrid();
         }
 
         private void LoadReportsButton_Click(object sender, RoutedEventArgs e)
@@ -446,9 +431,7 @@ namespace GakujoGUI
                 notifyAPI.SetTodoistTask(gakujoAPI.reports);
                 Dispatcher.Invoke(() =>
                 {
-                    ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
-                    ReportsDataGrid.ItemsSource = gakujoAPI.reports;
-                    ReportsDataGrid.Items.Refresh();
+                    RefreshReportsDataGrid();
                     foreach (Report report in diffReports)
                     {
                         NotifyToast(report);
@@ -458,6 +441,21 @@ namespace GakujoGUI
                     LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
+        }
+
+        private void FilterReportsCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshReportsDataGrid();
+        }
+
+        private void RefreshReportsDataGrid()
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.reports }.View;
+            collectionView.Filter = new Predicate<object>(item => (((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text)) && (!(bool)FilterReportsCheckBox.IsChecked! || ((Report)item).Unsubmitted));
+            ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
+            ReportsDataGrid.ItemsSource = collectionView;
+            ReportsDataGrid.Items.Refresh();
+            logger.Info("Refresh ReportsDataGrid.");
         }
 
         private void ReportsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -471,9 +469,7 @@ namespace GakujoGUI
 
         private void QuizzesSearchAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
-            collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(sender.Text) || ((Quiz)item).Title.Contains(sender.Text));
-            QuizzesDataGrid.ItemsSource = collectionView;
+            RefreshQuizzesDataGrid();
         }
 
         private void LoadQuizzesButton_Click(object sender, RoutedEventArgs e)
@@ -491,9 +487,7 @@ namespace GakujoGUI
                 notifyAPI.SetTodoistTask(gakujoAPI.quizzes);
                 Dispatcher.Invoke(() =>
                 {
-                    QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
-                    QuizzesDataGrid.ItemsSource = gakujoAPI.quizzes;
-                    QuizzesDataGrid.Items.Refresh();
+                    RefreshQuizzesDataGrid();
                     foreach (Quiz quiz in diffQuizzes)
                     {
                         NotifyToast(quiz);
@@ -503,6 +497,21 @@ namespace GakujoGUI
                     LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
             });
+        }
+
+        private void FilterQuizzesCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshQuizzesDataGrid();
+        }
+
+        private void RefreshQuizzesDataGrid()
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
+            collectionView.Filter = new Predicate<object>(item => (((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text)) && (!(bool)FilterQuizzesCheckBox.IsChecked! || ((Quiz)item).Unsubmitted));
+            QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
+            QuizzesDataGrid.ItemsSource = collectionView;
+            QuizzesDataGrid.Items.Refresh();
+            logger.Info("Refresh QuizzesDataGrid.");
         }
 
         private void QuizzesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -729,9 +738,7 @@ namespace GakujoGUI
         {
             if (GetSelectedClassTableCell() == null) { return; }
             QuizzesSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.quizzes }.View;
-            collectionView.Filter = new Predicate<object>(item => ((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text));
-            QuizzesDataGrid.ItemsSource = collectionView;
+            RefreshQuizzesDataGrid();
             e.Handled = true;
             QuizzesTabItem.IsSelected = true;
         }
@@ -784,14 +791,17 @@ namespace GakujoGUI
             }
             else { logger.Warn("Return Add Favorites by user rejection."); return; }
             logger.Info($"End Add Favorites to {classTableCell.SubjectsName}.");
-            RefreshClassTablesDataGrid();
+            RefreshClassTablesDataGrid(true);
         }
 
-        public void RefreshClassTablesDataGrid()
+        public void RefreshClassTablesDataGrid(bool saveJsons = false)
         {
-            gakujoAPI.SaveJsons();
-            ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
-            ClassTablesDataGrid.Items.Refresh();
+            if (saveJsons) { gakujoAPI.SaveJsons(); }
+            if (gakujoAPI.classTables != null)
+            {
+                ClassTablesDataGrid.ItemsSource = gakujoAPI.classTables[0..5];
+                ClassTablesDataGrid.Items.Refresh();
+            }
             logger.Info("Refresh ClassTablesDataGrid.");
         }
 
@@ -1312,7 +1322,6 @@ namespace GakujoGUI
         }
 
         #endregion
-
     }
 
     public class Settings

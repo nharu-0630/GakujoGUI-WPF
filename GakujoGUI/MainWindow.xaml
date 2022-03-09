@@ -376,6 +376,12 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
+                    <CheckBox
+                        Name="FilterReportsCheckBox"
+                        Margin="6"
+                        Checked="FilterReportsCheckBox_CheckStateChanged"
+                        Content="未提出のみ"
+                        Unchecked="FilterReportsCheckBox_CheckStateChanged" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
@@ -470,6 +476,12 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
+                    <CheckBox
+                        Name="FilterQuizzesCheckBox"
+                        Margin="6"
+                        Checked="FilterQuizzesCheckBox_CheckStateChanged"
+                        Content="未提出のみ"
+                        Unchecked="FilterQuizzesCheckBox_CheckStateChanged" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
