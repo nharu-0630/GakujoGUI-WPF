@@ -23,7 +23,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
@@ -39,10 +38,10 @@ namespace GakujoGUI
     {
         private readonly GakujoAPI gakujoAPI;
         private readonly NotifyAPI notifyAPI = new();
-
         private readonly Settings settings = new();
-
         private readonly DispatcherTimer autoLoadTimer = new();
+        private readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private bool shutdownFlag = false;
 
         private static string GetJsonPath(string value)
         {
@@ -52,16 +51,6 @@ namespace GakujoGUI
             }
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll", CharSet = CharSet.Auto)]
-        private static extern bool SetForegroundWindow(IntPtr hWnd);
-
-        private readonly Logger logger = LogManager.GetCurrentClassLogger();
-
-        private bool shutdownFlag = false;
 
 #pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public MainWindow()
@@ -85,8 +74,6 @@ namespace GakujoGUI
             {
                 foreach (Process process in processes)
                 {
-                    //_ = ShowWindow(process.MainWindowHandle, 5);
-                    //SetForegroundWindow(process.MainWindowHandle);
                     MessageBox.Show("GakujoGUIはすでに起動しています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                     logger.Warn("Shutdown by double activation.");
                     shutdownFlag = true;
@@ -172,14 +159,8 @@ namespace GakujoGUI
 
         private void Login()
         {
-            Dispatcher.Invoke(() =>
-            {
-                gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordPasswordBox.Password);
-            });
-            if (gakujoAPI.account.UserId == "" || gakujoAPI.account.PassWord == "")
-            {
-                return;
-            }
+            Dispatcher.Invoke(() => { gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordPasswordBox.Password); });
+            if (string.IsNullOrEmpty(gakujoAPI.account.UserId) || string.IsNullOrEmpty(gakujoAPI.account.PassWord)) { return; }
             Dispatcher.Invoke(() =>
             {
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
@@ -187,10 +168,7 @@ namespace GakujoGUI
             });
             if (!gakujoAPI.Login())
             {
-                Dispatcher.Invoke(() =>
-                {
-                    MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error);
-                });
+                Dispatcher.Invoke(() => { MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); });
             }
             else
             {
