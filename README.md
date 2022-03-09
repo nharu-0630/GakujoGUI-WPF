@@ -48,6 +48,8 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### アカウント
 
+<img src="https://user-images.githubusercontent.com/8305330/157392937-fc2fa4d7-b9ac-4f05-8f84-4153ad5dae76.png" width="640">
+
 <details>
 <summary>詳細</summary>
 
@@ -61,7 +63,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### 授業連絡
 
-<img src="https://user-images.githubusercontent.com/8305330/155840055-42d9f776-0ead-4550-89f5-69b3bcd50669.png" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/157393222-ced2382a-8de2-4ca4-ae5d-599c50053bc3.png" width="640">
 
 <details>
 <summary>詳細</summary>
@@ -81,7 +83,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### レポート
 
-<img src="https://user-images.githubusercontent.com/8305330/155840075-97eba8ee-8688-499c-a98b-354d4761625a.png" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/157393376-d68e2d66-b820-4da5-80ee-5267c8d33c92.png" width="640">
 
 <details>
 <summary>詳細</summary>
@@ -101,7 +103,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### 小テスト
 
-<img src="https://user-images.githubusercontent.com/8305330/155840084-70c474f6-34d0-4a03-8672-e1919ec60ba1.png" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/157393451-ffafc7b7-bd14-4d6b-9bf2-edc62585f769.png" width="640">
 
 <details>
 <summary>詳細</summary>
@@ -121,7 +123,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### 授業共有ファイル
 
-<img src="https://user-images.githubusercontent.com/8305330/155840102-ba833a9d-4a44-4d7a-81ec-510d7401dbed.png" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/157393702-c062886b-c126-4482-a1e8-4666bb793a16.png" width="640">
 
 <details>
 <summary>詳細</summary>
@@ -137,7 +139,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### 成績情報
 
-<img src="https://user-images.githubusercontent.com/8305330/155840121-d9d5b2b3-3a59-4a71-ab94-c00df1cba112.png" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/157393816-2bb21fb9-9adf-42bb-9eee-7b3d1e2a6612.png" width="640">
 
 <details>
 <summary>詳細</summary>
