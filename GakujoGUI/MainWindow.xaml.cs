@@ -93,7 +93,7 @@ namespace GakujoGUI
                 {
                     ChangeVisibility(Visibility.Hidden);
                     new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
-                    logger.Info("Startup minimized");
+                    logger.Info("Startup minimized.");
                 }
                 gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
             }
