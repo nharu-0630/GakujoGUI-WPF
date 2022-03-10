@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
@@ -19,6 +20,8 @@ namespace HyperlinkTextBlock
                 typeof(string),
                 typeof(HyperlinkTextBlock),
                 new PropertyMetadata(null, OnInlinePropertyChanged));
+
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public static string? GetInline(TextBlock textBlock)
         {
@@ -141,6 +144,7 @@ namespace HyperlinkTextBlock
             try
             {
                 Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+                logger.Info($"Start Process {e.Uri.AbsoluteUri}");
                 e.Handled = true;
             }
             catch

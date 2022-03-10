@@ -335,10 +335,8 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
-                    Process.Start(new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex])
-                    {
-                        UseShellExecute = true
-                    });
+                    Process.Start(new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true });
+                    logger.Info($"Start Process {((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}");
                 }
             }
         }
@@ -349,11 +347,8 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
                 {
-                    Process.Start(new ProcessStartInfo("explorer.exe")
-                    {
-                        Arguments = $"/e,/select,\"{((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}\"",
-                        UseShellExecute = true
-                    });
+                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
+                    logger.Info($"Start Process explorer.exe /e,/select,\"{((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}\"");
                 }
             }
         }
@@ -535,10 +530,8 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
-                    Process.Start(new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex])
-                    {
-                        UseShellExecute = true
-                    });
+                    Process.Start(new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true });
+                    logger.Info($"Start Process {((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}");
                 }
             }
         }
@@ -549,11 +542,8 @@ namespace GakujoGUI
             {
                 if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
                 {
-                    Process.Start(new ProcessStartInfo("explorer.exe")
-                    {
-                        Arguments = $"/e,/select,\"{((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}\"",
-                        UseShellExecute = true
-                    });
+                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
+                    logger.Info("Start Process explorer.exe /e,/select,\"{((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}\"");
                 }
             }
         }
@@ -1090,6 +1080,7 @@ namespace GakujoGUI
                     settings.UserAgent = UserAgentTextBox.Text;
                     SaveJson();
                     Process.Start(Environment.ProcessPath!);
+                    logger.Info($"Start Process {Environment.ProcessPath!}");
                     logger.Info("Shutdown by apply Settings.");
                     shutdownFlag = true;
                     Application.Current.Shutdown();
@@ -1111,6 +1102,7 @@ namespace GakujoGUI
         private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            logger.Info($"Start Process {e.Uri.AbsoluteUri}");
             e.Handled = true;
         }
 
@@ -1155,6 +1147,7 @@ namespace GakujoGUI
                 Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"",
                 UseShellExecute = true
             });
+            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"");
         }
 
         private void GetLatestVersionButton_Click(object sender, RoutedEventArgs e)
@@ -1168,8 +1161,8 @@ namespace GakujoGUI
                     Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\n{latestVersion}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
                     if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
                     {
-                        logger.Info("Start Process update bat file.");
                         Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
+                        logger.Info("Start Process update bat file.");
                         shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
                     }
