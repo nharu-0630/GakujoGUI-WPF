@@ -1018,6 +1018,11 @@ namespace GakujoGUI
             });
         }
 
+        private void NotificationButton_Click(object sender, RoutedEventArgs e)
+        {
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
         private void AutoLoadEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
             settings.AutoLoadEnable = (bool)AutoLoadEnableCheckBox.IsChecked!;
@@ -1234,6 +1239,7 @@ namespace GakujoGUI
         }
 
         #endregion
+
     }
 
     public class Settings

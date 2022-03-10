@@ -919,7 +919,7 @@
                 <StackPanel Grid.Column="0" Margin="6">
                     <StackPanel Orientation="Horizontal">
                         <Label Margin="6" Content="外部連携" />
-                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                        <TextBlock Margin="6">
                             <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E5%A4%96%E9%83%A8%E9%80%A3%E6%90%BA" RequestNavigate="Hyperlink_RequestNavigate">連携方法</Hyperlink>
                         </TextBlock>
                     </StackPanel>
@@ -938,22 +938,53 @@
                         Width="Auto"
                         Margin="6"
                         ui:ControlHelper.PlaceholderText="Discordトークン" />
-                    <Button
-                        Name="SaveTokensButton"
-                        Margin="6"
-                        Click="SaveTokensButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="SaveTokensButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="SaveTokensButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
+                    <StackPanel Orientation="Horizontal">
+                        <Button
+                            Name="SaveTokensButton"
+                            Margin="6"
+                            Click="SaveTokensButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="SaveTokensButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="SaveTokensButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Button
+                            Name="NotificationButton"
+                            Margin="6"
+                            Click="NotificationButton_Click"
+                            Content="通知設定"
+                            Visibility="Hidden">
+                            <ui:FlyoutBase.AttachedFlyout>
+                                <ui:Flyout Placement="Bottom">
+                                    <StackPanel Orientation="Vertical">
+                                        <Label Margin="6" Content="Todoist" />
+                                        <CheckBox Margin="6" Content="レポート" />
+                                        <CheckBox Margin="6" Content="小テスト" />
+                                        <Separator Margin="6" />
+                                        <Label Margin="6" Content="Discord" />
+                                        <CheckBox Margin="6" Content="授業連絡" />
+                                        <CheckBox Margin="6" Content="レポート" />
+                                        <CheckBox Margin="6" Content="小テスト" />
+                                        <CheckBox Margin="6" Content="授業共有ファイル" />
+                                        <CheckBox Margin="6" Content="成績情報" />
+                                        <Label Margin="6" Content="Windows" />
+                                        <CheckBox Margin="6" Content="授業連絡" />
+                                        <CheckBox Margin="6" Content="レポート" />
+                                        <CheckBox Margin="6" Content="小テスト" />
+                                        <CheckBox Margin="6" Content="授業共有ファイル" />
+                                        <CheckBox Margin="6" Content="成績情報" />
+                                    </StackPanel>
+                                </ui:Flyout>
+                            </ui:FlyoutBase.AttachedFlyout>
+                        </Button>
+                    </StackPanel>
                     <Separator Margin="6" />
                     <Label Margin="6" Content="自動更新" />
                     <CheckBox

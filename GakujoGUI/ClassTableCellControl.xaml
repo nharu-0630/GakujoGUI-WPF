@@ -78,14 +78,12 @@
                 <Button
                     Name="ClassContactButton"
                     Margin="3"
-                    HorizontalAlignment="Center"
                     Click="ClassContactButton_Click">
                     <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8F2;" />
                 </Button>
                 <Button
                     Name="ReportButton"
                     Margin="3"
-                    HorizontalAlignment="Center"
                     Click="ReportButton_Click">
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9F9;" />
@@ -115,7 +113,6 @@
                 <Button
                     Name="QuizButton"
                     Margin="3"
-                    HorizontalAlignment="Center"
                     Click="QuizButton_Click">
                     <Grid>
                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE9D5;" />
