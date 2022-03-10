@@ -91,7 +91,7 @@ namespace GakujoGUI
                 }
                 if (settings.StartUpMinimize)
                 {
-                    ChangeVisibility(Visibility.Hidden);
+                    SetVisibility(Visibility.Hidden);
                     new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
                     logger.Info("Startup minimized.");
                 }
@@ -842,7 +842,7 @@ namespace GakujoGUI
 
         #region 通知
 
-        private void ChangeVisibility(Visibility visibility)
+        private void SetVisibility(Visibility visibility)
         {
             switch (visibility)
             {
@@ -854,7 +854,7 @@ namespace GakujoGUI
                     Activate();
                     ShowInTaskbar = true;
                     TaskBarIcon.Visibility = Visibility.Collapsed;
-                    logger.Info("Change visibility to Visible.");
+                    logger.Info("Set visibility to Visible.");
                     break;
                 case Visibility.Hidden:
                     //WindowState = WindowState.Minimized;
@@ -862,7 +862,7 @@ namespace GakujoGUI
                     Hide();
                     ShowInTaskbar = false;
                     TaskBarIcon.Visibility = Visibility.Visible;
-                    logger.Info("Change visibility to Hidden.");
+                    logger.Info("Set visibility to Hidden.");
                     break;
             }
         }
@@ -872,7 +872,7 @@ namespace GakujoGUI
             ToastArguments toastArguments = ToastArguments.Parse(e.Argument);
             Dispatcher.Invoke(() =>
             {
-                ChangeVisibility(Visibility.Visible);
+                SetVisibility(Visibility.Visible);
                 logger.Info("Activate MainForm by Toast.");
                 if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
                 {
@@ -941,7 +941,7 @@ namespace GakujoGUI
 
         private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeVisibility(Visibility.Visible);
+            SetVisibility(Visibility.Visible);
             logger.Info("Activate MainForm by OpenMenuItem.");
         }
 
@@ -959,7 +959,7 @@ namespace GakujoGUI
 
         private void TaskBarIcon_TrayMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            ChangeVisibility(Visibility.Visible);
+            SetVisibility(Visibility.Visible);
             logger.Info("Activate MainForm by TaskBarIcon.");
         }
 
@@ -971,14 +971,14 @@ namespace GakujoGUI
 
         private void ReportMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeVisibility(Visibility.Visible);
+            SetVisibility(Visibility.Visible);
             ReportsTabItem.IsSelected = true;
             logger.Info("Activate MainForm by ReportMenuItem.");
         }
 
         private void QuizMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeVisibility(Visibility.Visible);
+            SetVisibility(Visibility.Visible);
             QuizzesTabItem.IsSelected = true;
             logger.Info("Activate MainForm by QuizMenuItem.");
         }
@@ -988,7 +988,7 @@ namespace GakujoGUI
             if (!shutdownFlag)
             {
                 e.Cancel = true;
-                ChangeVisibility(Visibility.Hidden);
+                SetVisibility(Visibility.Hidden);
                 //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態に移動しました．").Show();
                 logger.Info("Minimized MainForm by window closing.");
             }
