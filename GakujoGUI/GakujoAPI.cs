@@ -814,7 +814,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[5]/tr/td/table") == null)
+            if (htmlDocument.DocumentNode.SelectNodes("//table[@class=\"txt12\"]") == null)
             {
                 diffClassResults = new();
                 logger.Warn("Not found ClassResults list.");
@@ -823,10 +823,10 @@ namespace GakujoGUI
             {
                 diffClassResults = new(schoolGrade.ClassResults);
                 schoolGrade.ClassResults.Clear();
-                logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count - 1} ClassResults.");
-                for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr").Count; i++)
+                logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1} ClassResults.");
+                for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count; i++)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[5]/tr/td/table").SelectNodes("tr")[i];
+                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr")[i];
                     ClassResult classResult = new();
                     classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
                     classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
