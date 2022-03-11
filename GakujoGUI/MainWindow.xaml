@@ -1037,7 +1037,17 @@
                         <ComboBoxItem Content="後期前半" />
                         <ComboBoxItem Content="後期後半" />
                     </ComboBox>
-                    <Label Margin="6" Content="UserAgent" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="UserAgent" />
+                        <Button
+                            Name="ResetUserAgentButton"
+                            Margin="6"
+                            Click="ResetUserAgentButton_Click"
+                            Content="リセットする" />
+                    </StackPanel>
                     <TextBox
                         Name="UserAgentTextBox"
                         MinHeight="96"

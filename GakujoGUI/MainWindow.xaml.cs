@@ -1074,6 +1074,11 @@ namespace GakujoGUI
             registryKey.Close();
         }
 
+        private void ResetUserAgentButton_Click(object sender, RoutedEventArgs e)
+        {
+            UserAgentTextBox.Text = new Settings().UserAgent;
+        }
+
         private void SaveGakujoButton_Click(object sender, RoutedEventArgs e)
         {
             switch (MessageBox.Show("適用するにはGakujoGUIを再起動する必要があります．\n再起動しますか．", "GakujoGUI", MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
@@ -1247,8 +1252,8 @@ namespace GakujoGUI
         public bool StartUpEnable { get; set; } = false;
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2021;
-        public int SemesterCode { get; set; } = 2;
-        public string UserAgent { get; set; } = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36 Edg/91.0.864.71";
+        public int SemesterCode { get; set; } = 3;
+        public string UserAgent { get; set; } = $"Chrome/99.0.4844.51 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
     }
 
 #pragma warning disable IDE1006 // 命名スタイル
