@@ -1050,8 +1050,8 @@
                     </StackPanel>
                     <TextBox
                         Name="UserAgentTextBox"
-                        MinHeight="96"
-                        MaxHeight="96"
+                        MinHeight="72"
+                        MaxHeight="72"
                         Margin="6"
                         TextWrapping="Wrap"
                         VerticalScrollBarVisibility="Auto" />
