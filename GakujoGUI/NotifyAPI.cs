@@ -12,13 +12,14 @@ namespace GakujoGUI
 {
     internal class NotifyAPI
     {
-        public Tokens tokens = new();
+        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
+        private Tokens tokens = new();
         private TodoistClient? todoistClient;
         private DiscordSocketClient? discordSocketClient;
-
         private DateTime todoistUpdateDateTime = new();
-        private Resources? _todoistResources;
+        private Resources? todoistResources;
+
         private Resources TodoistResources
         {
             get
@@ -28,10 +29,11 @@ namespace GakujoGUI
                     todoistUpdateDateTime = DateTime.Now;
                     TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 }
-                return _todoistResources!;
+                return todoistResources!;
             }
-            set => _todoistResources = value;
+            set => todoistResources = value;
         }
+        public Tokens Tokens { get => tokens; set => tokens = value; }
 
         private static string GetJsonPath(string value)
         {
@@ -42,13 +44,11 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
         public NotifyAPI()
         {
             if (File.Exists(GetJsonPath("Tokens")))
             {
-                tokens = JsonConvert.DeserializeObject<Tokens>(File.ReadAllText(GetJsonPath("Tokens")))!;
+                Tokens = JsonConvert.DeserializeObject<Tokens>(File.ReadAllText(GetJsonPath("Tokens")))!;
                 logger.Info("Load Tokens.");
             }
             Login();
@@ -56,10 +56,10 @@ namespace GakujoGUI
 
         public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
-            tokens.TodoistToken = todoistToken;
-            tokens.DiscordChannel = ulong.Parse(discordChannel);
-            tokens.DiscordToken = discordToken;
-            try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(tokens, Formatting.Indented)); }
+            Tokens.TodoistToken = todoistToken;
+            Tokens.DiscordChannel = ulong.Parse(discordChannel);
+            Tokens.DiscordToken = discordToken;
+            try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Tokens."); }
         }
 
@@ -67,14 +67,14 @@ namespace GakujoGUI
         {
             try
             {
-                todoistClient = new(tokens.TodoistToken);
+                todoistClient = new(Tokens.TodoistToken);
                 logger.Info("Login Todoist.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Login Todoist."); }
             try
             {
                 discordSocketClient = new();
-                discordSocketClient.LoginAsync(TokenType.Bot, tokens.DiscordToken).Wait();
+                discordSocketClient.LoginAsync(TokenType.Bot, Tokens.DiscordToken).Wait();
                 discordSocketClient.StartAsync().Wait();
                 logger.Info("Login Discord.");
             }
@@ -178,7 +178,7 @@ namespace GakujoGUI
                 embedBuilder.WithDescription(classContact.Content);
                 embedBuilder.WithAuthor(classContact.Subjects);
                 embedBuilder.WithTimestamp(classContact.ContactDateTime);
-                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 logger.Info("Notify Discord ClassContact.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassContact."); }
@@ -193,7 +193,7 @@ namespace GakujoGUI
                 embedBuilder.WithDescription($"{report.StartDateTime} -> {report.EndDateTime}");
                 embedBuilder.WithAuthor(report.Subjects);
                 embedBuilder.WithTimestamp(report.StartDateTime);
-                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 logger.Info("Notify Discord Report.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Notify Discord Report."); }
@@ -208,7 +208,7 @@ namespace GakujoGUI
                 embedBuilder.WithDescription($"{quiz.StartDateTime} -> {quiz.EndDateTime}");
                 embedBuilder.WithAuthor(quiz.Subjects);
                 embedBuilder.WithTimestamp(quiz.StartDateTime);
-                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 logger.Info("Notify Discord Quiz.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Notify Discord Quiz."); }
@@ -223,7 +223,7 @@ namespace GakujoGUI
                 embedBuilder.WithDescription(classSharedFile.Description);
                 embedBuilder.WithAuthor(classSharedFile.Subjects);
                 embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
-                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 logger.Info("Notify Discord ClassSharedFile.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassSharedFile."); }
@@ -238,7 +238,7 @@ namespace GakujoGUI
                 if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}"); }
                 embedBuilder.WithAuthor(classResult.TeacherName);
                 embedBuilder.WithTimestamp(classResult.ReportDate);
-                (discordSocketClient!.GetChannel(tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
+                (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 logger.Info("Notify Discord ClassResult.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassResult."); }
