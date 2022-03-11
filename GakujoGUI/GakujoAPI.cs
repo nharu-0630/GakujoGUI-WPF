@@ -334,11 +334,10 @@ namespace GakujoGUI
             if (ClassTables == null) { logger.Warn("Return Apply Reports to ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in ClassTables)
             {
-                classTableRow.Monday.ReportCount = 0;
-                classTableRow.Tuesday.ReportCount = 0;
-                classTableRow.Wednesday.ReportCount = 0;
-                classTableRow.Thursday.ReportCount = 0;
-                classTableRow.Friday.ReportCount = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    classTableRow[i].ReportCount = 0;
+                }
             }
             foreach (Report report in Reports)
             {
@@ -346,11 +345,11 @@ namespace GakujoGUI
                 {
                     foreach (ClassTableRow classTableRow in ClassTables)
                     {
-                        if (report.Subjects.Contains($"{classTableRow.Monday.SubjectsName}（{classTableRow.Monday.ClassName}）")) { classTableRow.Monday.ReportCount++; }
-                        if (report.Subjects.Contains($"{classTableRow.Tuesday.SubjectsName}（{classTableRow.Tuesday.ClassName}）")) { classTableRow.Tuesday.ReportCount++; }
-                        if (report.Subjects.Contains($"{classTableRow.Wednesday.SubjectsName}（{classTableRow.Wednesday.ClassName}）")) { classTableRow.Wednesday.ReportCount++; }
-                        if (report.Subjects.Contains($"{classTableRow.Thursday.SubjectsName}（{classTableRow.Thursday.ClassName}）")) { classTableRow.Thursday.ReportCount++; }
-                        if (report.Subjects.Contains($"{classTableRow.Friday.SubjectsName}（{classTableRow.Friday.ClassName}）")) { classTableRow.Friday.ReportCount++; }
+                        if (classTableRow == null) { continue; }
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (report.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].ReportCount++; }
+                        }
                     }
                 }
             }
@@ -428,11 +427,10 @@ namespace GakujoGUI
             foreach (ClassTableRow classTableRow in ClassTables)
             {
                 if (classTableRow == null) { continue; }
-                classTableRow.Monday.QuizCount = 0;
-                classTableRow.Tuesday.QuizCount = 0;
-                classTableRow.Wednesday.QuizCount = 0;
-                classTableRow.Thursday.QuizCount = 0;
-                classTableRow.Friday.QuizCount = 0;
+                for (int i = 0; i < 5; i++)
+                {
+                    classTableRow[i].QuizCount = 0;
+                }
             }
             foreach (Quiz quiz in Quizzes)
             {
@@ -441,11 +439,10 @@ namespace GakujoGUI
                     foreach (ClassTableRow classTableRow in ClassTables)
                     {
                         if (classTableRow == null) { continue; }
-                        if (quiz.Subjects.Contains($"{classTableRow.Monday.SubjectsName}（{classTableRow.Monday.ClassName}）")) { classTableRow.Monday.QuizCount++; }
-                        if (quiz.Subjects.Contains($"{classTableRow.Tuesday.SubjectsName}（{classTableRow.Tuesday.ClassName}）")) { classTableRow.Tuesday.QuizCount++; }
-                        if (quiz.Subjects.Contains($"{classTableRow.Wednesday.SubjectsName}（{classTableRow.Wednesday.ClassName}）")) { classTableRow.Wednesday.QuizCount++; }
-                        if (quiz.Subjects.Contains($"{classTableRow.Thursday.SubjectsName}（{classTableRow.Thursday.ClassName}）")) { classTableRow.Thursday.QuizCount++; }
-                        if (quiz.Subjects.Contains($"{classTableRow.Friday.SubjectsName}（{classTableRow.Friday.ClassName}）")) { classTableRow.Friday.QuizCount++; }
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (quiz.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].QuizCount++; }
+                        }
                     }
                 }
             }
@@ -949,25 +946,7 @@ namespace GakujoGUI
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    ClassTableCell classTableCell = new();
-                    switch (j)
-                    {
-                        case 0:
-                            classTableCell = ClassTables[i].Monday;
-                            break;
-                        case 1:
-                            classTableCell = ClassTables[i].Tuesday;
-                            break;
-                        case 2:
-                            classTableCell = ClassTables[i].Wednesday;
-                            break;
-                        case 3:
-                            classTableCell = ClassTables[i].Thursday;
-                            break;
-                        case 4:
-                            classTableCell = ClassTables[i].Friday;
-                            break;
-                    }
+                    ClassTableCell classTableCell = ClassTables[i][j];
                     if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a") != null)
                     {
                         string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
@@ -1005,24 +984,7 @@ namespace GakujoGUI
                     {
                         classTableCell = new();
                     }
-                    switch (j)
-                    {
-                        case 0:
-                            ClassTables[i].Monday = classTableCell;
-                            break;
-                        case 1:
-                            ClassTables[i].Tuesday = classTableCell;
-                            break;
-                        case 2:
-                            ClassTables[i].Wednesday = classTableCell;
-                            break;
-                        case 3:
-                            ClassTables[i].Thursday = classTableCell;
-                            break;
-                        case 4:
-                            ClassTables[i].Friday = classTableCell;
-                            break;
-                    }
+                    ClassTables[i][j] = classTableCell;
                 }
             }
             logger.Info("End Get ClassTables.");
@@ -1281,16 +1243,55 @@ namespace GakujoGUI
         public ClassTableCell Thursday { get; set; } = new();
         public ClassTableCell Friday { get; set; } = new();
 
-        public override string ToString() => $"{Monday.SubjectsName} {Tuesday.SubjectsName} {Wednesday.SubjectsName} {Thursday.SubjectsName} {Friday.SubjectsName}";
+        public ClassTableCell this[int index]
+        {
+            get
+            {
+                return index switch
+                {
+                    0 => Monday,
+                    1 => Tuesday,
+                    2 => Wednesday,
+                    3 => Thursday,
+                    4 => Friday,
+                    _ => new(),
+                };
+            }
+            set
+            {
+                switch (index)
+                {
+                    case 0:
+                        Monday = value;
+                        break;
+                    case 1:
+                        Tuesday = value;
+                        break;
+                    case 2:
+                        Wednesday = value;
+                        break;
+                    case 3:
+                        Thursday = value;
+                        break;
+                    case 4:
+                        Friday = value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        public override string ToString() => $"{this[0].SubjectsName} {this[1].SubjectsName} {this[2].SubjectsName} {this[3].SubjectsName} {this[4].SubjectsName}";
 
         public override bool Equals(object? obj)
         {
             if (obj == null || GetType() != obj.GetType()) { return false; }
             ClassTableRow objClassTableRow = (ClassTableRow)obj;
-            return Monday.GetHashCode() == objClassTableRow.Monday.GetHashCode() && Tuesday.GetHashCode() == objClassTableRow.Tuesday.GetHashCode() && Wednesday.GetHashCode() == objClassTableRow.Wednesday.GetHashCode() && Thursday.GetHashCode() == objClassTableRow.Thursday.GetHashCode() && Friday.GetHashCode() == objClassTableRow.Friday.GetHashCode();
+            return this[0].GetHashCode() == objClassTableRow[0].GetHashCode() && this[1].GetHashCode() == objClassTableRow[1].GetHashCode() && this[2].GetHashCode() == objClassTableRow[2].GetHashCode() && this[3].GetHashCode() == objClassTableRow[3].GetHashCode() && this[4].GetHashCode() == objClassTableRow[4].GetHashCode();
         }
 
-        public override int GetHashCode() => Monday.GetHashCode() ^ Tuesday.GetHashCode() ^ Wednesday.GetHashCode() ^ Thursday.GetHashCode() ^ Friday.GetHashCode();
+        public override int GetHashCode() => this[0].GetHashCode() ^ this[1].GetHashCode() ^ this[2].GetHashCode() ^ this[3].GetHashCode() ^ this[4].GetHashCode();
     }
 
     public class ClassTableCell

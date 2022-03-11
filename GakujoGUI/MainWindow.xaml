@@ -24,7 +24,7 @@
             TrayMouseDoubleClick="TaskBarIcon_TrayMouseDoubleClick"
             Visibility="Hidden">
             <tb:TaskbarIcon.ContextMenu>
-                <ContextMenu>
+                <ContextMenu Opened="ContextMenu_Opened">
                     <MenuItem
                         Name="ReportMenuItem"
                         Click="ReportMenuItem_Click"
