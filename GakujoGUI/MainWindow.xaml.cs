@@ -25,6 +25,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Windows.Navigation;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
 
@@ -1099,7 +1100,7 @@ namespace GakujoGUI
             }
         }
 
-        private void Hyperlink_RequestNavigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
             Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             logger.Info($"Start Process {e.Uri.AbsoluteUri}");

@@ -30,19 +30,13 @@ namespace HyperlinkTextBlock
 
         public static void SetInline(TextBlock textBlock, string value)
         {
-            if (textBlock != null)
-            {
-                textBlock.SetValue(ArticleContentProperty, value);
-            }
+            if (textBlock != null) { textBlock.SetValue(ArticleContentProperty, value); }
         }
 
         private static void OnInlinePropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             TextBlock textBlock = (dependencyObject as TextBlock)!;
-            if (textBlock == null || e.NewValue is not string message)
-            {
-                return;
-            }
+            if (textBlock == null || e.NewValue is not string message) { return; }
             message = message.TrimEnd('\n').TrimEnd('\r');
             List<int> newLine = new();
             int i = 0;
@@ -133,10 +127,7 @@ namespace HyperlinkTextBlock
                     }
                 }
             }
-            else
-            {
-                textBlock.Text = message;
-            }
+            else { textBlock.Text = message; }
         }
 
         private static void RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -147,25 +138,18 @@ namespace HyperlinkTextBlock
                 logger.Info($"Start Process {e.Uri.AbsoluteUri}");
                 e.Handled = true;
             }
-            catch
-            { }
+            catch { }
         }
 
         private static new void MouseEnter(object sender, MouseEventArgs e)
         {
-            if (sender is not Hyperlink hyperlink)
-            {
-                return;
-            }
+            if (sender is not Hyperlink hyperlink) { return; }
             hyperlink.Foreground = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
         }
 
         private static new void MouseLeave(object sender, MouseEventArgs e)
         {
-            if (sender is not Hyperlink hyperlink || hyperlink!.Parent is not TextBlock textBlock)
-            {
-                return;
-            }
+            if (sender is not Hyperlink hyperlink || hyperlink!.Parent is not TextBlock textBlock) { return; }
             hyperlink.Foreground = textBlock.Foreground;
         }
     }
