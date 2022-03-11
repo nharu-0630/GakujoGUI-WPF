@@ -329,7 +329,7 @@ namespace GakujoGUI
                 if (classTableRow == null) { continue; }
                 for (int i = 0; i < 5; i++) { classTableRow[i].ReportCount = 0; }
             }
-            foreach (Report report in Reports.FindAll(x => x.Unsubmitted)
+            foreach (Report report in Reports.FindAll(x => x.Unsubmitted))
             {
                 foreach (ClassTableRow classTableRow in ClassTables)
                 {
@@ -413,7 +413,7 @@ namespace GakujoGUI
                 if (classTableRow == null) { continue; }
                 for (int i = 0; i < 5; i++) { classTableRow[i].QuizCount = 0; }
             }
-            foreach (Quiz quiz in Quizzes.FindAll(x => x.Unsubmitted)
+            foreach (Quiz quiz in Quizzes.FindAll(x => x.Unsubmitted))
             {
                 foreach (ClassTableRow classTableRow in ClassTables)
                 {
