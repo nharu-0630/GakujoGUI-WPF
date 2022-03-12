@@ -5,8 +5,6 @@ using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
 using Newtonsoft.Json;
 using NLog;
-using NLog.Config;
-using NLog.Targets;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -58,18 +56,6 @@ namespace GakujoGUI
 #pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         {
             InitializeComponent();
-            LoggingConfiguration loggingConfiguration = new();
-            FileTarget fileTarget = new();
-            loggingConfiguration.AddTarget("file", fileTarget);
-            fileTarget.Name = "fileTarget";
-            fileTarget.FileName = "${basedir}/Logs/${shortdate}.log";
-            fileTarget.Layout = "${longdate} [${uppercase:${level}}] ${message}"; ;
-            LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
-            if (Environment.GetCommandLineArgs().Contains("-trace"))
-            { loggingRule = new("*", LogLevel.Trace, fileTarget); }
-            loggingConfiguration.LoggingRules.Add(loggingRule);
-            LogManager.Configuration = loggingConfiguration;
-            logger.Info("Start Logging.");
             Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Where(x => x.Id != Environment.ProcessId).ToArray();
             if (processes.Length != 0)
             {
