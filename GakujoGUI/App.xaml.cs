@@ -2,6 +2,7 @@
 using NLog.Config;
 using NLog.Targets;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,7 +25,7 @@ namespace GakujoGUI
             FileTarget fileTarget = new();
             loggingConfiguration.AddTarget("file", fileTarget);
             fileTarget.Name = "fileTarget";
-            fileTarget.FileName = "${basedir}/Logs/${shortdate}.log";
+            fileTarget.FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @"GakujoGUI\Logs\${shortdate}.log");
             fileTarget.Layout = "${longdate} [${uppercase:${level}}] ${message}"; ;
             LoggingRule loggingRule = new("*", LogLevel.Debug, fileTarget);
             if (Environment.GetCommandLineArgs().Contains("-trace"))
