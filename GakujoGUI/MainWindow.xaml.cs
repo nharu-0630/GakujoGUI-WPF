@@ -714,7 +714,9 @@ namespace GakujoGUI
             logger.Info("Refresh ClassTablesDataGrid.");
         }
 
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
         private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
             if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
             DataGridRow dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
