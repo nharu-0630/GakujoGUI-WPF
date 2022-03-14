@@ -14,7 +14,6 @@
     MinHeight="600"
     ui:WindowHelper.UseModernWindowStyle="True"
     Closing="Window_Closing"
-    Loaded="Window_Loaded"
     mc:Ignorable="d">
     <Window.DataContext>
         <tb:TaskbarIcon

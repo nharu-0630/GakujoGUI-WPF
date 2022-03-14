@@ -83,57 +83,49 @@ namespace GakujoGUI
                     logger.Info("Startup minimized.");
                 }
                 gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-            }
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            UserIdTextBox.Text = gakujoAPI.Account.UserId;
-            PassWordPasswordBox.Password = gakujoAPI.Account.PassWord;
-            TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
-            DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
-            RefreshClassTablesDataGrid();
-            RefreshClassContactsDataGrid();
-            RefreshReportsDataGrid();
-            RefreshQuizzesDataGrid();
-            RefreshClassSharedFilesDataGrid();
-            RefreshClassResultsDataGrid();
-            AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
-            AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
-            StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
-            StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
-            SchoolYearNumberBox.Value = settings.SchoolYear;
-            SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
-            UserAgentTextBox.Text = settings.UserAgent;
-            VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
-            Task.Run(() =>
-            {
-                gakujoAPI.LoadJson();
-                Login();
-                Load();
-                Dispatcher.Invoke(() =>
+                UserIdTextBox.Text = gakujoAPI.Account.UserId;
+                PassWordPasswordBox.Password = gakujoAPI.Account.PassWord;
+                TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
+                DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
+                DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
+                RefreshClassTablesDataGrid();
+                RefreshClassContactsDataGrid();
+                RefreshReportsDataGrid();
+                RefreshQuizzesDataGrid();
+                RefreshClassSharedFilesDataGrid();
+                RefreshClassResultsDataGrid();
+                AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
+                AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
+                StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
+                StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
+                SchoolYearNumberBox.Value = settings.SchoolYear;
+                SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
+                UserAgentTextBox.Text = settings.UserAgent;
+                VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+                Task.Run(() =>
                 {
-                    autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
-                    autoLoadTimer.Tick += new EventHandler(LoadEvent);
-                    if (settings.AutoLoadEnable)
+                    gakujoAPI.LoadJson();
+                    Login();
+                    Load();
+                    Dispatcher.Invoke(() =>
                     {
-                        autoLoadTimer.Start();
-                        logger.Info("Start AutoLoadTimer.");
-                    }
+                        autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
+                        autoLoadTimer.Tick += new EventHandler(LoadEvent);
+                        if (settings.AutoLoadEnable)
+                        {
+                            autoLoadTimer.Start();
+                            logger.Info("Start AutoLoadTimer.");
+                        }
+                    });
                 });
-            });
+            }
         }
 
         #region ログイン
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() =>
-            {
-                Login();
-                Load();
-            });
+            Task.Run(() => { Login(); Load(); });
         }
 
         private void Login()
