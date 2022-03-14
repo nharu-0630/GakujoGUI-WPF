@@ -293,6 +293,7 @@ namespace GakujoGUI
                         Task.Run(() => gakujoAPI.GetClassContact(index));
                     }
                 }
+                ClassContactContactDateTimeLabel.Content = ((ClassContact)ClassContactsDataGrid.SelectedItem).ContactDateTime.ToString("yyyy/MM/dd HH:mm");
                 ClassContactContentTextBox.Text = ((ClassContact)ClassContactsDataGrid.SelectedItem).Content;
                 if (((ClassContact)ClassContactsDataGrid.SelectedItem).Files.Length == 0)
                 {
@@ -381,7 +382,54 @@ namespace GakujoGUI
 
         private void ReportsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (ReportsDataGrid.SelectedIndex != -1)
+            {
+                if (((Report)ReportsDataGrid.SelectedItem).EvaluationMethod == "")
+                {
+                    if (MessageBox.Show("レポートの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        Task.Run(() => gakujoAPI.GetReport((Report)ReportsDataGrid.SelectedItem));
+                    }
+                }
+                ReportDescriptionTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Description;
+                ReportMessageTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Message;
+                if (((Report)ReportsDataGrid.SelectedItem).Files.Length == 0)
+                {
+                    ReportFilesComboBox.ItemsSource = null;
+                    ReportFilesStackPanel.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    ReportFilesComboBox.ItemsSource = ((Report)ReportsDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
+                    ReportFilesComboBox.SelectedIndex = 0;
+                    ReportFilesStackPanel.Visibility = Visibility.Visible;
+                }
+            }
+        }
 
+        private void OpenReportFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ReportFilesComboBox.SelectedIndex != -1)
+            {
+                if (File.Exists(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]))
+                {
+                    Process.Start(new ProcessStartInfo(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]) { UseShellExecute = true });
+                    logger.Info($"Start Process {((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}");
+                }
+            }
+        }
+
+        private void OpenReportFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (ReportFilesComboBox.SelectedIndex != -1)
+            {
+                if (File.Exists(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]))
+                {
+                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
+                    logger.Info($"Start Process explorer.exe /e,/select,\"{((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}\"");
+                }
+            }
         }
 
         #endregion
@@ -490,6 +538,7 @@ namespace GakujoGUI
                         Task.Run(() => gakujoAPI.GetClassSharedFile(index));
                     }
                 }
+                ClassSharedFileUpdateDateTimeLabel.Content = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).UpdateDateTime.ToString("yyyy/MM/dd HH:mm");
                 ClassSharedFileDescriptionTextBox.Text = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description;
                 if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files.Length == 0)
                 {
@@ -1221,6 +1270,7 @@ namespace GakujoGUI
         }
 
         #endregion
+
     }
 
     public class Settings

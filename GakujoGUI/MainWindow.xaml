@@ -283,12 +283,6 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding ContactDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="連絡日時"
-                                IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <GridSplitter
@@ -301,6 +295,11 @@
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
+                                <Label
+                                    Name="ClassContactContactDateTimeLabel"
+                                    Margin="12"
+                                    HorizontalAlignment="Right"
+                                    Content="連絡日時" />
                                 <TextBox
                                     Name="ClassContactContentTextBox"
                                     Text="内容"
@@ -311,23 +310,20 @@
                                     link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
                                     Text="{Binding Text, ElementName=ClassContactContentTextBox}"
                                     TextWrapping="Wrap" />
-                                <StackPanel
-                                    Name="ClassContactFilesStackPanel"
-                                    Orientation="Horizontal"
-                                    Visibility="Hidden">
+                                <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal">
                                     <ComboBox
                                         Name="ClassContactFilesComboBox"
                                         MaxWidth="360"
-                                        Margin="6" />
+                                        Margin="12" />
                                     <Button
                                         Name="OpenClassContactFileButton"
-                                        Margin="6"
+                                        Margin="6,12"
                                         Click="OpenClassContactFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
                                         Name="OpenClassContactFolderButton"
-                                        Margin="6"
+                                        Margin="6,12"
                                         Click="OpenClassContactFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
                                     </Button>
@@ -386,56 +382,114 @@
                     Grid.Row="1"
                     Width="5"
                     VerticalAlignment="Stretch" />
-                <DataGrid
-                    Name="ReportsDataGrid"
-                    Grid.Row="2"
-                    Margin="6"
-                    AreRowDetailsFrozen="True"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserResizeRows="False"
-                    CanUserSortColumns="False"
-                    RowHeight="32"
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionChanged="ReportsDataGrid_SelectionChanged"
-                    SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding Subjects}"
-                            Header="授業科目"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="280"
-                            MinWidth="280"
-                            Binding="{Binding Title}"
-                            Header="タイトル"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding Status}"
-                            Header="状態"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="120"
-                            MinWidth="120"
-                            Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                            Header="提出期間"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="120"
-                            MinWidth="120"
-                            Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                            Header="提出期間"
-                            IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" MinHeight="100" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" MinHeight="100" />
+                    </Grid.RowDefinitions>
+                    <DataGrid
+                        Name="ReportsDataGrid"
+                        Grid.Row="0"
+                        Margin="6"
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        RowHeight="32"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionChanged="ReportsDataGrid_SelectionChanged"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding Subjects}"
+                                Header="授業科目"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="280"
+                                MinWidth="280"
+                                Binding="{Binding Title}"
+                                Header="タイトル"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding Status}"
+                                Header="状態"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="120"
+                                MinWidth="120"
+                                Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                Header="提出期間"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="120"
+                                MinWidth="120"
+                                Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                Header="提出期間"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Height="5"
+                        HorizontalAlignment="Stretch" />
+                    <ScrollViewer
+                        Grid.Row="2"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <DockPanel>
+                            <StackPanel Orientation="Vertical">
+                                <TextBox
+                                    Name="ReportDescriptionTextBox"
+                                    Text="説明"
+                                    Visibility="Collapsed" />
+                                <TextBlock
+                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                    Margin="12"
+                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportDescriptionTextBox}"
+                                    Text="{Binding Text, ElementName=ReportDescriptionTextBox}"
+                                    TextWrapping="Wrap" />
+                                <TextBox
+                                    Name="ReportMessageTextBox"
+                                    Text="伝達事項"
+                                    Visibility="Collapsed" />
+                                <TextBlock
+                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                    Margin="12,6"
+                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
+                                    Text="{Binding Text, ElementName=ReportMessageTextBox}"
+                                    TextWrapping="Wrap" />
+                                <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal">
+                                    <ComboBox
+                                        Name="ReportFilesComboBox"
+                                        MaxWidth="360"
+                                        Margin="12" />
+                                    <Button
+                                        Name="OpenReportFileButton"
+                                        Margin="6"
+                                        Click="OpenReportFileButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                    </Button>
+                                    <Button
+                                        Name="OpenReportFolderButton"
+                                        Margin="6"
+                                        Click="OpenReportFolderButton_Click">
+                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                    </Button>
+                                </StackPanel>
+                            </StackPanel>
+                        </DockPanel>
+                    </ScrollViewer>
+                </Grid>
             </Grid>
         </TabItem>
         <TabItem Name="QuizzesTabItem" Header="小テスト">
@@ -622,12 +676,6 @@
                                 Binding="{Binding Title}"
                                 Header="タイトル"
                                 IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding UpdateDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="更新日時"
-                                IsReadOnly="True" />
                         </DataGrid.Columns>
                     </DataGrid>
                     <GridSplitter
@@ -640,6 +688,11 @@
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
+                                <Label
+                                    Name="ClassSharedFileUpdateDateTimeLabel"
+                                    Margin="12"
+                                    HorizontalAlignment="Right"
+                                    Content="更新日時" />
                                 <TextBox
                                     Name="ClassSharedFileDescriptionTextBox"
                                     Text="ファイル説明"
@@ -651,16 +704,16 @@
                                     Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                     TextWrapping="Wrap" />
                                 <StackPanel Orientation="Horizontal">
-                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="6" />
+                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="12" />
                                     <Button
                                         Name="OpenClassSharedFileButton"
-                                        Margin="6"
+                                        Margin="6,12"
                                         Click="OpenClassSharedFileButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
                                     </Button>
                                     <Button
                                         Name="OpenClassSharedFolderButton"
-                                        Margin="6"
+                                        Margin="6,12"
                                         Click="OpenClassSharedFolderButton_Click">
                                         <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
                                     </Button>
