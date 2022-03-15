@@ -24,7 +24,7 @@
 
 ## 📦️ Installation
 
-[Release](https://github.com/xyzyxJP/GakujoGUI-WPF/releases)
+[正式リリース](https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest/download/net6.0-windows10.0.18362.0.zip)
 
 Zipファイルをダウンロードし，すべて展開を行ったあとに，`GakujoGUI.exe`を実行してください．  
 ランタイムエラーが表示される場合は，[こちら](https://github.com/xyzyxJP/GakujoGUI-WPF#%EF%B8%8F-troubleshooting)を参照してください．
