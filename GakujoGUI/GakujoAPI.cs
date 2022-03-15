@@ -1127,7 +1127,7 @@ namespace GakujoGUI
         private static string GetSyllabusValue(HtmlDocument htmlDocument, string key)
         {
             if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return ""; }
-            return Regex.Replace(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim('　').Trim(' '), " +", " ").Replace("<br>", " \r\n");
+            return Regex.Replace(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim('　').Trim(' '), " +", " ").Replace("<br>", " \r\n").Replace("<b>","").Replace("</b>","");
         }
     }
 
