@@ -448,6 +448,11 @@
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
+                                <Label
+                                    Name="ReportStartEndDateTimeLabel"
+                                    Margin="12"
+                                    HorizontalAlignment="Right"
+                                    Content="提出期間" />
                                 <TextBox
                                     Name="ReportDescriptionTextBox"
                                     Text="説明"
@@ -613,6 +618,11 @@
                         ScrollViewer.VerticalScrollBarVisibility="Auto">
                         <DockPanel>
                             <StackPanel Orientation="Vertical">
+                                <Label
+                                    Name="QuizStartEndDateTimeLabel"
+                                    Margin="12"
+                                    HorizontalAlignment="Right"
+                                    Content="提出期間" />
                                 <TextBox
                                     Name="QuizDescriptionTextBox"
                                     Text="説明"

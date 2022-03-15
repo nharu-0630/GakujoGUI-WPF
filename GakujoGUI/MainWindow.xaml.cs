@@ -284,7 +284,7 @@ namespace GakujoGUI
         {
             if (ClassContactsDataGrid.SelectedIndex != -1)
             {
-                if (((ClassContact)ClassContactsDataGrid.SelectedItem).Content == "")
+                if (!((ClassContact)ClassContactsDataGrid.SelectedItem).IsAcquired)
                 {
                     if (MessageBox.Show("授業連絡の詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -384,7 +384,7 @@ namespace GakujoGUI
         {
             if (ReportsDataGrid.SelectedIndex != -1)
             {
-                if (((Report)ReportsDataGrid.SelectedItem).EvaluationMethod == "")
+                if (!((Report)ReportsDataGrid.SelectedItem).IsAcquired)
                 {
                     if (MessageBox.Show("レポートの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -392,6 +392,7 @@ namespace GakujoGUI
                         Task.Run(() => gakujoAPI.GetReport((Report)ReportsDataGrid.SelectedItem));
                     }
                 }
+                ReportStartEndDateTimeLabel.Content = $"{((Report)ReportsDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Report)ReportsDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Report)ReportsDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Report)ReportsDataGrid.SelectedItem).EndDateTime - DateTime.Now:hh'時間'mm'分'})" : " (締切)");
                 ReportDescriptionTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Description;
                 ReportMessageTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Message;
                 if (((Report)ReportsDataGrid.SelectedItem).Files.Length == 0)
@@ -483,7 +484,7 @@ namespace GakujoGUI
         {
             if (QuizzesDataGrid.SelectedIndex != -1)
             {
-                if (((Quiz)QuizzesDataGrid.SelectedItem).EvaluationMethod == "")
+                if (!((Quiz)QuizzesDataGrid.SelectedItem).IsAcquired)
                 {
                     if (MessageBox.Show("小テストの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -491,6 +492,7 @@ namespace GakujoGUI
                         Task.Run(() => gakujoAPI.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
                     }
                 }
+                QuizStartEndDateTimeLabel.Content = $"{((Quiz)QuizzesDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime - DateTime.Now:hh'時間'mm'分'})" : " (締切)");
                 QuizDescriptionTextBox.Text = ((Quiz)QuizzesDataGrid.SelectedItem).Description;
                 if (((Quiz)QuizzesDataGrid.SelectedItem).Files.Length == 0)
                 {
@@ -575,7 +577,7 @@ namespace GakujoGUI
         {
             if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
-                if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description == "")
+                if (!((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).IsAcquired)
                 {
                     if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {

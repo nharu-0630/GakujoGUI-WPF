@@ -1125,6 +1125,7 @@ namespace GakujoGUI
         public string Description { get; set; } = "";
         public string[] Files { get; set; } = Array.Empty<string>();
         public string Message { get; set; } = "";
+        public bool IsAcquired => EvaluationMethod != "";
 
         public bool Unsubmitted => Status == "受付中" && SubmittedDateTime == new DateTime();
 
@@ -1161,6 +1162,7 @@ namespace GakujoGUI
         public string Description { get; set; } = "";
         public string[] Files { get; set; } = Array.Empty<string>();
         public string Message { get; set; } = "";
+        public bool IsAcquired => EvaluationMethod != "";
 
         public bool Unsubmitted => Status == "受付中" && SubmissionStatus == "未提出";
 
@@ -1192,6 +1194,7 @@ namespace GakujoGUI
         public DateTime TargetDateTime { get; set; }
         public DateTime ContactDateTime { get; set; }
         public string WebReplyRequest { get; set; } = "";
+        public bool IsAcquired => Content != "";
 
         public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {ContactDateTime.ToShortDateString()}";
 
@@ -1214,6 +1217,7 @@ namespace GakujoGUI
         public string Description { get; set; } = "";
         public string PublicPeriod { get; set; } = "";
         public DateTime UpdateDateTime { get; set; }
+        public bool IsAcquired => Files.Length != 0;
 
         public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {UpdateDateTime.ToShortDateString()}";
 
