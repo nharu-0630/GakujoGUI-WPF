@@ -1188,12 +1188,15 @@
                             Margin="6"
                             FontSize="12">
                             <Label.Content>
-                                <AccessText Text="適用するにはGakujoGUIを再起動する必要があります．" TextWrapping="Wrap" />
+                                <AccessText
+                                    Foreground="#f03e3e"
+                                    Text="適用するにはGakujoGUIを再起動する必要があります．"
+                                    TextWrapping="Wrap" />
                             </Label.Content>
                         </Label>
                     </StackPanel>
                     <Label Margin="6" Content="詳細を一括取得する" />
-                    <StackPanel Orientation="Horizontal">
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <Button
                             Name="LoadAllClassContactsButton"
                             Margin="6"
@@ -1230,17 +1233,23 @@
                         Margin="6"
                         FontSize="12">
                         <Label.Content>
-                            <AccessText Text="操作には10分以上かかる場合があります．" TextWrapping="Wrap" />
+                            <AccessText
+                                Foreground="#f03e3e"
+                                Text="操作には10分以上かかる場合があります．"
+                                TextWrapping="Wrap" />
                         </Label.Content>
                     </Label>
                     <TextBlock Margin="6" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
                     </TextBlock>
                 </StackPanel>
-                <StackPanel Grid.Column="2" Margin="6">
+                <StackPanel
+                    Grid.Column="2"
+                    Margin="6"
+                    VerticalAlignment="Center">
                     <Image
                         Width="100"
-                        Margin="6,120,6,6"
+                        Margin="6"
                         Source="Resources/GakujoGUI.ico" />
                     <Label
                         Margin="6"
@@ -1262,18 +1271,40 @@
                         HorizontalAlignment="Center"
                         Click="GetLatestVersionButton_Click"
                         Content="更新を確認する " />
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <CheckBox
+                            Name="UpdateBetaEnableCheckBox"
+                            Margin="6"
+                            HorizontalAlignment="Center"
+                            Checked="UpdateBetaEnableCheckBox_CheckStateChanged"
+                            Content="事前リリースを有効にする"
+                            Unchecked="UpdateBetaEnableCheckBox_CheckStateChanged" />
+                        <Label
+                            Width="150"
+                            Margin="6"
+                            FontSize="12">
+                            <Label.Content>
+                                <AccessText
+                                    Foreground="#f03e3e"
+                                    Text="機能が正常に動作しない可能性があります．"
+                                    TextWrapping="Wrap" />
+                            </Label.Content>
+                        </Label>
+                    </StackPanel>
                     <Button
                         Name="OpenJsonFolderButton"
                         Margin="6"
                         HorizontalAlignment="Center"
                         Click="OpenJsonFolderButton_Click"
                         Content="設定フォルダを開く" />
-                    <TextBlock Margin="6" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>
-                    </TextBlock>
-                    <TextBlock Margin="6" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
-                    </TextBlock>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
+                        </TextBlock>
+                    </StackPanel>
                 </StackPanel>
             </Grid>
         </TabItem>

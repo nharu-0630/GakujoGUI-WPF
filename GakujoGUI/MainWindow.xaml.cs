@@ -101,6 +101,7 @@ namespace GakujoGUI
                 SchoolYearNumberBox.Value = settings.SchoolYear;
                 SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
                 UserAgentTextBox.Text = settings.UserAgent;
+                UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
                 VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
                 Task.Run(() =>
                 {
@@ -1223,6 +1224,11 @@ namespace GakujoGUI
                 });
             });
         }
+        private void UpdateBetaEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            settings.UpdateBetaEnable = (bool)UpdateBetaEnableCheckBox.IsChecked!;
+            SaveJson();
+        }
 
         private void OpenJsonFolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -1242,7 +1248,7 @@ namespace GakujoGUI
                 else
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
-                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\n{latestVersion}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
+                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
                     if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
                     {
                         Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
@@ -1271,28 +1277,37 @@ namespace GakujoGUI
             });
         }
 
-        private bool GetLatestVersion(out string latestVersion)
+        private bool GetLatestVersion(out string version)
         {
             logger.Info("Start Get latest version.");
             HttpClient httpClient = new();
-            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
             HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases/latest");
+            logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            ReleaseAPI releaseAPI = JsonConvert.DeserializeObject<ReleaseAPI>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
-            latestVersion = releaseAPI.name.TrimStart('v');
+            Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
+            string releaseVersion = releases[0].tag_name.TrimStart('v');
+            string latestVersion = releases.Where(x => x.prerelease == false).ToArray()[0].tag_name.TrimStart('v');
+            logger.Info($"releaseVersion={releaseVersion}");
             logger.Info($"latestVersion={latestVersion}");
-            if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == latestVersion)
+            version = (settings.UpdateBetaEnable ? releaseVersion : latestVersion);
+            if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == version)
             {
                 logger.Info("Return Get latest version by the same version.");
                 return false;
             }
-            string latestZipUrl = releaseAPI.assets[0].browser_download_url;
+            if (int.Parse(Assembly.GetExecutingAssembly().GetName().Version!.ToString().Replace(".", "")) > int.Parse(version.Replace(".", "")))
+            {
+                logger.Info("Return Get latest version by using newer version.");
+                return false;
+            }
+            string latestZipUrl = (settings.UpdateBetaEnable ? releases[0].assets[0].browser_download_url : releases.Where(x => x.prerelease == false).ToArray()[0].assets[0].browser_download_url);
             logger.Info($"latestZipUrl={latestZipUrl}");
             logger.Info("Start Download latest version.");
             httpRequestMessage = new(new("GET"), latestZipUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
+            logger.Info($"GET {latestZipUrl}");
             using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
@@ -1330,90 +1345,95 @@ namespace GakujoGUI
         public int SchoolYear { get; set; } = 2021;
         public int SemesterCode { get; set; } = 3;
         public string UserAgent { get; set; } = $"Chrome/99.0.4844.51 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public bool UpdateBetaEnable { get; set; } = false;
     }
 
 #pragma warning disable IDE1006 // 命名スタイル
-    public class ReleaseAPI
+#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
+
+    public class Release
     {
-        public string url { get; set; } = "";
-        public string assets_url { get; set; } = "";
-        public string upload_url { get; set; } = "";
-        public string html_url { get; set; } = "";
+        public string url { get; set; }
+        public string assets_url { get; set; }
+        public string upload_url { get; set; }
+        public string html_url { get; set; }
         public int id { get; set; }
-        public Author author { get; set; } = new();
-        public string node_id { get; set; } = "";
-        public string tag_name { get; set; } = "";
-        public string target_commitish { get; set; } = "";
-        public string name { get; set; } = "";
+        public Author author { get; set; }
+        public string node_id { get; set; }
+        public string tag_name { get; set; }
+        public string target_commitish { get; set; }
+        public string name { get; set; }
         public bool draft { get; set; }
         public bool prerelease { get; set; }
         public DateTime created_at { get; set; }
         public DateTime published_at { get; set; }
-        public Asset[] assets { get; set; } = Array.Empty<Asset>();
-        public string tarball_url { get; set; } = "";
-        public string zipball_url { get; set; } = "";
-        public string body { get; set; } = "";
+        public Asset[] assets { get; set; }
+        public string tarball_url { get; set; }
+        public string zipball_url { get; set; }
+        public string body { get; set; }
     }
 
     public class Author
     {
-        public string login { get; set; } = "";
+        public string login { get; set; }
         public int id { get; set; }
-        public string node_id { get; set; } = "";
-        public string avatar_url { get; set; } = "";
-        public string gravatar_id { get; set; } = "";
-        public string url { get; set; } = "";
-        public string html_url { get; set; } = "";
-        public string followers_url { get; set; } = "";
-        public string following_url { get; set; } = "";
-        public string gists_url { get; set; } = "";
-        public string starred_url { get; set; } = "";
-        public string subscriptions_url { get; set; } = "";
-        public string organizations_url { get; set; } = "";
-        public string repos_url { get; set; } = "";
-        public string events_url { get; set; } = "";
-        public string received_events_url { get; set; } = "";
-        public string type { get; set; } = "";
+        public string node_id { get; set; }
+        public string avatar_url { get; set; }
+        public string gravatar_id { get; set; }
+        public string url { get; set; }
+        public string html_url { get; set; }
+        public string followers_url { get; set; }
+        public string following_url { get; set; }
+        public string gists_url { get; set; }
+        public string starred_url { get; set; }
+        public string subscriptions_url { get; set; }
+        public string organizations_url { get; set; }
+        public string repos_url { get; set; }
+        public string events_url { get; set; }
+        public string received_events_url { get; set; }
+        public string type { get; set; }
         public bool site_admin { get; set; }
     }
 
     public class Asset
     {
-        public string url { get; set; } = "";
+        public string url { get; set; }
         public int id { get; set; }
-        public string node_id { get; set; } = "";
-        public string name { get; set; } = "";
-        public object label { get; set; } = new();
-        public Uploader uploader { get; set; } = new();
-        public string content_type { get; set; } = "";
-        public string state { get; set; } = "";
+        public string node_id { get; set; }
+        public string name { get; set; }
+        public object label { get; set; }
+        public Uploader uploader { get; set; }
+        public string content_type { get; set; }
+        public string state { get; set; }
         public int size { get; set; }
         public int download_count { get; set; }
         public DateTime created_at { get; set; }
         public DateTime updated_at { get; set; }
-        public string browser_download_url { get; set; } = "";
+        public string browser_download_url { get; set; }
     }
 
     public class Uploader
     {
-        public string login { get; set; } = "";
+        public string login { get; set; }
         public int id { get; set; }
-        public string node_id { get; set; } = "";
-        public string avatar_url { get; set; } = "";
-        public string gravatar_id { get; set; } = "";
-        public string url { get; set; } = "";
-        public string html_url { get; set; } = "";
-        public string followers_url { get; set; } = "";
-        public string following_url { get; set; } = "";
-        public string gists_url { get; set; } = "";
-        public string starred_url { get; set; } = "";
-        public string subscriptions_url { get; set; } = "";
-        public string organizations_url { get; set; } = "";
-        public string repos_url { get; set; } = "";
-        public string events_url { get; set; } = "";
-        public string received_events_url { get; set; } = "";
-        public string type { get; set; } = "";
+        public string node_id { get; set; }
+        public string avatar_url { get; set; }
+        public string gravatar_id { get; set; }
+        public string url { get; set; }
+        public string html_url { get; set; }
+        public string followers_url { get; set; }
+        public string following_url { get; set; }
+        public string gists_url { get; set; }
+        public string starred_url { get; set; }
+        public string subscriptions_url { get; set; }
+        public string organizations_url { get; set; }
+        public string repos_url { get; set; }
+        public string events_url { get; set; }
+        public string received_events_url { get; set; }
+        public string type { get; set; }
         public bool site_admin { get; set; }
     }
+
+#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
 #pragma warning restore IDE1006 // 命名スタイル
 }
