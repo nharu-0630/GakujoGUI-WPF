@@ -355,12 +355,14 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             report.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText;
-            report.Description = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerText;
-            report.Message = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerText;
+            report.Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
+            report.Description = Regex.Replace(report.Description, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
+            report.Message = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
+            report.Message = Regex.Replace(report.Message, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a") != null)
             {
-                report.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count - 1];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count - 1; i++)
+                report.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count];
+                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a")[i];
                     string selectedKey = htmlNode.Attributes["onclick"].Value.Split(',')[0].Replace("fileDownload('", "").Replace("'", "");
@@ -507,12 +509,14 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             quiz.QuestionsCount = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText.Replace("問", "").Trim());
             quiz.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerText;
-            quiz.Description = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerText;
-            quiz.Message = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerText;
+            quiz.Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
+            quiz.Description = Regex.Replace(quiz.Description, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
+            quiz.Message = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
+            quiz.Message = Regex.Replace(quiz.Message, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a") != null)
             {
-                quiz.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count - 1];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count - 1; i++)
+                quiz.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count];
+                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a")[i];
                     string selectedKey = htmlNode.Attributes["onclick"].Value.Split(',')[0].Replace("fileDownload('", "").Replace("'", "");

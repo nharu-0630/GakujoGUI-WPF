@@ -481,7 +481,53 @@ namespace GakujoGUI
 
         private void QuizzesDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (QuizzesDataGrid.SelectedIndex != -1)
+            {
+                if (((Quiz)QuizzesDataGrid.SelectedItem).EvaluationMethod == "")
+                {
+                    if (MessageBox.Show("小テストの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    {
+                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        Task.Run(() => gakujoAPI.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
+                    }
+                }
+                QuizDescriptionTextBox.Text = ((Quiz)QuizzesDataGrid.SelectedItem).Description;
+                if (((Quiz)QuizzesDataGrid.SelectedItem).Files.Length == 0)
+                {
+                    QuizFilesComboBox.ItemsSource = null;
+                    QuizFilesStackPanel.Visibility = Visibility.Hidden;
+                }
+                else
+                {
+                    QuizFilesComboBox.ItemsSource = ((Quiz)QuizzesDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
+                    QuizFilesComboBox.SelectedIndex = 0;
+                    QuizFilesStackPanel.Visibility = Visibility.Visible;
+                }
+            }
+        }
 
+        private void OpenQuizFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (QuizFilesComboBox.SelectedIndex != -1)
+            {
+                if (File.Exists(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]))
+                {
+                    Process.Start(new ProcessStartInfo(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]) { UseShellExecute = true });
+                    logger.Info($"Start Process {((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}");
+                }
+            }
+        }
+
+        private void OpenQuizFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (QuizFilesComboBox.SelectedIndex != -1)
+            {
+                if (File.Exists(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]))
+                {
+                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
+                    logger.Info($"Start Process explorer.exe /e,/select,\"{((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}\"");
+                }
+            }
         }
 
         #endregion
