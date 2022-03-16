@@ -1317,15 +1317,6 @@ namespace GakujoGUI
                             File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"));
                             logger.Info("Delete Download latest version.");
                         }
-                        if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
-                        {
-                            foreach (FileInfo fileInfo in new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")).GetFiles())
-                            {
-                                fileInfo.Delete();
-                            }
-                            Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
-                            logger.Info("Delete Extract latest version.");
-                        }
                     }
                 }
             });
@@ -1372,16 +1363,6 @@ namespace GakujoGUI
                 logger.Warn("Return Get latest version by the file is missing.");
                 return false;
             }
-            if (Directory.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")))
-            {
-                foreach (FileInfo fileInfo in new DirectoryInfo(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0")).GetFiles())
-                {
-                    fileInfo.Delete();
-                }
-                Directory.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
-            }
-            ZipFile.ExtractToDirectory(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0"));
-            logger.Info("Extract latest version.");
             logger.Info("End Get latest version.");
             return true;
         }
