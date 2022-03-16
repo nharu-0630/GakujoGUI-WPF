@@ -8,6 +8,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:ui="http://schemas.modernwpf.com/2019"
+    xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     Title="GakujoGUI"
     Width="900"
     Height="600"
@@ -16,7 +17,6 @@
     ui:WindowHelper.UseModernWindowStyle="True"
     Closing="Window_Closing"
     mc:Ignorable="d">
-
     <Window.DataContext>
         <tb:TaskbarIcon
             Name="TaskBarIcon"
@@ -50,7 +50,7 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
     </Window.DataContext>
-    <TabControl>
+    <TabControl SelectionChanged="TabControl_SelectionChanged">
         <TabItem
             Name="LoginTabItem"
             Header="ログイン"
@@ -206,6 +206,20 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
+        </TabItem>
+        <TabItem
+            Name="SyllabusClassTablesTabItem"
+            Header="シラバス時間割"
+            Visibility="Collapsed">
+            <markdig:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
+                <markdig:MarkdownViewer.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="Resources/generic.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </markdig:MarkdownViewer.Resources>
+            </markdig:MarkdownViewer>
         </TabItem>
         <TabItem Name="ClassContactsTabItem" Header="授業連絡">
             <Grid>
@@ -1022,16 +1036,20 @@
                 </DataGrid>
             </Grid>
         </TabItem>
-        <TabItem Name="SyllabusTabItem" Header="シラバス">
-            <markdig:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
-                <markdig:MarkdownViewer.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="Resources/generic.xaml" />
-                        </ResourceDictionary.MergedDictionaries>
-                    </ResourceDictionary>
-                </markdig:MarkdownViewer.Resources>
-            </markdig:MarkdownViewer>
+        <TabItem Name="SyllabusSearchTabItem" Header="シラバス検索">
+            <Grid Margin="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="100" />
+                    <ColumnDefinition Width="*" MinWidth="100" />
+                </Grid.ColumnDefinitions>
+                <wv2:WebView2
+                    Name="SyllabusSearchWebView2"
+                    Grid.Column="0"
+                    NavigationCompleted="SyllabusSearchWebView2_NavigationCompleted"
+                    Source="https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on"
+                    WebMessageReceived="SyllabusSearchWebView2_WebMessageReceived" />
+                <wv2:WebView2 Name="SyllabusViewWebView2" Grid.Column="2" />
+            </Grid>
         </TabItem>
         <TabItem Name="SettingsTabItem" Header="設定">
             <Grid Margin="6">

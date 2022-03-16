@@ -733,6 +733,11 @@ namespace GakujoGUI
             e.Handled = true;
             QuizzesTabItem.IsSelected = true;
         }
+        private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (SyllabusClassTablesTabItem == null) { return; }
+            if (!SyllabusClassTablesTabItem.IsSelected) { SyllabusClassTablesTabItem.Visibility = Visibility.Collapsed; }
+        }
 
         private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
@@ -792,8 +797,9 @@ namespace GakujoGUI
             value += $"### 在宅授業形態(詳細)\n";
             value += $"{syllabus.HomeClassStyleDetail}  \n";
             SyllabusMarkdownViewer.Markdown = value;
+            SyllabusClassTablesTabItem.Visibility = Visibility.Visible;
             e.Handled = true;
-            SyllabusTabItem.IsSelected = true;
+            SyllabusClassTablesTabItem.IsSelected = true;
             //logger.Info("Start Get syllabus token.");
             //HttpClient httpClient = new();
             //HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
@@ -919,6 +925,16 @@ namespace GakujoGUI
             if (e.Data.GetDataPresent(DataFormats.Text, false) || e.Data.GetDataPresent(DataFormats.FileDrop, false)) { e.Effects = DragDropEffects.All; }
             else { e.Effects = DragDropEffects.None; }
             e.Handled = true;
+        }
+
+        private void SyllabusSearchWebView2_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        {
+            SyllabusSearchWebView2.ExecuteScriptAsync("dbLinkClick = function(url){ window.chrome.webview.postMessage(url); }");
+        }
+
+        private void SyllabusSearchWebView2_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
+        {
+            SyllabusViewWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/" + e.TryGetWebMessageAsString());
         }
 
         #endregion
