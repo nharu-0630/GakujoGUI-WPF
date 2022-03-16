@@ -845,11 +845,8 @@ namespace GakujoGUI
         {
             if (saveJsons) { gakujoAPI.SaveJsons(); }
             LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoAPI.Account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
-            if (gakujoAPI.ClassTables != null)
-            {
-                ClassTablesDataGrid.ItemsSource = gakujoAPI.ClassTables;
-                ClassTablesDataGrid.Items.Refresh();
-            }
+            ClassTablesDataGrid.ItemsSource = gakujoAPI.ClassTables.GetRange(0, Math.Min(5, gakujoAPI.ClassTables.Count));
+            ClassTablesDataGrid.Items.Refresh();
             logger.Info("Refresh ClassTablesDataGrid.");
         }
 
