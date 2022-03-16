@@ -1,5 +1,4 @@
-﻿using HtmlAgilityPack;
-using Microsoft.Toolkit.Uwp.Notifications;
+﻿using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
@@ -22,8 +21,8 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using System.Windows.Navigation;
+using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
 
@@ -733,6 +732,7 @@ namespace GakujoGUI
             e.Handled = true;
             QuizzesTabItem.IsSelected = true;
         }
+
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (SyllabusClassTablesTabItem == null) { return; }

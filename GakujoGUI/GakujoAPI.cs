@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using NLog;
+using ReverseMarkdown;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,7 +13,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Web;
-using ReverseMarkdown;
 
 namespace GakujoGUI
 {
@@ -36,7 +36,7 @@ namespace GakujoGUI
         public List<ClassSharedFile> ClassSharedFiles { get => classSharedFiles; set => classSharedFiles = value; }
         public SchoolGrade SchoolGrade { get => schoolGrade; set => schoolGrade = value; }
         public List<ClassTableRow> ClassTables { get => classTables; set => classTables = value; }
-        public bool LoginStatus { get => loginStatus; }
+        public bool LoginStatus => loginStatus;
 
         private CookieContainer cookieContainer = new();
         private HttpClientHandler httpClientHandler = new();
@@ -1185,9 +1185,15 @@ namespace GakujoGUI
 
         public bool Unsubmitted => Status == "受付中" && SubmittedDateTime == new DateTime();
 
-        public override string ToString() => $"[{Status}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        public override string ToString()
+        {
+            return $"[{Status}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        }
 
-        public string ToShortString() => $"{Subjects.Split(' ')[0]} {Title}";
+        public string ToShortString()
+        {
+            return $"{Subjects.Split(' ')[0]} {Title}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1196,7 +1202,10 @@ namespace GakujoGUI
             return SubjectCode == objReport.SubjectCode && ClassCode == objReport.ClassCode && Id == objReport.Id;
         }
 
-        public override int GetHashCode() => SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
+        public override int GetHashCode()
+        {
+            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
+        }
     }
 
     public class Quiz
@@ -1222,9 +1231,15 @@ namespace GakujoGUI
 
         public bool Unsubmitted => Status == "受付中" && SubmissionStatus == "未提出";
 
-        public override string ToString() => $"[{SubmissionStatus}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        public override string ToString()
+        {
+            return $"[{SubmissionStatus}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        }
 
-        public string ToShortString() => $"{Subjects.Split(' ')[0]} {Title}";
+        public string ToShortString()
+        {
+            return $"{Subjects.Split(' ')[0]} {Title}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1233,7 +1248,10 @@ namespace GakujoGUI
             return SubjectCode == objQuiz.SubjectCode && ClassCode == objQuiz.ClassCode && Id == objQuiz.Id;
         }
 
-        public override int GetHashCode() => SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
+        public override int GetHashCode()
+        {
+            return SubjectCode.GetHashCode() ^ ClassCode.GetHashCode() ^ Id.GetHashCode();
+        }
     }
 
     public class ClassContact
@@ -1252,7 +1270,10 @@ namespace GakujoGUI
         public string WebReplyRequest { get; set; } = "";
         public bool IsAcquired => Content != "";
 
-        public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {ContactDateTime.ToShortDateString()}";
+        public override string ToString()
+        {
+            return $"{Subjects.Split(' ')[0]} {Title} {ContactDateTime.ToShortDateString()}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1261,7 +1282,10 @@ namespace GakujoGUI
             return Subjects == objClassContact.Subjects && Title == objClassContact.Title && ContactDateTime == objClassContact.ContactDateTime;
         }
 
-        public override int GetHashCode() => Subjects.GetHashCode() ^ Title.GetHashCode() ^ ContactDateTime.GetHashCode();
+        public override int GetHashCode()
+        {
+            return Subjects.GetHashCode() ^ Title.GetHashCode() ^ ContactDateTime.GetHashCode();
+        }
     }
 
     public class ClassSharedFile
@@ -1275,7 +1299,10 @@ namespace GakujoGUI
         public DateTime UpdateDateTime { get; set; }
         public bool IsAcquired => Files.Length != 0;
 
-        public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {UpdateDateTime.ToShortDateString()}";
+        public override string ToString()
+        {
+            return $"{Subjects.Split(' ')[0]} {Title} {UpdateDateTime.ToShortDateString()}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1284,7 +1311,10 @@ namespace GakujoGUI
             return Subjects == objClassSharedFile.Subjects && Title == objClassSharedFile.Title && UpdateDateTime == objClassSharedFile.UpdateDateTime;
         }
 
-        public override int GetHashCode() => Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
+        public override int GetHashCode()
+        {
+            return Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();
+        }
     }
 
     public class ClassResult
@@ -1301,7 +1331,10 @@ namespace GakujoGUI
         public DateTime ReportDate { get; set; }
         public string TestType { get; set; } = "";
 
-        public override string ToString() => $"{Subjects} {Score} ({Evaluation}) {GP} {ReportDate.ToShortDateString()}";
+        public override string ToString()
+        {
+            return $"{Subjects} {Score} ({Evaluation}) {GP} {ReportDate.ToShortDateString()}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1310,7 +1343,10 @@ namespace GakujoGUI
             return Subjects == objClassResult.Subjects && AcquisitionYear == objClassResult.AcquisitionYear;
         }
 
-        public override int GetHashCode() => Subjects.GetHashCode() ^ AcquisitionYear.GetHashCode();
+        public override int GetHashCode()
+        {
+            return Subjects.GetHashCode() ^ AcquisitionYear.GetHashCode();
+        }
     }
 
     public class EvaluationCredit
@@ -1318,7 +1354,10 @@ namespace GakujoGUI
         public string Evaluation { get; set; } = "";
         public int Credit { get; set; }
 
-        public override string ToString() => $"{Evaluation} {Credit}";
+        public override string ToString()
+        {
+            return $"{Evaluation} {Credit}";
+        }
     }
 
     public class YearCredit
@@ -1326,7 +1365,10 @@ namespace GakujoGUI
         public string Year { get; set; } = "";
         public int Credit { get; set; }
 
-        public override string ToString() => $"{Year} {Credit}";
+        public override string ToString()
+        {
+            return $"{Year} {Credit}";
+        }
     }
 
     public class SemesterGPA
@@ -1335,7 +1377,10 @@ namespace GakujoGUI
         public string Semester { get; set; } = "";
         public double GPA { get; set; }
 
-        public override string ToString() => $"{Year}{Semester} {GPA}";
+        public override string ToString()
+        {
+            return $"{Year}{Semester} {GPA}";
+        }
     }
 
     public class DepartmentGPA
@@ -1384,18 +1429,15 @@ namespace GakujoGUI
 
         public ClassTableCell this[int index]
         {
-            get
+            get => index switch
             {
-                return index switch
-                {
-                    0 => Monday,
-                    1 => Tuesday,
-                    2 => Wednesday,
-                    3 => Thursday,
-                    4 => Friday,
-                    _ => new(),
-                };
-            }
+                0 => Monday,
+                1 => Tuesday,
+                2 => Wednesday,
+                3 => Thursday,
+                4 => Friday,
+                _ => new(),
+            };
             set
             {
                 switch (index)
@@ -1421,7 +1463,10 @@ namespace GakujoGUI
             }
         }
 
-        public override string ToString() => $"{this[0].SubjectsName} {this[1].SubjectsName} {this[2].SubjectsName} {this[3].SubjectsName} {this[4].SubjectsName}";
+        public override string ToString()
+        {
+            return $"{this[0].SubjectsName} {this[1].SubjectsName} {this[2].SubjectsName} {this[3].SubjectsName} {this[4].SubjectsName}";
+        }
 
         public override bool Equals(object? obj)
         {
@@ -1430,7 +1475,10 @@ namespace GakujoGUI
             return this[0].GetHashCode() == objClassTableRow[0].GetHashCode() && this[1].GetHashCode() == objClassTableRow[1].GetHashCode() && this[2].GetHashCode() == objClassTableRow[2].GetHashCode() && this[3].GetHashCode() == objClassTableRow[3].GetHashCode() && this[4].GetHashCode() == objClassTableRow[4].GetHashCode();
         }
 
-        public override int GetHashCode() => this[0].GetHashCode() ^ this[1].GetHashCode() ^ this[2].GetHashCode() ^ this[3].GetHashCode() ^ this[4].GetHashCode();
+        public override int GetHashCode()
+        {
+            return this[0].GetHashCode() ^ this[1].GetHashCode() ^ this[2].GetHashCode() ^ this[3].GetHashCode() ^ this[4].GetHashCode();
+        }
     }
 
     public class ClassTableCell
@@ -1473,7 +1521,10 @@ namespace GakujoGUI
             return SubjectsName == objClassTableCell.SubjectsName && SubjectsId == objClassTableCell.SubjectsId;
         }
 
-        public override int GetHashCode() => SubjectsName.GetHashCode() ^ SubjectsId.GetHashCode();
+        public override int GetHashCode()
+        {
+            return SubjectsName.GetHashCode() ^ SubjectsId.GetHashCode();
+        }
     }
 
     public class Syllabus
@@ -1517,6 +1568,9 @@ namespace GakujoGUI
             return SubjectsName == objSyllabus.SubjectsName && TeacherName == objSyllabus.TeacherName;
         }
 
-        public override int GetHashCode() => SubjectsName.GetHashCode() ^ TeacherName.GetHashCode();
+        public override int GetHashCode()
+        {
+            return SubjectsName.GetHashCode() ^ TeacherName.GetHashCode();
+        }
     }
 }
