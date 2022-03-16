@@ -1097,8 +1097,8 @@ namespace GakujoGUI
             classTableCell.Syllabus.ClassName = GetSyllabusValue(htmlDocument, "クラス");
             classTableCell.Syllabus.SemesterName = GetSyllabusValue(htmlDocument, "学期");
             classTableCell.Syllabus.SelectionSection = GetSyllabusValue(htmlDocument, "必修選択区分");
-            if (int.TryParse(GetSyllabusValue(htmlDocument, "対象学年").Replace("年", ""), out _)) { classTableCell.Syllabus.TargetGrade = int.Parse(GetSyllabusValue(htmlDocument, "対象学年").Replace("年", "")); }
-            if (int.TryParse(GetSyllabusValue(htmlDocument, "単位数"), out _)) { classTableCell.Syllabus.Credit = int.Parse(GetSyllabusValue(htmlDocument, "単位数")); }
+            classTableCell.Syllabus.TargetGrade = GetSyllabusValue(htmlDocument, "対象学年");
+            classTableCell.Syllabus.Credit = GetSyllabusValue(htmlDocument, "単位数");
             classTableCell.Syllabus.WeekdayPeriod = GetSyllabusValue(htmlDocument, "曜日・時限");
             classTableCell.Syllabus.ClassRoom = GetSyllabusValue(htmlDocument, "教室");
             classTableCell.Syllabus.Keyword = GetSyllabusValue(htmlDocument, "キーワード");
@@ -1127,7 +1127,7 @@ namespace GakujoGUI
         private static string GetSyllabusValue(HtmlDocument htmlDocument, string key)
         {
             if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return ""; }
-            return Regex.Replace(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim('　').Trim(' '), " +", " ").Replace("<br>", " \r\n").Replace("<b>","").Replace("</b>","");
+            return htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim('　').Trim(' ');
         }
     }
 
@@ -1472,8 +1472,8 @@ namespace GakujoGUI
         public string ClassName { get; set; } = "";
         public string SemesterName { get; set; } = "";
         public string SelectionSection { get; set; } = "";
-        public int TargetGrade { get; set; }
-        public int Credit { get; set; }
+        public string TargetGrade { get; set; } = "";
+        public string Credit { get; set; } = "";
         public string WeekdayPeriod { get; set; } = "";
         public string ClassRoom { get; set; } = "";
         public string Keyword { get; set; } = "";
