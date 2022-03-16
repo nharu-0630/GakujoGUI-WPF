@@ -697,35 +697,18 @@ namespace GakujoGUI
 
         private ClassTableCell? GetSelectedClassTableCell()
         {
-            ClassTableCell? classTableCell = null;
             if (gakujoAPI.ClassTables != null)
             {
-                switch (ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex)
-                {
-                    case 0:
-                        classTableCell = gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Monday;
-                        break;
-                    case 1:
-                        classTableCell = gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Tuesday;
-                        break;
-                    case 2:
-                        classTableCell = gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Wednesday;
-                        break;
-                    case 3:
-                        classTableCell = gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Thursday;
-                        break;
-                    case 4:
-                        classTableCell = gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)].Friday;
-                        break;
-                }
+                return gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)][ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex];
             }
-            return classTableCell;
+            return null;
         }
 
         private void ClassTableCellControl_ClassContactButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetSelectedClassTableCell() == null) { return; }
-            ClassContactsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
+            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null) { return; }
+            ClassContactsSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshClassContactsDataGrid();
             e.Handled = true;
             ClassContactsTabItem.IsSelected = true;
@@ -733,8 +716,9 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_ReportButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetSelectedClassTableCell() == null) { return; }
-            ReportsSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
+            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null) { return; }
+            ReportsSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshReportsDataGrid();
             e.Handled = true;
             ReportsTabItem.IsSelected = true;
@@ -742,8 +726,9 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_QuizButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GetSelectedClassTableCell() == null) { return; }
-            QuizzesSearchAutoSuggestBox.Text = GetSelectedClassTableCell()!.SubjectsName;
+            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null) { return; }
+            QuizzesSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshQuizzesDataGrid();
             e.Handled = true;
             QuizzesTabItem.IsSelected = true;
@@ -751,22 +736,79 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
-            if (GetSelectedClassTableCell() == null) { return; }
-            logger.Info("Start Get syllabus token.");
-            HttpClient httpClient = new();
-            HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
-            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            logger.Info("GET https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
-            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            string syllabusToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@name=\"syllabusTitleID\"]").Attributes["onchange"].Value.Split("'")[1];
-            logger.Info($"syllabusToken={syllabusToken}");
-            logger.Info("End Get syllabus token.");
-            Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}") { UseShellExecute = true });
-            logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}");
+            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null) { return; }
+            Syllabus syllabus = classTableCell.Syllabus;
+            string value = $"## {syllabus.SubjectsName}\n";
+            value += $"|担当教員名|所属等|研究室|分担教員名|\n";
+            value += $"|-|-|-|-|\n";
+            value += $"|{syllabus.TeacherName}|{syllabus.Affiliation}|{syllabus.ResearchRoom}|{syllabus.SharingTeacherName}|\n";
+            value += "\n";
+            value += $"|クラス|学期|必修選択区分|\n";
+            value += $"|-|-|-|\n";
+            value += $"|{syllabus.ClassName}|{syllabus.SemesterName}|{syllabus.SelectionSection}|\n";
+            value += "\n";
+            value += $"|対象学年|単位数|曜日・時限|\n";
+            value += $"|-|-|-|\n";
+            value += $"|{syllabus.TargetGrade}|{syllabus.Credit}|{syllabus.WeekdayPeriod}|\n";
+            value += $"### 教室\n";
+            value += $"{syllabus.ClassRoom}  \n";
+            value += $"### キーワード\n";
+            value += $"{syllabus.Keyword}  \n";
+            value += $"### 授業の目標\n";
+            value += $"{syllabus.ClassTarget}  \n";
+            value += $"### 学習内容\n";
+            value += $"{syllabus.LearningDetail}  \n";
+            value += $"### 授業計画\n";
+            value += $"{syllabus.ClassPlan}  \n";
+            value += $"### 受講要件\n";
+            value += $"{syllabus.ClassRequirement}  \n";
+            value += $"### テキスト\n";
+            value += $"{syllabus.Textbook}  \n";
+            value += $"### 参考書\n";
+            value += $"{syllabus.ReferenceBook}  \n";
+            value += $"### 予習・復習について\n";
+            value += $"{syllabus.PreparationReview}  \n";
+            value += $"### 成績評価の方法･基準\n";
+            value += $"{syllabus.EvaluationMethod}  \n";
+            value += $"### オフィスアワー\n";
+            value += $"{syllabus.OfficeHour}  \n";
+            value += $"### 担当教員からのメッセージ\n";
+            value += $"{syllabus.Message}  \n";
+            value += $"### アクティブ・ラーニング\n";
+            value += $"{syllabus.ActiveLearning}  \n";
+            value += $"### 実務経験のある教員の有無\n";
+            value += $"{syllabus.TeacherPracticalExperience}  \n";
+            value += $"### 実務経験のある教員の経歴と授業内容\n";
+            value += $"{syllabus.TeacherCareerClassDetail}  \n";
+            value += $"### 教職科目区分\n";
+            value += $"{syllabus.TeachingProfessionSection}  \n";
+            value += $"### 関連授業科目\n";
+            value += $"{syllabus.RelatedClassSubjects}  \n";
+            value += $"### その他\n";
+            value += $"{syllabus.Other}  \n";
+            value += $"### 在宅授業形態\n";
+            value += $"{syllabus.HomeClassStyle}  \n";
+            value += $"### 在宅授業形態(詳細)\n";
+            value += $"{syllabus.HomeClassStyleDetail}  \n";
+            SyllabusMarkdownViewer.Markdown = value;
             e.Handled = true;
+            SyllabusTabItem.IsSelected = true;
+            //logger.Info("Start Get syllabus token.");
+            //HttpClient httpClient = new();
+            //HttpRequestMessage httpRequestMessage = new(new("GET"), "https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+            //httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
+            //HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            //logger.Info("GET https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+            //logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            //HtmlDocument htmlDocument = new();
+            //htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            //string syllabusToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@name=\"syllabusTitleID\"]").Attributes["onchange"].Value.Split("'")[1];
+            //logger.Info($"syllabusToken={syllabusToken}");
+            //logger.Info("End Get syllabus token.");
+            //Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}") { UseShellExecute = true });
+            //logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}");
+            //e.Handled = true;
         }
 
         private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)

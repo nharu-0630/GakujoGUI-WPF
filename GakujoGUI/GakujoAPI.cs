@@ -1127,8 +1127,8 @@ namespace GakujoGUI
 
         private static string GetSyllabusValue(HtmlDocument htmlDocument, string key, bool convert = false)
         {
-            if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return value; }
-            string value = "";
+            if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return ""; }
+            string value;
             if (!convert) { value = htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", " ").Trim('　').Trim(' '); }
             else
             {
@@ -1139,9 +1139,9 @@ namespace GakujoGUI
                     RemoveComments = true,
                     SmartHrefHandling = true,
                 };
-                value = new Converter(config).Convert(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml).Replace("\n                     \n                           ", "");
+                value = new Converter(config).Convert(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml);
             }
-            return Regex.Replace(value, @"\s+", " ");
+            return Regex.Replace(Regex.Replace(value, @" +", " ").Replace("|\r\n\n \n |", "|\r\n|"), "(?<=[^|])\\r\\n(?=[^|])", "  \r\n");
         }
     }
 

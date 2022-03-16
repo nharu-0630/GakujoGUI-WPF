@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GakujoGUI"
+    xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:ui="http://schemas.modernwpf.com/2019"
@@ -15,6 +16,7 @@
     ui:WindowHelper.UseModernWindowStyle="True"
     Closing="Window_Closing"
     mc:Ignorable="d">
+
     <Window.DataContext>
         <tb:TaskbarIcon
             Name="TaskBarIcon"
@@ -1019,6 +1021,17 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
+        </TabItem>
+        <TabItem Name="SyllabusTabItem" Header="シラバス">
+            <markdig:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
+                <markdig:MarkdownViewer.Resources>
+                    <ResourceDictionary>
+                        <ResourceDictionary.MergedDictionaries>
+                            <ResourceDictionary Source="Resources/generic.xaml" />
+                        </ResourceDictionary.MergedDictionaries>
+                    </ResourceDictionary>
+                </markdig:MarkdownViewer.Resources>
+            </markdig:MarkdownViewer>
         </TabItem>
         <TabItem Name="SettingsTabItem" Header="設定">
             <Grid Margin="6">

@@ -22,6 +22,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Resources\generic.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
@@ -30,12 +34,14 @@
 
   <ItemGroup>
     <Resource Include="Resources\GakujoGUI.ico" />
+    <Resource Include="Resources\generic.xaml" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net.WebSocket" Version="3.4.1" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
+    <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
     <PackageReference Include="ModernWpf.MessageBox" Version="0.5.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.4" />
