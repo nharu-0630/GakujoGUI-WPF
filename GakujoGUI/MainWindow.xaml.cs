@@ -808,7 +808,6 @@ namespace GakujoGUI
             //logger.Info("End Get syllabus token.");
             //Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}") { UseShellExecute = true });
             //logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do;jsessionid={syllabusToken}?schoolYear={settings.SchoolYear}&subjectCD={GetSelectedClassTableCell()!.SubjectsId}&classCD={GetSelectedClassTableCell()!.ClassCode}");
-            //e.Handled = true;
         }
 
         private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)
