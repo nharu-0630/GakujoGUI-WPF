@@ -12,6 +12,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Web;
+using ReverseMarkdown;
 
 namespace GakujoGUI
 {
@@ -1102,9 +1103,9 @@ namespace GakujoGUI
             classTableCell.Syllabus.WeekdayPeriod = GetSyllabusValue(htmlDocument, "曜日・時限");
             classTableCell.Syllabus.ClassRoom = GetSyllabusValue(htmlDocument, "教室");
             classTableCell.Syllabus.Keyword = GetSyllabusValue(htmlDocument, "キーワード");
-            classTableCell.Syllabus.ClassTarget = GetSyllabusValue(htmlDocument, "授業の目標");
-            classTableCell.Syllabus.LearningDetail = GetSyllabusValue(htmlDocument, "学習内容");
-            classTableCell.Syllabus.ClassPlan = GetSyllabusValue(htmlDocument, "授業計画");
+            classTableCell.Syllabus.ClassTarget = GetSyllabusValue(htmlDocument, "授業の目標", true);
+            classTableCell.Syllabus.LearningDetail = GetSyllabusValue(htmlDocument, "学習内容", true);
+            classTableCell.Syllabus.ClassPlan = GetSyllabusValue(htmlDocument, "授業計画", true);
             classTableCell.Syllabus.Textbook = GetSyllabusValue(htmlDocument, "テキスト");
             classTableCell.Syllabus.ReferenceBook = GetSyllabusValue(htmlDocument, "参考書");
             classTableCell.Syllabus.PreparationReview = GetSyllabusValue(htmlDocument, "予習・復習について");
@@ -1124,10 +1125,23 @@ namespace GakujoGUI
             return classTableCell;
         }
 
-        private static string GetSyllabusValue(HtmlDocument htmlDocument, string key)
+        private static string GetSyllabusValue(HtmlDocument htmlDocument, string key, bool convert = false)
         {
-            if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return ""; }
-            return htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim('　').Trim(' ');
+            if (htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td") == null) { return value; }
+            string value = "";
+            if (!convert) { value = htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", " ").Trim('　').Trim(' '); }
+            else
+            {
+                Config config = new()
+                {
+                    UnknownTags = Config.UnknownTagsOption.Bypass,
+                    GithubFlavored = true,
+                    RemoveComments = true,
+                    SmartHrefHandling = true,
+                };
+                value = new Converter(config).Convert(htmlDocument.DocumentNode.SelectSingleNode($"//font[contains(text(), \"{key}\")]/../following-sibling::td").InnerHtml).Replace("\n                     \n                           ", "");
+            }
+            return Regex.Replace(value, @"\s+", " ");
         }
     }
 
