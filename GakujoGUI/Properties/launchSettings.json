@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GakujoGUI": {
+      "commandName": "Project",
+      "commandLineArgs": "-force"
+    }
+  }
+}
