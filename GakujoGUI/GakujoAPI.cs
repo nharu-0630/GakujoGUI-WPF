@@ -324,7 +324,7 @@ namespace GakujoGUI
             }
             reports.AddRange(diffReports);
             logger.Info($"Found {diffReports.Count} new Reports.");
-            foreach (Report report in reports.FindAll(x => x.EvaluationMethod == "")) { GetReport(report); }
+            foreach (Report report in reports.FindAll(x => !x.IsAcquired)) { GetReport(report); }
             Account.ReportDateTime = DateTime.Now;
             logger.Info("End Get Reports.");
             ApplyReportsClassTables();
@@ -474,7 +474,7 @@ namespace GakujoGUI
             }
             quizzes.AddRange(diffQuizzes);
             logger.Info($"Found {diffQuizzes.Count} new Quizzes.");
-            foreach (Quiz quiz in quizzes.FindAll(x => x.EvaluationMethod == "")) { GetQuiz(quiz); }
+            foreach (Quiz quiz in quizzes.FindAll(x => !x.IsAcquired)) { GetQuiz(quiz); }
             Account.QuizDateTime = DateTime.Now;
             logger.Info("End Get Quizzes.");
             ApplyQuizzesClassTables();
