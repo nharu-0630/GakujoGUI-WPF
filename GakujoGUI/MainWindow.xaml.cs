@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -25,6 +24,7 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
+using Microsoft.Web.WebView2.Core;
 
 namespace GakujoGUI
 {
@@ -75,6 +75,7 @@ namespace GakujoGUI
                     process.Kill();
                     logger.Warn($"Kill other GakujoGUI process processId={process.Id}.");
                 }
+
                 ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
                 if (File.Exists(GetJsonPath("Settings")))
                 {
@@ -867,12 +868,16 @@ namespace GakujoGUI
             e.Handled = true;
         }
 
-        private void SyllabusSearchWebView2_NavigationCompleted(object sender, Microsoft.Web.WebView2.Core.CoreWebView2NavigationCompletedEventArgs e)
+        private void SyllabusSearchWebView2_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
+            //if (SyllabusSearchWebView2.ExecuteScriptAsync("document.documentElement.outerHTML;").Result.Contains("一定時間操作が行われなかったため、サーバ側で自動ログアウトしました。処理を続ける場合は、再度ログインしてください。"))
+            //{
+            //    SyllabusSearchWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+            //}
             SyllabusSearchWebView2.ExecuteScriptAsync("dbLinkClick = function(url){ window.chrome.webview.postMessage(url); }");
         }
 
-        private void SyllabusSearchWebView2_WebMessageReceived(object sender, Microsoft.Web.WebView2.Core.CoreWebView2WebMessageReceivedEventArgs e)
+        private void SyllabusSearchWebView2_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
             SyllabusViewWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/" + e.TryGetWebMessageAsString());
         }
