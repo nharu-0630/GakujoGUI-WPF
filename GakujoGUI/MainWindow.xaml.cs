@@ -75,7 +75,6 @@ namespace GakujoGUI
                     process.Kill();
                     logger.Warn($"Kill other GakujoGUI process processId={process.Id}.");
                 }
-
                 ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
                 if (File.Exists(GetJsonPath("Settings")))
                 {
@@ -85,7 +84,7 @@ namespace GakujoGUI
                 if (settings.StartUpMinimize)
                 {
                     SetVisibility(Visibility.Hidden);
-                    new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
+                    //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
                     logger.Info("Startup minimized.");
                 }
                 notifyAPI = new();
@@ -870,16 +869,13 @@ namespace GakujoGUI
 
         private void SyllabusSearchWebView2_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
         {
-            //if (SyllabusSearchWebView2.ExecuteScriptAsync("document.documentElement.outerHTML;").Result.Contains("一定時間操作が行われなかったため、サーバ側で自動ログアウトしました。処理を続ける場合は、再度ログインしてください。"))
-            //{
-            //    SyllabusSearchWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
-            //}
             SyllabusSearchWebView2.ExecuteScriptAsync("dbLinkClick = function(url){ window.chrome.webview.postMessage(url); }");
         }
 
         private void SyllabusSearchWebView2_WebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
             SyllabusViewWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/" + e.TryGetWebMessageAsString());
+            logger.Info($"Navigate SyllabusView https://syllabus.shizuoka.ac.jp/{e.TryGetWebMessageAsString()}");
         }
 
         #endregion
@@ -928,6 +924,8 @@ namespace GakujoGUI
                     ShowInTaskbar = true;
                     TaskBarIcon.Visibility = Visibility.Collapsed;
                     logger.Info("Set visibility to Visible.");
+                    SyllabusSearchWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+                    logger.Info($"Navigate SyllabusSearch https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
                     break;
                 case Visibility.Hidden:
                     Visibility = Visibility.Hidden;
