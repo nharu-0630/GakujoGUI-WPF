@@ -1322,7 +1322,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2021;
         public int SemesterCode { get; set; } = 3;
-        public string UserAgent { get; set; } = $"Chrome/99.0.4844.51 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/99.0.4844.74 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
     }
 
