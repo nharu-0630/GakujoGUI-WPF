@@ -944,7 +944,7 @@ namespace GakujoGUI
             SaveCookies();
         }
 
-        public void SetLotteryRegistration(List<LotteryRegistrationEntry> lotteryRegistrationEntries)
+        public void SetLotteryRegistration(List<LotteryRegistrationEntry> lotteryRegistrationEntries, bool notifyMail = false)
         {
             logger.Info("Start Set LotteryRegistration.");
             SetAcademicSystem();
@@ -969,6 +969,26 @@ namespace GakujoGUI
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuRegist.do");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            string selectedSemesterCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[1]/tbody/tr/td[2]/a").Attributes["href"].Value.Split(',')[1].Replace("'", "").Replace(")", "").Trim();
+            if (notifyMail)
+            {
+                httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/kyoumu/sendChuusenRishuuMailInit.do?selectedSemesterCode={selectedSemesterCode}");
+                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                logger.Info($"GET https://gakujo.shizuoka.ac.jp/kyoumu/sendChuusenRishuuMailInit.do?selectedSemesterCode={selectedSemesterCode}");
+                logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                string mailAddress = htmlDocument.DocumentNode.SelectSingleNode("//input[@name='mailAddress' and @checked]").Attributes["value"].Value;
+                httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/sendChuusenRishuuMail.do");
+                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+                httpRequestMessage.Content = new StringContent($"{mailAddress}&button_changePassword.changePassword.x=0&button_changePassword.changePassword.y=0");
+                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/sendChuusenRishuuMail.do");
+                logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            }
             logger.Info("End Set LotteryRegistration.");
             SaveJsons();
             SaveCookies();
