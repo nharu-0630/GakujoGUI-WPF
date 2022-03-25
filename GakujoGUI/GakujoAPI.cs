@@ -25,6 +25,7 @@ namespace GakujoGUI
         private List<Quiz> quizzes = new();
         private List<ClassContact> classContacts = new() { };
         private List<ClassSharedFile> classSharedFiles = new() { };
+        private List<List<LotteryRegistration>> lotteryRegistrations = new() { };
         private SchoolGrade schoolGrade = new();
         private List<ClassTableRow> classTables = new();
         private bool loginStatus = false;
@@ -34,6 +35,7 @@ namespace GakujoGUI
         public List<Quiz> Quizzes { get => quizzes; set => quizzes = value; }
         public List<ClassContact> ClassContacts { get => classContacts; set => classContacts = value; }
         public List<ClassSharedFile> ClassSharedFiles { get => classSharedFiles; set => classSharedFiles = value; }
+        public List<List<LotteryRegistration>> LotteryRegistrations { get => lotteryRegistrations; set => lotteryRegistrations = value; }
         public SchoolGrade SchoolGrade { get => schoolGrade; set => schoolGrade = value; }
         public List<ClassTableRow> ClassTables { get => classTables; set => classTables = value; }
         public bool LoginStatus => loginStatus;
@@ -320,11 +322,11 @@ namespace GakujoGUI
                 }
                 report.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
                 report.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
-                if (!reports.Contains(report)) { diffReports.Add(report); }
+                if (!Reports.Contains(report)) { diffReports.Add(report); }
             }
-            reports.AddRange(diffReports);
+            Reports.AddRange(diffReports);
             logger.Info($"Found {diffReports.Count} new Reports.");
-            foreach (Report report in reports.FindAll(x => !x.IsAcquired)) { GetReport(report); }
+            Reports.Where(x => !x.IsAcquired).ToList().ForEach(x => GetReport(x));
             Account.ReportDateTime = DateTime.Now;
             logger.Info("End Get Reports.");
             ApplyReportsClassTables();
@@ -402,16 +404,14 @@ namespace GakujoGUI
         {
             logger.Info("Start Apply Reports to ClassTables.");
             if (ClassTables == null) { logger.Warn("Return Apply Reports to ClassTables by ClassTables is null."); return; }
-            foreach (ClassTableRow classTableRow in ClassTables)
+            foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                if (classTableRow == null) { continue; }
                 for (int i = 0; i < 5; i++) { classTableRow[i].ReportCount = 0; }
             }
-            foreach (Report report in Reports.FindAll(x => x.Unsubmitted))
+            foreach (Report report in Reports.Where(x => x.Unsubmitted))
             {
-                foreach (ClassTableRow classTableRow in ClassTables)
+                foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
-                    if (classTableRow == null) { continue; }
                     for (int i = 0; i < 5; i++) { if (report.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].ReportCount++; } }
                 }
             }
@@ -470,11 +470,11 @@ namespace GakujoGUI
                 quiz.SubmissionStatus = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim();
                 quiz.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
                 quiz.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
-                if (!quizzes.Contains(quiz)) { diffQuizzes.Add(quiz); }
+                if (!Quizzes.Contains(quiz)) { diffQuizzes.Add(quiz); }
             }
-            quizzes.AddRange(diffQuizzes);
+            Quizzes.AddRange(diffQuizzes);
             logger.Info($"Found {diffQuizzes.Count} new Quizzes.");
-            foreach (Quiz quiz in quizzes.FindAll(x => !x.IsAcquired)) { GetQuiz(quiz); }
+            Quizzes.Where(x => !x.IsAcquired).ToList().ForEach(x => GetQuiz(x));
             Account.QuizDateTime = DateTime.Now;
             logger.Info("End Get Quizzes.");
             ApplyQuizzesClassTables();
@@ -553,16 +553,14 @@ namespace GakujoGUI
         {
             logger.Info("Start Apply Quizzes to ClassTables.");
             if (ClassTables == null) { logger.Warn("Return Apply Quizzes to ClassTables by ClassTables is null."); return; }
-            foreach (ClassTableRow classTableRow in ClassTables)
+            foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                if (classTableRow == null) { continue; }
                 for (int i = 0; i < 5; i++) { classTableRow[i].QuizCount = 0; }
             }
-            foreach (Quiz quiz in Quizzes.FindAll(x => x.Unsubmitted))
+            foreach (Quiz quiz in Quizzes.Where(x => x.Unsubmitted))
             {
-                foreach (ClassTableRow classTableRow in ClassTables)
+                foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
-                    if (classTableRow == null) { continue; }
                     for (int i = 0; i < 5; i++) { if (quiz.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].QuizCount++; } }
                 }
             }
@@ -897,7 +895,7 @@ namespace GakujoGUI
             return true;
         }
 
-        public void GetLotteryRegistration()
+        public void GetLotteryRegistration(out string jikanwariVector)
         {
             logger.Info("Start Get LotteryRegistration.");
             SetAcademicSystem();
@@ -908,8 +906,10 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            List<List<LotteryRegistration>> lotteryRegistrations = new();
+            jikanwariVector = "AA";
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistration."); return; }
+            LotteryRegistrations = new();
+            jikanwariVector = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/input").Attributes["value"].Value;
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count - 1; i++)
             {
                 List<LotteryRegistration> tempLotteryRegistrations = new();
@@ -929,12 +929,47 @@ namespace GakujoGUI
                     lotteryRegistration.FirstApplicantNumber = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[11].InnerText.Replace("&nbsp;", "").Trim());
                     lotteryRegistration.SecondApplicantNumber = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[12].InnerText.Replace("&nbsp;", "").Trim());
                     lotteryRegistration.ThirdApplicantNumber = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[13].InnerText.Replace("&nbsp;", "").Trim());
+                    lotteryRegistration.ChoiceNumberKey = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].SelectSingleNode("input").Attributes["name"].Value;
+                    if (htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].SelectSingleNode("input").Attributes.Contains("checked")) { lotteryRegistration.ChoiceNumberValue = 0; }
+                    else if (htmlNode.SelectNodes("tr")[j].SelectNodes("td")[7].SelectSingleNode("input").Attributes.Contains("checked")) { lotteryRegistration.ChoiceNumberValue = 1; }
+                    else if (htmlNode.SelectNodes("tr")[j].SelectNodes("td")[8].SelectSingleNode("input").Attributes.Contains("checked")) { lotteryRegistration.ChoiceNumberValue = 2; }
+                    else if (htmlNode.SelectNodes("tr")[j].SelectNodes("td")[9].SelectSingleNode("input").Attributes.Contains("checked")) { lotteryRegistration.ChoiceNumberValue = 3; }
                     tempLotteryRegistrations.Add(lotteryRegistration);
                     logger.Info(lotteryRegistration);
                 }
-                lotteryRegistrations.Add(tempLotteryRegistrations);
+                LotteryRegistrations.Add(tempLotteryRegistrations);
             }
             logger.Info("End Get LotteryRegistration.");
+            SaveJsons();
+            SaveCookies();
+        }
+
+        public void SetLotteryRegistration(List<LotteryRegistrationEntry> lotteryRegistrationEntries)
+        {
+            logger.Info("Start Set LotteryRegistration.");
+            SetAcademicSystem();
+            GetLotteryRegistration(out string jikanwariVector);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuRegist.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            string choiceNumbers = "";
+            foreach (LotteryRegistrationEntry lotteryRegistrationEntry in lotteryRegistrationEntries)
+            {
+                foreach (List<LotteryRegistration> lotteryRegistrations in LotteryRegistrations)
+                {
+                    if (lotteryRegistrations.Where(x => x.SubjectsName == lotteryRegistrationEntry.SubjectsName && x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable).Count() == 1)
+                    {
+                        lotteryRegistrations.Where(x => x.ChoiceNumberValue == lotteryRegistrationEntry.AspirationOrder).ToList().ForEach(x => x.ChoiceNumberValue = 0);
+                        lotteryRegistrations.Where(x => x.SubjectsName == lotteryRegistrationEntry.SubjectsName && x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable).First().ChoiceNumberValue = lotteryRegistrationEntry.AspirationOrder;
+                    }
+                }
+            }
+            LotteryRegistrations.SelectMany(_ => _).Where(x => x.IsRegisterable).ToList().ForEach(x => { choiceNumbers += x.ToChoiceNumberString(); logger.Info($"ChoiceNumber {x.ToChoiceNumberString()}"); });
+            httpRequestMessage.Content = new StringContent($"x=0&y=0&RishuuForm.jikanwariVector={jikanwariVector}{choiceNumbers}");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuRegist.do");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            logger.Info("End Set LotteryRegistration.");
             SaveJsons();
             SaveCookies();
         }
@@ -943,7 +978,7 @@ namespace GakujoGUI
         {
             logger.Info("Start Get ClassResults.");
             SetAcademicSystem();
-            GetLotteryRegistration();
+            //SetLotteryRegistration(new() { new() { SubjectsName = "数理の構造", ClassName = "情工１", AspirationOrder = 1 } });
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/seisekiSearchStudentInit.do?mainMenuCode=008&parentMenuCode=007");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -1373,10 +1408,29 @@ namespace GakujoGUI
         public int FirstApplicantNumber { get; set; }
         public int SecondApplicantNumber { get; set; }
         public int ThirdApplicantNumber { get; set; }
+        public string ChoiceNumberKey { get; set; } = "";
+        public int ChoiceNumberValue { get; set; }
 
         public override string ToString()
         {
             return $"{SubjectsName} {ClassName} {AttendingCapacity} 1:{FirstApplicantNumber} 2:{SecondApplicantNumber} 3:{ThirdApplicantNumber}";
+        }
+
+        public string ToChoiceNumberString()
+        {
+            return $"&{ChoiceNumberKey}={ChoiceNumberValue}";
+        }
+    }
+
+    public class LotteryRegistrationEntry
+    {
+        public string SubjectsName { get; set; } = "";
+        public string ClassName { get; set; } = "";
+        public int AspirationOrder { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SubjectsName} {ClassName} [{AspirationOrder}]";
         }
     }
 
@@ -1462,10 +1516,7 @@ namespace GakujoGUI
             string value = $"学年 {Grade}年";
             value += $"\n累積GPA {GPA}";
             value += $"\n学期GPA";
-            foreach (SemesterGPA semesterGPA in SemesterGPAs)
-            {
-                value += $"\n{semesterGPA}";
-            }
+            SemesterGPAs.ForEach(x => value += $"\n{x}");
             value += $"\n学科内順位 {DepartmentRank[0]}/{DepartmentRank[1]}";
             value += $"\nコース内順位 {CourseRank[0]}/{CourseRank[1]}";
             value += $"\n算出日 {CalculationDate:yyyy/MM/dd}";
@@ -1477,7 +1528,7 @@ namespace GakujoGUI
     {
         public List<ClassResult> ClassResults { get; set; } = new() { };
         public List<EvaluationCredit> EvaluationCredits { get; set; } = new() { };
-        public double PreliminaryGPA => 1.0 * ClassResults.FindAll(x => x.Score != 0).Select(x => x.GP * x.Credit).Sum() / ClassResults.FindAll(x => x.Score != 0).Select(x => x.Credit).Sum();
+        public double PreliminaryGPA => 1.0 * ClassResults.Where(x => x.Score != 0).Select(x => x.GP * x.Credit).Sum() / ClassResults.Where(x => x.Score != 0).Select(x => x.Credit).Sum();
         public DepartmentGPA DepartmentGPA { get; set; } = new();
         public List<YearCredit> YearCredits { get; set; } = new() { };
     }
