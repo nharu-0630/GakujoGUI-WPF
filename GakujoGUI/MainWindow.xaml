@@ -799,6 +799,133 @@
                 </Grid>
             </Grid>
         </TabItem>
+        <TabItem Name="LotteryRegistrationsTabItem" Header="抽選履修登録">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button
+                        Name="LoadLotteryRegistrationsButton"
+                        Margin="6"
+                        Click="LoadLotteryRegistrationsButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:FontIcon
+                                Name="LoadLotteryRegistrationsButtonFontIcon"
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE72C;"
+                                Visibility="Visible" />
+                            <ui:ProgressRing
+                                Name="LoadLotteryRegistrationsButtonProgressRing"
+                                IsActive="True"
+                                Visibility="Collapsed" />
+                        </StackPanel>
+                    </Button>
+                    <Label
+                        Name="LotteryRegistrationsDateTimeLabel"
+                        Margin="6"
+                        VerticalAlignment="Center"
+                        Content="最終更新" />
+                    <CheckBox
+                        Name="FilterLotteryRegistrationsCheckBox"
+                        Margin="6"
+                        Checked="FilterLotteryRegistrationsCheckBox_CheckStateChanged"
+                        Content="履修可能のみ"
+                        Unchecked="FilterLotteryRegistrationsCheckBox_CheckStateChanged" />
+                </StackPanel>
+                <GridSplitter
+                    Grid.Row="1"
+                    Width="5"
+                    VerticalAlignment="Stretch" />
+                <DataGrid
+                    Name="LotteryRegistrationsDataGrid"
+                    Grid.Row="2"
+                    Margin="6"
+                    AreRowDetailsFrozen="True"
+                    AutoGenerateColumns="False"
+                    CanUserAddRows="False"
+                    CanUserDeleteRows="False"
+                    CanUserReorderColumns="False"
+                    CanUserResizeRows="False"
+                    CanUserSortColumns="False"
+                    RowHeight="32"
+                    ScrollViewer.CanContentScroll="True"
+                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                    ScrollViewer.VerticalScrollBarVisibility="Auto"
+                    SelectionMode="Single">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn
+                            Width="80"
+                            MinWidth="80"
+                            Binding="{Binding WeekdayPeriod}"
+                            Header="曜日時限"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="160"
+                            MinWidth="160"
+                            Binding="{Binding SubjectsName}"
+                            Header="科目名"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="100"
+                            MinWidth="100"
+                            Binding="{Binding ClassName}"
+                            Header="クラス名"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding SubjectsSection}"
+                            Header="科目区分"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding SelectionSection}"
+                            Header="必修選択区分"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding Credit}"
+                            Header="単位"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="60"
+                            MinWidth="60"
+                            Binding="{Binding ChoiceNumberValue}"
+                            Header="志望"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="80"
+                            MinWidth="80"
+                            Binding="{Binding AttendingCapacity}"
+                            Header="受講定員"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="80"
+                            MinWidth="80"
+                            Binding="{Binding FirstApplicantNumber}"
+                            Header="第1志望"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="80"
+                            MinWidth="80"
+                            Binding="{Binding SecondApplicantNumber}"
+                            Header="第2志望"
+                            IsReadOnly="True" />
+                        <DataGridTextColumn
+                            Width="80"
+                            MinWidth="80"
+                            Binding="{Binding ThirdApplicantNumber}"
+                            Header="第3志望"
+                            IsReadOnly="True" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </TabItem>
         <TabItem Name="ClassResultsTabItem" Header="成績情報">
             <Grid>
                 <Grid.RowDefinitions>

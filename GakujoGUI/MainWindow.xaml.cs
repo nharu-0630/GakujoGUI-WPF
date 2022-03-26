@@ -99,6 +99,7 @@ namespace GakujoGUI
                 RefreshReportsDataGrid();
                 RefreshQuizzesDataGrid();
                 RefreshClassSharedFilesDataGrid();
+                RefreshLotteryRegistrationsDataGrid();
                 RefreshClassResultsDataGrid();
                 AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
                 AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
@@ -176,6 +177,8 @@ namespace GakujoGUI
                 LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
                 LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
+                LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
                 LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             });
@@ -190,6 +193,7 @@ namespace GakujoGUI
                 RefreshReportsDataGrid();
                 RefreshQuizzesDataGrid();
                 RefreshClassSharedFilesDataGrid();
+                RefreshLotteryRegistrationsDataGrid();
                 RefreshClassResultsDataGrid();
                 if (classContactsDiffCount != gakujoAPI.ClassContacts.Count)
                 {
@@ -241,6 +245,8 @@ namespace GakujoGUI
                 LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
                 LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Visible;
                 LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
+                LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
                 LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
             });
@@ -632,6 +638,39 @@ namespace GakujoGUI
         }
 
         #endregion
+
+        private void LoadLotteryRegistrationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
+            Task.Run(() =>
+            {
+                gakujoAPI.GetLotteryRegistrations(out _);
+                Dispatcher.Invoke(() =>
+                {
+                    RefreshLotteryRegistrationsDataGrid();
+                    LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        private void FilterLotteryRegistrationsCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshLotteryRegistrationsDataGrid();
+        }
+
+        private void RefreshLotteryRegistrationsDataGrid()
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.LotteryRegistrations.SelectMany(_ => _) }.View;
+            collectionView.Filter = new Predicate<object>(item => (!(bool)FilterLotteryRegistrationsCheckBox.IsChecked! || ((LotteryRegistration)item).IsRegisterable));
+            LotteryRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.LotteryRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
+            LotteryRegistrationsDataGrid.ItemsSource = collectionView;
+            LotteryRegistrationsDataGrid.Items.Refresh();
+            logger.Info("Refresh LotteryRegistrationsDataGrid.");
+        }
+
 
         #region 成績情報
 
