@@ -149,7 +149,7 @@ CSS，画像ファイルなどを取得しないため，ブラウザ上のロ�
 
 #### 抽選履修登録
 
-<img src="" width="640">
+<img src="https://user-images.githubusercontent.com/8305330/160237352-53a9426c-f7d3-491f-8202-f7ac34da8868.png" width="640">
 
 <details>
 <summary>詳細</summary>
