@@ -26,6 +26,7 @@ namespace GakujoGUI
         private List<ClassContact> classContacts = new() { };
         private List<ClassSharedFile> classSharedFiles = new() { };
         private List<List<LotteryRegistration>> lotteryRegistrations = new() { };
+        private List<List<LotteryRegistrationResult>> lotteryRegistrationsResult = new() { };
         private SchoolGrade schoolGrade = new();
         private List<ClassTableRow> classTables = new();
         private bool loginStatus = false;
@@ -36,6 +37,7 @@ namespace GakujoGUI
         public List<ClassContact> ClassContacts { get => classContacts; set => classContacts = value; }
         public List<ClassSharedFile> ClassSharedFiles { get => classSharedFiles; set => classSharedFiles = value; }
         public List<List<LotteryRegistration>> LotteryRegistrations { get => lotteryRegistrations; set => lotteryRegistrations = value; }
+        public List<List<LotteryRegistrationResult>> LotteryRegistrationsResult { get => lotteryRegistrationsResult; set => lotteryRegistrationsResult = value; }
         public SchoolGrade SchoolGrade { get => schoolGrade; set => schoolGrade = value; }
         public List<ClassTableRow> ClassTables { get => classTables; set => classTables = value; }
         public bool LoginStatus => loginStatus;
@@ -144,6 +146,10 @@ namespace GakujoGUI
             {
                 LotteryRegistrations = JsonConvert.DeserializeObject<List<List<LotteryRegistration>>>(File.ReadAllText(GetJsonPath("LotteryRegistrations")))!;
             }
+            if (File.Exists(GetJsonPath("LotteryRegistrationsResult")))
+            {
+                LotteryRegistrationsResult = JsonConvert.DeserializeObject<List<List<LotteryRegistrationResult>>>(File.ReadAllText(GetJsonPath("LotteryRegistrationsResult")))!;
+            }
             if (File.Exists(GetJsonPath("SchoolGrade")))
             {
                 SchoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))!;
@@ -176,8 +182,10 @@ namespace GakujoGUI
             catch (Exception exception) { logger.Error(exception, "Error Save ClassContacts."); }
             try { File.WriteAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(ClassSharedFiles, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save ClassSharedFiles."); }
-            try { File.WriteAllText(GetJsonPath("LotteryRegistrations"), JsonConvert.SerializeObject(lotteryRegistrations, Formatting.Indented)); }
+            try { File.WriteAllText(GetJsonPath("LotteryRegistrations"), JsonConvert.SerializeObject(LotteryRegistrations, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save LotteryRegistrations."); }
+            try { File.WriteAllText(GetJsonPath("LotteryRegistrationsResult"), JsonConvert.SerializeObject(LotteryRegistrationsResult, Formatting.Indented)); }
+            catch (Exception exception) { logger.Error(exception, "Error Save LotteryRegistrationsResult."); }
             try { File.WriteAllText(GetJsonPath("SchoolGrade"), JsonConvert.SerializeObject(SchoolGrade, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save SchoolGrade."); }
             try { File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(ClassTables, Formatting.Indented)); }
@@ -855,7 +863,7 @@ namespace GakujoGUI
             return true;
         }
 
-        private bool SetAcademicSystem(out bool lotteryRegistrationEnabled)
+        private bool SetAcademicSystem(out bool lotteryRegistrationEnabled, out bool lotteryRegistrationResultEnabled)
         {
             logger.Info("Start Set AcademicSystem.");
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/preLogin.do");
@@ -896,7 +904,8 @@ namespace GakujoGUI
                 logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             }
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            lotteryRegistrationEnabled = htmlDocument.DocumentNode.SelectNodes("//a[contains(@onclick,\"mainMenuCode=019&parentMenuCode=001\")]").Count == 1;
+            lotteryRegistrationEnabled = htmlDocument.DocumentNode.SelectNodes("//a[contains(@onclick,\"mainMenuCode=019&parentMenuCode=001\")]") != null;
+            lotteryRegistrationResultEnabled = htmlDocument.DocumentNode.SelectNodes("//a[contains(@onclick,\"mainMenuCode=020&parentMenuCode=001\")]") != null;
             logger.Info("End Set AcademicSystem.");
             SaveJsons();
             SaveCookies();
@@ -906,7 +915,7 @@ namespace GakujoGUI
         public void GetLotteryRegistrations(out string jikanwariVector)
         {
             logger.Info("Start Get LotteryRegistrations.");
-            SetAcademicSystem(out bool lotteryRegistrationEnabled);
+            SetAcademicSystem(out bool lotteryRegistrationEnabled, out _);
             jikanwariVector = "AA";
             if (!lotteryRegistrationEnabled) { logger.Warn("Not found LotteryRegistrations by overtime."); return; }
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuInit.do?mainMenuCode=019&parentMenuCode=001");
@@ -919,10 +928,11 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrations."); return; }
             LotteryRegistrations = new();
             jikanwariVector = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/input").Attributes["value"].Value;
-            for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count - 1; i++)
+            for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count; i++)
             {
                 List<LotteryRegistration> tempLotteryRegistrations = new();
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table")[i].SelectSingleNode("tr/td/table");
+                if (htmlNode == null) { continue; }
                 for (int j = 2; j < htmlNode.SelectNodes("tr").Count; j++)
                 {
                     LotteryRegistration lotteryRegistration = new();
@@ -957,7 +967,7 @@ namespace GakujoGUI
         public void SetLotteryRegistrations(List<LotteryRegistrationEntry> lotteryRegistrationEntries, bool notifyMail = false)
         {
             logger.Info("Start Set LotteryRegistrations.");
-            SetAcademicSystem(out bool lotteryRegistrationEnabled);
+            SetAcademicSystem(out bool lotteryRegistrationEnabled, out _);
             if (!lotteryRegistrationEnabled) { logger.Warn("Return Set LotteryRegistrations by overtime."); return; }
             GetLotteryRegistrations(out string jikanwariVector);
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuRegist.do");
@@ -1005,10 +1015,52 @@ namespace GakujoGUI
             SaveCookies();
         }
 
+        public void GetLotteryRegistrationsResult()
+        {
+            logger.Info("Start Get LotteryRegistrationsResult.");
+            SetAcademicSystem(out _, out bool lotteryRegistrationResultEnabled);
+            if (!lotteryRegistrationResultEnabled) { logger.Warn("Not found LotteryRegistrationsResult by overtime."); return; }
+            httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuInit.do?mainMenuCode=020&parentMenuCode=001");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/chuusenRishuuInit.do?mainMenuCode=020&parentMenuCode=001");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrationsResult."); return; }
+            LotteryRegistrationsResult = new();
+            for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count; i++)
+            {
+                List<LotteryRegistrationResult> tempLotteryRegistrationsResult = new();
+                HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table")[i].SelectSingleNode("tr/td/table");
+                if (htmlNode == null) { continue; }
+                for (int j = 1; j < htmlNode.SelectNodes("tr").Count; j++)
+                {
+                    LotteryRegistrationResult lotteryRegistrationResult = new();
+                    lotteryRegistrationResult.WeekdayPeriod = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[0].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.SubjectsName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[1].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.SubjectsName = Regex.Replace(lotteryRegistrationResult.SubjectsName, @" +", " ");
+                    lotteryRegistrationResult.ClassName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[2].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.SubjectsSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[3].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.SelectionSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[4].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.Credit = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[5].InnerText.Trim());
+                    lotteryRegistrationResult.ChoiceNumberValue = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].InnerText.Trim().Replace("&nbsp;", ""));
+                    lotteryRegistrationResult.IsWinning = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[7].InnerText.Contains("当選");
+                    tempLotteryRegistrationsResult.Add(lotteryRegistrationResult);
+                    logger.Info(lotteryRegistrationResult);
+                }
+                LotteryRegistrationsResult.Add(tempLotteryRegistrationsResult);
+            }
+            logger.Info("End Get LotteryRegistrationsResult.");
+            Account.LotteryRegistrationResultDateTime = DateTime.Now;
+            SaveJsons();
+            SaveCookies();
+        }
+
         public void GetClassResults(out List<ClassResult> diffClassResults)
         {
             logger.Info("Start Get ClassResults.");
-            SetAcademicSystem(out _);
+            SetAcademicSystem(out _, out _);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/seisekiSearchStudentInit.do?mainMenuCode=008&parentMenuCode=007");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -1112,7 +1164,7 @@ namespace GakujoGUI
         public void GetClassTables()
         {
             logger.Info("Start Get ClassTables.");
-            SetAcademicSystem(out _);
+            SetAcademicSystem(out _, out _);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=005&parentMenuCode=004");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -1269,6 +1321,7 @@ namespace GakujoGUI
         public DateTime ClassSharedFileDateTime { get; set; }
         public DateTime SchoolSharedFileDateTime { get; set; }
         public DateTime LotteryRegistrationDateTime { get; set; }
+        public DateTime LotteryRegistrationResultDateTime { get; set; }
         public DateTime ClassResultDateTime { get; set; }
     }
 
@@ -1462,6 +1515,22 @@ namespace GakujoGUI
         public override string ToString()
         {
             return $"{SubjectsName} {ClassName} [{AspirationOrder}]";
+        }
+    }
+    public class LotteryRegistrationResult
+    {
+        public string WeekdayPeriod { get; set; } = "";
+        public string SubjectsName { get; set; } = "";
+        public string ClassName { get; set; } = "";
+        public string SubjectsSection { get; set; } = "";
+        public string SelectionSection { get; set; } = "";
+        public int Credit { get; set; }
+        public int ChoiceNumberValue { get; set; }
+        public bool IsWinning { get; set; }
+
+        public override string ToString()
+        {
+            return $"{SubjectsName} {ClassName} {ChoiceNumberValue} {(IsWinning ? "*" : "")}";
         }
     }
 
