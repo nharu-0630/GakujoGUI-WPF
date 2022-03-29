@@ -189,6 +189,8 @@ namespace GakujoGUI
             gakujoAPI.GetReports(out List<Report> diffReports);
             gakujoAPI.GetQuizzes(out List<Quiz> diffQuizzes);
             gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
+            gakujoAPI.GetLotteryRegistrations(out _);
+            gakujoAPI.GetLotteryRegistrationsResult();
             gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
             Dispatcher.Invoke(() =>
             {
