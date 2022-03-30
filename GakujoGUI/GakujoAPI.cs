@@ -149,7 +149,7 @@ namespace GakujoGUI
                     httpClient = new HttpClient(httpClientHandler);
                     logger.Info("Load Cookies.");
                 }
-                catch (Exception exception) { logger.Error("Error Load Cookies.", exception); }
+                catch (Exception exception) { logger.Error(exception, "Error Load Cookies."); }
                 return CheckConnection();
             }
             cookieContainer = new CookieContainer();
