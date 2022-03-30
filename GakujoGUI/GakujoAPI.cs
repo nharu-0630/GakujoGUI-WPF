@@ -1170,7 +1170,99 @@ namespace GakujoGUI
 
         }
 
-        public void SetGeneralRegistration(List<GeneralRegistrationEntry> generalRegistrationEntries, bool overwrite = false)
+        private bool SetGeneralRegistration(GeneralRegistrationEntry generalRegistrationEntry, bool restore, out int result)
+        {
+            result = -1;
+            string youbi = "";
+            switch (generalRegistrationEntry.WeekdayPeriod[..1])
+            {
+                case "月": youbi = "1"; break;
+                case "火": youbi = "2"; break;
+                case "水": youbi = "3"; break;
+                case "木": youbi = "4"; break;
+                case "金": youbi = "5"; break;
+            }
+            string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
+            logger.Info(generalRegistrationEntry.EntriedKamokuCode);
+            logger.Info(generalRegistrationEntry.EntriedClassCode);
+            List<GeneralRegistration> suggestGeneralRegistrationEntries = GetRegisterableGeneralRegistrations(youbi, jigen, out string faculty, out string department, out string course, out string grade).Where(x => (!restore && x.SubjectsName.Contains(generalRegistrationEntry.SubjectsName) && x.SubjectsName.Contains(generalRegistrationEntry.ClassName)) || (restore && x.KamokuCode == generalRegistrationEntry.EntriedKamokuCode && x.ClassCode == generalRegistrationEntry.EntriedClassCode)).ToList();
+            if (suggestGeneralRegistrationEntries.Count != 1) { logger.Warn("Not found GeneralRegistration by count not 1."); return false; }
+            GeneralRegistration generalRegistration = suggestGeneralRegistrationEntries[0];
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/searchKamoku.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"faculty={faculty}&department={department}&course={course}&grade={grade}&kamokuKbnCode=&req=&kamokuCode={generalRegistration.KamokuCode}&classCode={generalRegistration.ClassCode}&unit={generalRegistration.Unit}&radio={generalRegistration.Radio}&selectKamoku={generalRegistration.SelectKamoku}&button_kind.registKamoku.x=0&button_kind.registKamoku.y=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/searchKamoku.do");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (htmlDocument.DocumentNode.SelectNodes("/html/body/font[1]/b") != null)
+            {
+                string errorMessage = htmlDocument.DocumentNode.SelectSingleNode("/html/body/font[2]/ul/li").InnerText;
+                if (errorMessage.Contains("他の科目を取り消して、半期履修制限単位数以内で履修登録してください。"))
+                {
+                    logger.Error($"Error Set GeneralRegistration {generalRegistration} by credits limit.");
+                    result = 1;
+                }
+                else if (errorMessage.Contains("を取り消してから、履修登録してください。"))
+                {
+                    logger.Error($"Error Set GeneralRegistration {generalRegistration} by duplicate class.");
+                    result = 2;
+                }
+                else if (errorMessage.Contains("定員数を超えているため、登録できません。"))
+                {
+                    logger.Error($"Error Set GeneralRegistration {generalRegistration} by attending capacity.");
+                    result = 3;
+                }
+                return false;
+            }
+            logger.Info($"Set GeneralRegistration {generalRegistration}");
+            SaveJsons();
+            SaveCookies();
+            result = 0;
+            return true;
+        }
+
+        private void SetGeneralRegistrationClear(string youbi, string jigen)
+        {
+            logger.Info("Start Set GeneralRegistrationClear.");
+            SetAcademicSystem(out _, out _, out bool generalRegistrationEnabled);
+            if (!generalRegistrationEnabled) { logger.Warn("Return Set GeneralRegistration by overtime."); return; }
+            httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=002&parentMenuCode=001");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=002&parentMenuCode=001");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{int.Parse(jigen) + 1}]/td[{int.Parse(youbi) + 1}]/table/tr[2]/td/a");
+            if (htmlNode == null) { logger.Warn("Not found class in GeneralRegistrations."); return; }
+            string kamokuCode = htmlNode.Attributes["href"].Value.Split(',')[1].Replace("'", "").Trim();
+            string classCode = htmlNode.Attributes["href"].Value.Split(',')[2].Replace("'", "").Trim();
+            httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/kyoumu/removeKamokuInit.do?kamokuCode={kamokuCode}&classCode={classCode}&youbi={youbi}&jigen={jigen}");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info($"GET https://gakujo.shizuoka.ac.jp/kyoumu/removeKamokuInit.do?kamokuCode={kamokuCode}&classCode={classCode}&youbi={youbi}&jigen={jigen}");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/removeKamoku.do");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/removeKamoku.do");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=002&parentMenuCode=001");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=002&parentMenuCode=001");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            logger.Info("End Set GeneralRegistrationClear.");
+            SaveJsons();
+            SaveCookies();
+        }
+
+        public void SetGeneralRegistrations(List<GeneralRegistrationEntry> generalRegistrationEntries, bool overwrite = false)
         {
             logger.Info("Start Set GeneralRegistrations.");
             SetAcademicSystem(out _, out _, out bool generalRegistrationEnabled);
@@ -1195,41 +1287,34 @@ namespace GakujoGUI
                     case "金": youbi = "5"; break;
                 }
                 string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
-                List<GeneralRegistration> suggestGeneralRegistrationEntries = GetRegisterableGeneralRegistrations(youbi, jigen, out string faculty, out string department, out string course, out string grade).Where(x => x.SubjectsName.Contains(generalRegistrationEntry.SubjectsName) && x.SubjectsName.Contains(generalRegistrationEntry.ClassName)).ToList();
-                if (suggestGeneralRegistrationEntries.Count != 1) { logger.Warn("Not found GeneralRegistration by count not 1."); continue; }
-                GeneralRegistration generalRegistration = suggestGeneralRegistrationEntries[0];
-                httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/kyoumu/searchKamoku.do");
-                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpRequestMessage.Content = new StringContent($"faculty={faculty}&department={department}&course={course}&grade={grade}&kamokuKbnCode=&req=&kamokuCode={generalRegistration.KamokuCode}&classCode={generalRegistration.ClassCode}&unit={generalRegistration.Unit}&radio={generalRegistration.Radio}&selectKamoku={generalRegistration.SelectKamoku}&button_kind.registKamoku.x=0&button_kind.registKamoku.y=0");
-                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-                logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/searchKamoku.do");
-                logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                htmlDocument = new();
-                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                if (htmlDocument.DocumentNode.SelectNodes("/html/body/font[1]/b") != null)
+                HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{int.Parse(jigen) + 1}]/td[{int.Parse(youbi) + 1}]/table/tr[2]/td/a");
+                if (htmlNode == null) { logger.Warn("Not found class in GeneralRegistrations."); continue; }
+                generalRegistrationEntry.EntriedKamokuCode = htmlNode.Attributes["href"].Value.Split(',')[1].Replace("'", "").Trim();
+                generalRegistrationEntry.EntriedClassCode = htmlNode.Attributes["href"].Value.Split(',')[2].Replace("'", "").Trim();
+            }
+            foreach (GeneralRegistrationEntry generalRegistrationEntry in generalRegistrationEntries)
+            {
+                SetGeneralRegistration(generalRegistrationEntry, false, out int result);
+                if (result == 2 && overwrite)
                 {
-                    string errorMessage = htmlDocument.DocumentNode.SelectSingleNode("/html/body/font[2]/ul/li").InnerText;
-                    if (errorMessage.Contains("他の科目を取り消して、半期履修制限単位数以内で履修登録してください。"))
+                    string youbi = "";
+                    switch (generalRegistrationEntry.WeekdayPeriod[..1])
                     {
-                        logger.Error($"Error Set GeneralRegistration {generalRegistration} by credits limit.");
+                        case "月": youbi = "1"; break;
+                        case "火": youbi = "2"; break;
+                        case "水": youbi = "3"; break;
+                        case "木": youbi = "4"; break;
+                        case "金": youbi = "5"; break;
                     }
-                    else if (errorMessage.Contains("を取り消してから、履修登録してください。"))
-                    {
-                        logger.Error($"Error Set GeneralRegistration {generalRegistration} by duplicate class.");
-                    }
-                    else if (errorMessage.Contains("定員数を超えているため、登録できません。"))
-                    {
-                        logger.Error($"Error Set GeneralRegistration {generalRegistration} by attending capacity.");
-                    }
-                    continue;
+                    string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
+                    SetGeneralRegistrationClear(youbi, jigen);
+                    SetGeneralRegistration(generalRegistrationEntry, false, out result);
+                    if (result != 0) { SetGeneralRegistration(generalRegistrationEntry, true, out _); }
                 }
-                logger.Info($"Set GeneralRegistration {generalRegistration}");
             }
             logger.Info("End Set GeneralRegistrations.");
             SaveJsons();
             SaveCookies();
-            return;
         }
 
         public void GetClassResults(out List<ClassResult> diffClassResults)
@@ -1750,6 +1835,9 @@ namespace GakujoGUI
         public string WeekdayPeriod { get; set; } = "";
         public string SubjectsName { get; set; } = "";
         public string ClassName { get; set; } = "";
+
+        public string EntriedKamokuCode { get; set; } = "";
+        public string EntriedClassCode { get; set; } = "";
 
         public override string ToString()
         {
