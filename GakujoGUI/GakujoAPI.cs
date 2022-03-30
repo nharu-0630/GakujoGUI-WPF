@@ -14,6 +14,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Web;
 
+
 namespace GakujoGUI
 {
     internal class GakujoAPI
@@ -54,7 +55,7 @@ namespace GakujoGUI
         private readonly string schoolYear = "";
         private readonly int semesterCode;
         private readonly string userAgent = "";
-        private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{(semesterCode < 2 ? 1 : 2)}";
+        private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{ReplaceSemesterCode(semesterCode)}";
         private string ReportDateStart => $"{schoolYear}/0{(semesterCode < 2 ? 3 : 8)}/01";
 
         private string lastCallerMemberName = "";
@@ -67,6 +68,37 @@ namespace GakujoGUI
             }
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
+
+        private static string ReplaceColon(string value) => value.Replace("&#x3a;", ":").Trim();
+
+        private static string ReplaceSpace(string value) => Regex.Replace(Regex.Replace(value.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim(), @"\s+", " "), @" +", " ").Trim();
+
+        private static string ReplaceJSArgs(string value, int index) => value.Split(',')[index].Replace("'", "").Replace("(", "").Replace(")", "").Replace(";", "").Trim();
+
+        private static DateTime ReplaceTimeSpan(string value, int index) => DateTime.Parse(value.Trim().Split('～')[index]);
+
+        private static string ReplaceHtmlNewLine(string value) => Regex.Replace(HttpUtility.HtmlDecode(value).Replace("<br>", " \r\n").Trim('\r').Trim('\n'), "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline).Trim();
+
+        private static int ReplaceSemesterCode(int value) => (value < 2 ? 1 : 2);
+
+        private static int ReplaceWeekday(string value)
+        {
+            return value[..1] switch
+            {
+                "月" => 0,
+                "火" => 1,
+                "水" => 2,
+                "木" => 3,
+                "金" => 4,
+                _ => -1,
+            };
+        }
+
+        private static int ReplacePeriod(string value) => (int.Parse(value.Substring(1, 1)) + 1) / 2;
+
+        private static string ReplaceWeekday(int index) => (new string[] { "月", "火", "水", "木", "金" })[index];
+
+        private static string ReplacePeriod(int index) => (new string[] { "1･2", "3･4", "5･6", "7･8", "9･10", "11･12", "13･14" })[index];
 
         public GakujoAPI(string schoolYear, int semesterCode, string userAgent)
         {
@@ -100,20 +132,24 @@ namespace GakujoGUI
         {
             if (File.Exists(cookiesPath))
             {
-                using (Stream stream = File.Open(cookiesPath, FileMode.Open))
+                try
                 {
-                    BinaryFormatter binaryFormatter = new();
+                    using (Stream stream = File.Open(cookiesPath, FileMode.Open))
+                    {
+                        BinaryFormatter binaryFormatter = new();
 #pragma warning disable SYSLIB0011 // 型またはメンバーが旧型式です
-                    cookieContainer = (CookieContainer)binaryFormatter.Deserialize(stream);
+                        cookieContainer = (CookieContainer)binaryFormatter.Deserialize(stream);
 #pragma warning restore SYSLIB0011 // 型またはメンバーが旧型式です
+                    }
+                    httpClientHandler = new HttpClientHandler
+                    {
+                        AutomaticDecompression = ~DecompressionMethods.None,
+                        CookieContainer = cookieContainer
+                    };
+                    httpClient = new HttpClient(httpClientHandler);
+                    logger.Info("Load Cookies.");
                 }
-                httpClientHandler = new HttpClientHandler
-                {
-                    AutomaticDecompression = ~DecompressionMethods.None,
-                    CookieContainer = cookieContainer
-                };
-                httpClient = new HttpClient(httpClientHandler);
-                logger.Info("Load Cookies.");
+                catch (Exception exception) { logger.Error("Error Load Cookies.", exception); }
                 return CheckConnection();
             }
             cookieContainer = new CookieContainer();
@@ -244,8 +280,7 @@ namespace GakujoGUI
             {
                 HtmlDocument htmlDocument = new();
                 htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                string relayState = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value;
-                relayState = relayState.Replace("&#x3a;", ":");
+                string relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
                 string SAMLResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
                 relayState = Uri.EscapeDataString(relayState);
                 SAMLResponse = Uri.EscapeDataString(SAMLResponse);
@@ -296,7 +331,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/search");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/search");
@@ -320,16 +355,15 @@ namespace GakujoGUI
             for (int i = 0; i < limitCount; i++)
             {
                 Report report = new();
-                report.Subjects = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\r", "").Replace("\n", "").Trim();
-                report.Subjects = Regex.Replace(report.Subjects, @"\s+", " ");
+                report.Subjects = ReplaceSpace(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText);
                 report.Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim();
-                report.Id = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                report.SchoolYear = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[3].Replace("'", "").Trim();
-                report.SubjectCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[4].Replace("'", "").Trim();
-                report.ClassCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[5].Replace("'", "").Replace(");", "").Trim();
+                report.Id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                report.SchoolYear = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 3);
+                report.SubjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4);
+                report.ClassCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5);
                 report.Status = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim();
-                report.StartDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText.Trim().Split('～')[0]);
-                report.EndDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText.Trim().Split('～')[1]);
+                report.StartDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 0);
+                report.EndDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 1);
                 if (htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim() != "")
                 {
                     report.SubmittedDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim());
@@ -363,7 +397,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/search");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/search");
@@ -372,7 +406,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/forwardSubmitRef");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId={report.Id}&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear={schoolYear}&listSubjectCode={report.SubjectCode}&listClassCode=L0&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&reportId={report.Id}&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear={schoolYear}&listSubjectCode={report.SubjectCode}&listClassCode=L0&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A02_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/report/student/searchList/forwardSubmitRef");
@@ -380,18 +414,16 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             report.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText;
-            report.Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
-            report.Description = Regex.Replace(report.Description, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
-            report.Message = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
-            report.Message = Regex.Replace(report.Message, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
+            report.Description = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerHtml);
+            report.Message = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerHtml);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a") != null)
             {
                 report.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a")[i];
-                    string selectedKey = htmlNode.Attributes["onclick"].Value.Split(',')[0].Replace("fileDownload('", "").Replace("'", "");
-                    string prefix = htmlNode.Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
+                    string selectedKey = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 0).Replace("fileDownload", "");
+                    string prefix = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classsupport/fileDownload/temporaryFileDownload?EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&selectedKey={selectedKey}&prefix={prefix}&EXCLUDE_SET=");
@@ -447,7 +479,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/search");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/search");
@@ -471,16 +503,15 @@ namespace GakujoGUI
             for (int i = 0; i < limitCount; i++)
             {
                 Quiz quiz = new();
-                quiz.Subjects = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText.Replace("\r", "").Replace("\n", "").Trim();
-                quiz.Subjects = Regex.Replace(quiz.Subjects, @"\s+", " ");
+                quiz.Subjects = ReplaceSpace(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText);
                 quiz.Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim();
-                quiz.Id = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                quiz.SchoolYear = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[3].Replace("'", "").Trim();
-                quiz.SubjectCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[4].Replace("'", "").Trim();
-                quiz.ClassCode = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[5].Replace("'", "").Replace(");", "").Trim();
+                quiz.Id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                quiz.SchoolYear = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 3);
+                quiz.SubjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4);
+                quiz.ClassCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5);
                 quiz.Status = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim();
-                quiz.StartDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText.Trim().Split('～')[0]);
-                quiz.EndDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText.Trim().Split('～')[1]);
+                quiz.StartDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 0);
+                quiz.EndDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 1);
                 quiz.SubmissionStatus = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim();
                 quiz.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
                 quiz.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
@@ -511,7 +542,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/search");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId=&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear=&listSubjectCode=&listClassCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=-1&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/search");
@@ -520,7 +551,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/forwardSubmitRef");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId={quiz.Id}&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear={schoolYear}&listSubjectCode={quiz.SubjectCode}&listClassCode={quiz.ClassCode}&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&testId={quiz.Id}&hidSchoolYear=&hidSemesterCode=&hidSubjectCode=&hidClassCode=&entranceDiv=&backPath=&listSchoolYear={schoolYear}&listSubjectCode={quiz.SubjectCode}&listClassCode={quiz.ClassCode}&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&operationFormat=1&operationFormat=2&searchList_length=10&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A03_01_G&_screenInfoDisp=&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/test/student/searchList/forwardSubmitRef");
@@ -529,18 +560,16 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             quiz.QuestionsCount = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText.Replace("問", "").Trim());
             quiz.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerText;
-            quiz.Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
-            quiz.Description = Regex.Replace(quiz.Description, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
-            quiz.Message = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerHtml).Replace("<br>", " \r\n").Trim('\r').Trim('\n');
-            quiz.Message = Regex.Replace(quiz.Message, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
+            quiz.Description = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerHtml);
+            quiz.Message = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerHtml);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a") != null)
             {
                 quiz.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a")[i];
-                    string selectedKey = htmlNode.Attributes["onclick"].Value.Split(',')[0].Replace("fileDownload('", "").Replace("'", "");
-                    string prefix = htmlNode.Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
+                    string selectedKey = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 0).Replace("fileDownload", "");
+                    string prefix = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classsupport/fileDownload/temporaryFileDownload?EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&selectedKey={selectedKey}&prefix={prefix}&EXCLUDE_SET=");
@@ -598,7 +627,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
@@ -620,8 +649,7 @@ namespace GakujoGUI
             for (int i = 0; i < limitCount; i++)
             {
                 ClassContact classContact = new();
-                classContact.Subjects = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText.Replace("\r", "").Replace("\n", "").Trim();
-                classContact.Subjects = Regex.Replace(classContact.Subjects, @"\s+", " ");
+                classContact.Subjects = ReplaceSpace(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText);
                 classContact.TeacherName = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim();
                 classContact.Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].SelectSingleNode("a").InnerText).Trim();
                 if (htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim() != "")
@@ -658,7 +686,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
@@ -667,7 +695,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/goDetail/" + indexCount);
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            string content = $"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={schoolYear}/01/01&reportDateEnd=&requireResponse=&studentCode=&studentName=&tbl_A01_01_length=-1&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A01_01&_screenInfoDisp=true&_scrollTop=0";
+            string content = $"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={schoolYear}/01/01&reportDateEnd=&requireResponse=&studentCode=&studentName=&tbl_A01_01_length=-1&_searchConditionDisp.accordionSearchCondition=false&_screenIdentifier=SC_A01_01&_screenInfoDisp=true&_scrollTop=0";
             httpRequestMessage.Content = new StringContent(content);
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -676,11 +704,10 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             ClassContacts[indexCount].ContactType = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[0].SelectSingleNode("td").InnerText;
-            ClassContacts[indexCount].Content = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].Content = Regex.Replace(ClassContacts[indexCount].Content, "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline);
-            ClassContacts[indexCount].FileLinkRelease = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "");
-            ClassContacts[indexCount].ReferenceURL = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "");
-            ClassContacts[indexCount].Severity = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerText.Replace("\r", "").Replace("\n", "").Replace("\t", "");
+            ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].ReferenceURL = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].Severity = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].WebReplyRequest = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[8].SelectSingleNode("td").InnerText;
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div") != null)
             {
@@ -688,8 +715,8 @@ namespace GakujoGUI
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div")[i];
-                    string prefix = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "");
-                    string no = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
+                    string prefix = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("fileDownLoad", "");
+                    string no = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -729,7 +756,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
@@ -751,8 +778,7 @@ namespace GakujoGUI
             for (int i = 0; i < limitCount; i++)
             {
                 ClassSharedFile classSharedFile = new();
-                classSharedFile.Subjects = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText.Replace("\r", "").Replace("\n", "").Trim();
-                classSharedFile.Subjects = Regex.Replace(classSharedFile.Subjects, @"\s+", " ");
+                classSharedFile.Subjects = ReplaceSpace(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText);
                 classSharedFile.Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].SelectSingleNode("a").InnerText).Trim();
                 classSharedFile.Size = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText;
                 classSharedFile.UpdateDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText);
@@ -785,7 +811,7 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&schoolYear={schoolYear}&semesterCode={(semesterCode < 2 ? 1 : 2)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
@@ -801,15 +827,15 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
             ClassSharedFiles[indexCount].Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
-            ClassSharedFiles[indexCount].PublicPeriod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[3].SelectSingleNode("td").InnerText.Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "");
+            ClassSharedFiles[indexCount].PublicPeriod = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[3].SelectSingleNode("td").InnerText);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div") != null)
             {
                 ClassSharedFiles[indexCount].Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
                     HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div")[i];
-                    string prefix = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[0].Replace("fileDownLoad('", "").Replace("'", "");
-                    string no = htmlNode.SelectSingleNode("a").Attributes["onclick"].Value.Split(',')[1].Replace("');", "").Replace("'", "").Trim();
+                    string prefix = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("fileDownLoad", "");
+                    string no = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
                     httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
                     httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&prefix=default&sequence=&webspaceTabDisplayFlag=&screenName=&fileNameAutonumberFlag=&fileNameDisplayFlag=");
@@ -890,8 +916,7 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[1]") != null && htmlDocument.DocumentNode.SelectNodes("/html/body/form/div/input[2]") != null)
             {
                 logger.Warn("Additional transition.");
-                string relayState = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value;
-                relayState = relayState.Replace("&#x3a;", ":");
+                string relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
                 string SAMLResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
                 relayState = Uri.EscapeDataString(relayState);
                 SAMLResponse = Uri.EscapeDataString(SAMLResponse);
@@ -941,12 +966,11 @@ namespace GakujoGUI
                 for (int j = 2; j < htmlNode.SelectNodes("tr").Count; j++)
                 {
                     LotteryRegistration lotteryRegistration = new();
-                    lotteryRegistration.WeekdayPeriod = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[0].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistration.SubjectsName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[1].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistration.SubjectsName = Regex.Replace(lotteryRegistration.SubjectsName, @" +", " ");
-                    lotteryRegistration.ClassName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[2].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistration.SubjectsSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[3].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistration.SelectionSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[4].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistration.WeekdayPeriod = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[0].InnerText);
+                    lotteryRegistration.SubjectsName = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[1].InnerText);
+                    lotteryRegistration.ClassName = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[2].InnerText);
+                    lotteryRegistration.SubjectsSection = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[3].InnerText);
+                    lotteryRegistration.SelectionSection = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[4].InnerText);
                     lotteryRegistration.Credit = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[5].InnerText.Trim());
                     lotteryRegistration.IsRegisterable = !htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].SelectSingleNode("input").Attributes.Contains("disabled");
                     lotteryRegistration.AttendingCapacity = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[10].InnerText.Replace("&nbsp;", "").Trim());
@@ -960,14 +984,7 @@ namespace GakujoGUI
                     else if (htmlNode.SelectNodes("tr")[j].SelectNodes("td")[9].SelectSingleNode("input").Attributes.Contains("checked")) { lotteryRegistration.ChoiceNumberValue = 3; }
                     lotteryRegistrations.Add(lotteryRegistration);
                 }
-                switch (lotteryRegistrations[0].WeekdayPeriod[..1])
-                {
-                    case "月": ClassTables[(int.Parse(lotteryRegistrations[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][0].LotteryRegistrations = lotteryRegistrations; break;
-                    case "火": ClassTables[(int.Parse(lotteryRegistrations[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][1].LotteryRegistrations = lotteryRegistrations; break;
-                    case "水": ClassTables[(int.Parse(lotteryRegistrations[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][2].LotteryRegistrations = lotteryRegistrations; break;
-                    case "木": ClassTables[(int.Parse(lotteryRegistrations[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][3].LotteryRegistrations = lotteryRegistrations; break;
-                    case "金": ClassTables[(int.Parse(lotteryRegistrations[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][4].LotteryRegistrations = lotteryRegistrations; break;
-                }
+                ClassTables[ReplacePeriod(lotteryRegistrations[0].WeekdayPeriod)][ReplaceWeekday(lotteryRegistrations[0].WeekdayPeriod)].LotteryRegistrations = lotteryRegistrations;
                 LotteryRegistrations.Add(lotteryRegistrations);
             }
             logger.Info("End Get LotteryRegistrations.");
@@ -1004,7 +1021,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            string selectedSemesterCode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[1]/tbody/tr/td[2]/a").Attributes["href"].Value.Split(',')[1].Replace("'", "").Replace(")", "").Trim();
+            string selectedSemesterCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[1]/tbody/tr/td[2]/a").Attributes["href"].Value, 1);
             if (notifyMail)
             {
                 httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/kyoumu/sendChuusenRishuuMailInit.do?selectedSemesterCode={selectedSemesterCode}");
@@ -1053,25 +1070,17 @@ namespace GakujoGUI
                 for (int j = 1; j < htmlNode.SelectNodes("tr").Count; j++)
                 {
                     LotteryRegistrationResult lotteryRegistrationResult = new();
-                    lotteryRegistrationResult.WeekdayPeriod = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[0].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistrationResult.SubjectsName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[1].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistrationResult.SubjectsName = Regex.Replace(lotteryRegistrationResult.SubjectsName, @" +", " ");
-                    lotteryRegistrationResult.ClassName = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[2].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistrationResult.SubjectsSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[3].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                    lotteryRegistrationResult.SelectionSection = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[4].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                    lotteryRegistrationResult.WeekdayPeriod = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[0].InnerText);
+                    lotteryRegistrationResult.SubjectsName = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[1].InnerText);
+                    lotteryRegistrationResult.ClassName = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[2].InnerText);
+                    lotteryRegistrationResult.SubjectsSection = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[3].InnerText);
+                    lotteryRegistrationResult.SelectionSection = ReplaceSpace(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[4].InnerText);
                     lotteryRegistrationResult.Credit = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[5].InnerText.Trim());
-                    lotteryRegistrationResult.ChoiceNumberValue = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].InnerText.Trim().Replace("&nbsp;", ""));
+                    lotteryRegistrationResult.ChoiceNumberValue = int.Parse(htmlNode.SelectNodes("tr")[j].SelectNodes("td")[6].InnerText.Replace("&nbsp;", "").Trim());
                     lotteryRegistrationResult.IsWinning = htmlNode.SelectNodes("tr")[j].SelectNodes("td")[7].InnerText.Contains("当選");
                     lotteryRegistrationsResult.Add(lotteryRegistrationResult);
                 }
-                switch (lotteryRegistrationsResult[0].WeekdayPeriod[..1])
-                {
-                    case "月": ClassTables[(int.Parse(lotteryRegistrationsResult[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][0].LotteryRegistrationsResult = lotteryRegistrationsResult; break;
-                    case "火": ClassTables[(int.Parse(lotteryRegistrationsResult[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][1].LotteryRegistrationsResult = lotteryRegistrationsResult; break;
-                    case "水": ClassTables[(int.Parse(lotteryRegistrationsResult[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][2].LotteryRegistrationsResult = lotteryRegistrationsResult; break;
-                    case "木": ClassTables[(int.Parse(lotteryRegistrationsResult[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][3].LotteryRegistrationsResult = lotteryRegistrationsResult; break;
-                    case "金": ClassTables[(int.Parse(lotteryRegistrationsResult[0].WeekdayPeriod.Substring(1, 1)) + 1) / 2][4].LotteryRegistrationsResult = lotteryRegistrationsResult; break;
-                }
+                ClassTables[ReplacePeriod(lotteryRegistrationsResult[0].WeekdayPeriod)][ReplaceWeekday(lotteryRegistrationsResult[0].WeekdayPeriod)].LotteryRegistrationsResult = lotteryRegistrationsResult;
                 LotteryRegistrationsResult.Add(lotteryRegistrationsResult);
             }
             logger.Info("End Get LotteryRegistrationsResult.");
@@ -1103,15 +1112,14 @@ namespace GakujoGUI
                 for (int j = 0; j < 5; j++)
                 {
                     GeneralRegistrations generalRegistrations = new();
-                    generalRegistrations.EntriedGeneralRegistration.WeekdayPeriod = (new string[] { "月", "火", "水", "木", "金" })[j] + (new string[] { "1･2", "3･4", "5･6", "7･8", "9･10", "11･12", "13･14" })[i];
+                    generalRegistrations.EntriedGeneralRegistration.WeekdayPeriod = ReplaceWeekday(j) + ReplacePeriod(i);
                     if (htmlNode.SelectNodes($"td[{j + 2}]/a") != null)
                     {
-                        generalRegistrations.EntriedGeneralRegistration.SubjectsName = htmlNode.SelectSingleNode($"td[{j + 2}]/a").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                        generalRegistrations.EntriedGeneralRegistration.SubjectsName = Regex.Replace(generalRegistrations.EntriedGeneralRegistration.SubjectsName, @" +", " ");
-                        generalRegistrations.EntriedGeneralRegistration.TeacherName = htmlNode.SelectSingleNode($"td[{j + 2}]/text()[1]").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                        generalRegistrations.EntriedGeneralRegistration.SelectionSection = htmlNode.SelectSingleNode($"td[{j + 2}]/font[1]").InnerText.Replace("&nbsp;", "").Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                        generalRegistrations.EntriedGeneralRegistration.SubjectsName = ReplaceSpace(htmlNode.SelectSingleNode($"td[{j + 2}]/a").InnerText);
+                        generalRegistrations.EntriedGeneralRegistration.TeacherName = ReplaceSpace(htmlNode.SelectSingleNode($"td[{j + 2}]/text()[1]").InnerText);
+                        generalRegistrations.EntriedGeneralRegistration.SelectionSection = ReplaceSpace(htmlNode.SelectSingleNode($"td[{j + 2}]/font[1]").InnerText);
                         generalRegistrations.EntriedGeneralRegistration.Credit = int.Parse(htmlNode.SelectSingleNode($"td[{j + 2}]/text()[2]").InnerText.Trim().Replace("単位", ""));
-                        generalRegistrations.EntriedGeneralRegistration.ClassRoom = htmlNode.SelectSingleNode($"td[{j + 2}]/text()[3]").InnerText.Replace("&nbsp;", "").Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                        generalRegistrations.EntriedGeneralRegistration.ClassRoom = ReplaceSpace(htmlNode.SelectSingleNode($"td[{j + 2}]/text()[3]").InnerText);
                     }
                     generalRegistrations.RegisterableGeneralRegistrations = GetRegisterableGeneralRegistrations((j + 1).ToString(), (i + 1).ToString(), out _, out _, out _, out _);
                     ClassTables[i][j].GeneralRegistrations = generalRegistrations;
@@ -1151,17 +1159,16 @@ namespace GakujoGUI
             {
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]/tr/td/table").SelectNodes("tr")[i];
                 GeneralRegistration generalRegistration = new();
-                generalRegistration.SubjectsName = htmlNode.SelectNodes("td")[1].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                generalRegistration.SubjectsName = Regex.Replace(generalRegistration.SubjectsName, @" +", " ");
-                generalRegistration.TeacherName = htmlNode.SelectNodes("td")[2].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+                generalRegistration.SubjectsName = ReplaceSpace(htmlNode.SelectNodes("td")[1].InnerText);
+                generalRegistration.TeacherName = ReplaceSpace(htmlNode.SelectNodes("td")[2].InnerText.Replace("\n", ""));
                 generalRegistration.Credit = int.Parse(htmlNode.SelectNodes("td")[3].InnerText.Trim().Replace("単位", ""));
-                generalRegistration.WeekdayPeriod = htmlNode.SelectNodes("td")[4].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                generalRegistration.WeekdayPeriod += htmlNode.SelectNodes("td")[5].InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("限", "");
-                generalRegistration.ClassRoom = htmlNode.SelectNodes("td")[6].InnerText.Replace("&nbsp;", "").Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-                generalRegistration.KamokuCode = htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value.Split(",")[0].Replace("javascript:checkKamoku('", "").Replace("'", "").Trim();
-                generalRegistration.ClassCode = htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value.Split(",")[1].Replace("'", "").Trim('　').Trim(' ');
-                generalRegistration.Unit = htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value.Split(",")[2].Replace("'", "").Trim('　').Trim(' ');
-                generalRegistration.SelectKamoku = htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value.Split(",")[3].Replace("'", "").Replace(")", "").Trim('　').Trim(' ');
+                generalRegistration.WeekdayPeriod = ReplaceSpace(htmlNode.SelectNodes("td")[4].InnerText);
+                generalRegistration.WeekdayPeriod += ReplaceSpace(htmlNode.SelectNodes("td")[5].InnerText).Replace("限", "");
+                generalRegistration.ClassRoom = ReplaceSpace(htmlNode.SelectNodes("td")[6].InnerText);
+                generalRegistration.KamokuCode = ReplaceJSArgs(htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("javascript:checkKamoku", "");
+                generalRegistration.ClassCode = ReplaceJSArgs(htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                generalRegistration.Unit = ReplaceJSArgs(htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value, 2);
+                generalRegistration.SelectKamoku = ReplaceJSArgs(htmlNode.SelectNodes("td")[0].SelectSingleNode("a").Attributes["onclick"].Value, 3);
                 generalRegistration.Radio = htmlNode.SelectNodes("td")[0].SelectSingleNode("a/input").Attributes["value"].Value;
                 registerableGeneralRegistrations.Add(generalRegistration);
             }
@@ -1173,16 +1180,8 @@ namespace GakujoGUI
         private bool SetGeneralRegistration(GeneralRegistrationEntry generalRegistrationEntry, bool restore, out int result)
         {
             result = -1;
-            string youbi = "";
-            switch (generalRegistrationEntry.WeekdayPeriod[..1])
-            {
-                case "月": youbi = "1"; break;
-                case "火": youbi = "2"; break;
-                case "水": youbi = "3"; break;
-                case "木": youbi = "4"; break;
-                case "金": youbi = "5"; break;
-            }
-            string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
+            string youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
+            string jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
             logger.Info(generalRegistrationEntry.EntriedKamokuCode);
             logger.Info(generalRegistrationEntry.EntriedClassCode);
             List<GeneralRegistration> suggestGeneralRegistrationEntries = GetRegisterableGeneralRegistrations(youbi, jigen, out string faculty, out string department, out string course, out string grade).Where(x => (!restore && x.SubjectsName.Contains(generalRegistrationEntry.SubjectsName) && x.SubjectsName.Contains(generalRegistrationEntry.ClassName)) || (restore && x.KamokuCode == generalRegistrationEntry.EntriedKamokuCode && x.ClassCode == generalRegistrationEntry.EntriedClassCode)).ToList();
@@ -1239,8 +1238,8 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{int.Parse(jigen) + 1}]/td[{int.Parse(youbi) + 1}]/table/tr[2]/td/a");
             if (htmlNode == null) { logger.Warn("Not found class in GeneralRegistrations."); return; }
-            string kamokuCode = htmlNode.Attributes["href"].Value.Split(',')[1].Replace("'", "").Trim();
-            string classCode = htmlNode.Attributes["href"].Value.Split(',')[2].Replace("'", "").Trim();
+            string kamokuCode = ReplaceJSArgs(htmlNode.Attributes["href"].Value, 1);
+            string classCode = ReplaceJSArgs(htmlNode.Attributes["href"].Value, 2);
             httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/kyoumu/removeKamokuInit.do?kamokuCode={kamokuCode}&classCode={classCode}&youbi={youbi}&jigen={jigen}");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -1277,36 +1276,20 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             foreach (GeneralRegistrationEntry generalRegistrationEntry in generalRegistrationEntries)
             {
-                string youbi = "";
-                switch (generalRegistrationEntry.WeekdayPeriod[..1])
-                {
-                    case "月": youbi = "1"; break;
-                    case "火": youbi = "2"; break;
-                    case "水": youbi = "3"; break;
-                    case "木": youbi = "4"; break;
-                    case "金": youbi = "5"; break;
-                }
-                string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
+                string youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
+                string jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{int.Parse(jigen) + 1}]/td[{int.Parse(youbi) + 1}]/table/tr[2]/td/a");
                 if (htmlNode == null) { logger.Warn("Not found class in GeneralRegistrations."); continue; }
-                generalRegistrationEntry.EntriedKamokuCode = htmlNode.Attributes["href"].Value.Split(',')[1].Replace("'", "").Trim();
-                generalRegistrationEntry.EntriedClassCode = htmlNode.Attributes["href"].Value.Split(',')[2].Replace("'", "").Trim();
+                generalRegistrationEntry.EntriedKamokuCode = ReplaceJSArgs(htmlNode.Attributes["href"].Value, 1);
+                generalRegistrationEntry.EntriedClassCode = ReplaceJSArgs(htmlNode.Attributes["href"].Value, 2);
             }
             foreach (GeneralRegistrationEntry generalRegistrationEntry in generalRegistrationEntries)
             {
                 SetGeneralRegistration(generalRegistrationEntry, false, out int result);
                 if (result == 2 && overwrite)
                 {
-                    string youbi = "";
-                    switch (generalRegistrationEntry.WeekdayPeriod[..1])
-                    {
-                        case "月": youbi = "1"; break;
-                        case "火": youbi = "2"; break;
-                        case "水": youbi = "3"; break;
-                        case "木": youbi = "4"; break;
-                        case "金": youbi = "5"; break;
-                    }
-                    string jigen = ((int.Parse(generalRegistrationEntry.WeekdayPeriod.Substring(1, 1)) + 1) / 2).ToString();
+                    string youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
+                    string jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
                     SetGeneralRegistrationClear(youbi, jigen);
                     SetGeneralRegistration(generalRegistrationEntry, false, out result);
                     if (result != 0) { SetGeneralRegistration(generalRegistrationEntry, true, out _); }
@@ -1441,35 +1424,35 @@ namespace GakujoGUI
                     ClassTableCell classTableCell = (ClassTables[i] != null) ? ClassTables[i][j] : new();
                     if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a") != null)
                     {
-                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        string detailKamokuCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value, 1);
+                        string detailClassCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td/a").Attributes["onclick"].Value, 2);
                         if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
                         {
                             classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
                             string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table/tr[2]/td").InnerHtml;
-                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                            classTableCell.ClassRoom = ReplaceSpace(classRoom[(classRoom.LastIndexOf("<br>") + 4)..]);
                         }
                     }
                     else if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a") != null && (semesterCode == 0 || semesterCode == 2))
                     {
-                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        string detailKamokuCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value, 1);
+                        string detailClassCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").Attributes["onclick"].Value, 2);
                         if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
                         {
                             classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
                             string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[1]/tr/td/a").InnerHtml;
-                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                            classTableCell.ClassRoom = ReplaceSpace(classRoom[(classRoom.LastIndexOf("<br>") + 4)..]);
                         }
                     }
                     else if (htmlDocument.DocumentNode.SelectNodes($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a") != null && (semesterCode == 1 || semesterCode == 3))
                     {
-                        string detailKamokuCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[1].Replace("'", "").Trim();
-                        string detailClassCode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value.Split(',')[2].Replace("'", "").Trim();
+                        string detailKamokuCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value, 1);
+                        string detailClassCode = ReplaceJSArgs(htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").Attributes["onclick"].Value, 2);
                         if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
                         {
                             classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
                             string classRoom = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table/tr[{i + 2}]/td[{j + 2}]/table[2]/tr/td/a").InnerHtml;
-                            classTableCell.ClassRoom = classRoom[(classRoom.LastIndexOf("<br>") + 4)..].Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ').Replace("&nbsp;", "");
+                            classTableCell.ClassRoom = ReplaceSpace(classRoom[(classRoom.LastIndexOf("<br>") + 4)..]);
                         }
                     }
                     else { classTableCell = new(); }
@@ -1494,12 +1477,12 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            classTableCell.SubjectsName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目名\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.SubjectsId = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目番号\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.ClassName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"クラス名\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.TeacherName = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.SubjectsSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
-            classTableCell.SelectionSection = htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Trim('　').Trim(' ');
+            classTableCell.SubjectsName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目名\")]/following-sibling::td").InnerText);
+            classTableCell.SubjectsId = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目番号\")]/following-sibling::td").InnerText);
+            classTableCell.ClassName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"クラス名\")]/following-sibling::td").InnerText);
+            classTableCell.TeacherName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText);
+            classTableCell.SubjectsSection = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText);
+            classTableCell.SelectionSection = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText);
             classTableCell.Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
             classTableCell.KamokuCode = detailKamokuCode;
             classTableCell.ClassCode = detailClassCode;
