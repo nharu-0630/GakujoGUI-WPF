@@ -1182,8 +1182,6 @@ namespace GakujoGUI
             result = -1;
             string youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
             string jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
-            logger.Info(generalRegistrationEntry.EntriedKamokuCode);
-            logger.Info(generalRegistrationEntry.EntriedClassCode);
             List<GeneralRegistration> suggestGeneralRegistrationEntries = GetRegisterableGeneralRegistrations(youbi, jigen, out string faculty, out string department, out string course, out string grade).Where(x => (!restore && x.SubjectsName.Contains(generalRegistrationEntry.SubjectsName) && x.SubjectsName.Contains(generalRegistrationEntry.ClassName)) || (restore && x.KamokuCode == generalRegistrationEntry.EntriedKamokuCode && x.ClassCode == generalRegistrationEntry.EntriedClassCode)).ToList();
             if (suggestGeneralRegistrationEntries.Count != 1) { logger.Warn("Not found GeneralRegistration by count not 1."); return false; }
             GeneralRegistration generalRegistration = suggestGeneralRegistrationEntries[0];
@@ -1226,8 +1224,6 @@ namespace GakujoGUI
         private void SetGeneralRegistrationClear(string youbi, string jigen)
         {
             logger.Info("Start Set GeneralRegistrationClear.");
-            SetAcademicSystem(out _, out _, out bool generalRegistrationEnabled);
-            if (!generalRegistrationEnabled) { logger.Warn("Return Set GeneralRegistration by overtime."); return; }
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/rishuuInit.do?mainMenuCode=002&parentMenuCode=001");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
