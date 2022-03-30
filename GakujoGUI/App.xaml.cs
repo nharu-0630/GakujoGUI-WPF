@@ -34,7 +34,7 @@ namespace GakujoGUI
             LogManager.Configuration = loggingConfiguration;
             logger.Info("Start Logging.");
             DispatcherUnhandledException += OnDispatcherUnhandledException;
-            //TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
             AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
         }
 
