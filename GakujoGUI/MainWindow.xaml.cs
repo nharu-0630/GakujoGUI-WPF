@@ -191,13 +191,11 @@ namespace GakujoGUI
             gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
             gakujoAPI.GetLotteryRegistrations(out _);
             gakujoAPI.GetLotteryRegistrationsResult();
-            gakujoAPI.GetGeneralRegistrations();
-
+            //gakujoAPI.GetGeneralRegistrations();
             //抽選履修登録
             //gakujoAPI.SetLotteryRegistrations(new List<LotteryRegistrationEntry>() { new LotteryRegistrationEntry() { SubjectsName = "心理と行動Ａ", ClassName = "情工１", AspirationOrder = 1 } });
             //一般履修登録
             //gakujoAPI.SetGeneralRegistrations(new List<GeneralRegistrationEntry>() { new GeneralRegistrationEntry() { WeekdayPeriod = "水3･4", SubjectsName = "科学と技術", ClassName = "" } }, true);
-
             gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
             Dispatcher.Invoke(() =>
             {
