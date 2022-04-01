@@ -26,6 +26,8 @@ namespace GakujoGUI
         private List<Quiz> quizzes = new();
         private List<ClassContact> classContacts = new() { };
         private List<ClassSharedFile> classSharedFiles = new() { };
+        private List<LotteryRegistrationEntry> lotteryRegistrationEntries = new();
+        private List<GeneralRegistrationEntry> generalRegistrationEntries = new();
         private SchoolGrade schoolGrade = new();
         private List<ClassTableRow> classTables = new();
         private bool loginStatus = false;
@@ -38,6 +40,8 @@ namespace GakujoGUI
         public List<List<LotteryRegistration>> LotteryRegistrations => ClassTables.Select(x => x.LotteryRegistrations).ToList();
         public List<List<LotteryRegistrationResult>> LotteryRegistrationsResult => ClassTables.Select(x => x.LotteryRegistrationsResult).ToList();
         public List<List<GeneralRegistration>> RegisterableGeneralRegistrations => ClassTables.Select(x => x.RegisterableGeneralRegistrations).ToList();
+        public List<LotteryRegistrationEntry> LotteryRegistrationEntries { get => lotteryRegistrationEntries; set => lotteryRegistrationEntries = value; }
+        public List<GeneralRegistrationEntry> GeneralRegistrationEntries { get => generalRegistrationEntries; set => generalRegistrationEntries = value; }
         public SchoolGrade SchoolGrade { get => schoolGrade; set => schoolGrade = value; }
         public List<ClassTableRow> ClassTables { get => classTables; set => classTables = value; }
         public bool LoginStatus => loginStatus;
@@ -177,6 +181,16 @@ namespace GakujoGUI
                 ClassSharedFiles = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix)))!;
                 logger.Info("Load ClassSharedFiles.");
             }
+            if (File.Exists(GetJsonPath("lotteryRegistrationEntries")))
+            {
+                lotteryRegistrationEntries = JsonConvert.DeserializeObject<List<LotteryRegistrationEntry>>(File.ReadAllText(GetJsonPath("lotteryRegistrationEntries")))!;
+                logger.Info("Load lotteryRegistrationEntries.");
+            }
+            if (File.Exists(GetJsonPath("GeneralRegistrationEntries")))
+            {
+                GeneralRegistrationEntries = JsonConvert.DeserializeObject<List<GeneralRegistrationEntry>>(File.ReadAllText(GetJsonPath("GeneralRegistrationEntries")))!;
+                logger.Info("Load GeneralRegistrationEntries.");
+            }
             if (File.Exists(GetJsonPath("SchoolGrade")))
             {
                 SchoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))!;
@@ -209,6 +223,10 @@ namespace GakujoGUI
             catch (Exception exception) { logger.Error(exception, "Error Save ClassContacts."); }
             try { File.WriteAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix), JsonConvert.SerializeObject(ClassSharedFiles, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save ClassSharedFiles."); }
+            try { File.WriteAllText(GetJsonPath("LotteryRegistrationEntries"), JsonConvert.SerializeObject(LotteryRegistrationEntries, Formatting.Indented)); }
+            catch (Exception exception) { logger.Error(exception, "Error Save LotteryRegistrationEntries."); }
+            try { File.WriteAllText(GetJsonPath("GeneralRegistrationEntries"), JsonConvert.SerializeObject(GeneralRegistrationEntries, Formatting.Indented)); }
+            catch (Exception exception) { logger.Error(exception, "Error Save GeneralRegistrationEntries."); }
             try { File.WriteAllText(GetJsonPath("SchoolGrade"), JsonConvert.SerializeObject(SchoolGrade, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save SchoolGrade."); }
             try { File.WriteAllText(GetJsonPath("ClassTables"), JsonConvert.SerializeObject(ClassTables, Formatting.Indented)); }

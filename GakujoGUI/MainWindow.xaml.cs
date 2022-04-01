@@ -658,6 +658,8 @@ namespace GakujoGUI
 
         #endregion
 
+        #region 抽選履修登録
+
         private void LoadLotteryRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
@@ -690,6 +692,10 @@ namespace GakujoGUI
             logger.Info("Refresh LotteryRegistrationsDataGrid.");
         }
 
+        #endregion
+
+        #region 抽選履修登録結果
+
         private void LoadLotteryRegistrationsResultButton_Click(object sender, RoutedEventArgs e)
         {
             if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
@@ -715,6 +721,49 @@ namespace GakujoGUI
             LotteryRegistrationsResultDataGrid.Items.Refresh();
             logger.Info("Refresh LotteryRegistrationsResultDataGrid.");
         }
+
+        #endregion
+
+        #region 一般履修登録
+
+        private void LoadGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
+            Task.Run(() =>
+            {
+                gakujoAPI.GetGeneralRegistrations();
+                Dispatcher.Invoke(() =>
+                {
+                    RefreshGeneralRegistrationsDataGrid();
+                    LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        private void RefreshGeneralRegistrationsDataGrid()
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _) }.View;
+            GeneralRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.GeneralRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
+            GeneralRegistrationsDataGrid.ItemsSource = collectionView;
+            GeneralRegistrationsDataGrid.Items.Refresh();
+            logger.Info("Refresh GeneralRegistrationsDataGrid.");
+        }
+
+        private void SetGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetGeneralRegistrationsDataGrid.ItemsSource = gakujoAPI.GeneralRegistrationEntries;
+            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private void SaveGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        #endregion
 
         #region 成績情報
 
@@ -1394,32 +1443,6 @@ namespace GakujoGUI
         }
 
         #endregion
-
-        private void LoadGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
-            LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
-            LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
-            Task.Run(() =>
-            {
-                gakujoAPI.GetGeneralRegistrations();
-                Dispatcher.Invoke(() =>
-                {
-                    RefreshGeneralRegistrationsDataGrid();
-                    LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
-                    LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
-                });
-            });
-        }
-
-        private void RefreshGeneralRegistrationsDataGrid()
-        {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _) }.View;
-            GeneralRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.GeneralRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
-            GeneralRegistrationsDataGrid.ItemsSource = collectionView;
-            GeneralRegistrationsDataGrid.Items.Refresh();
-            logger.Info("Refresh GeneralRegistrationsDataGrid.");
-        }
 
     }
 

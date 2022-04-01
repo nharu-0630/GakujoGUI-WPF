@@ -1058,6 +1058,64 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
+                    <Button
+                        Name="SetGeneralRegistrationsButton"
+                        Margin="6"
+                        Click="SetGeneralRegistrationsButton_Click"
+                        Content="自動登録">
+                        <ui:FlyoutBase.AttachedFlyout>
+                            <ui:Flyout Placement="Bottom">
+                                <StackPanel Orientation="Vertical">
+                                    <DataGrid
+                                        Name="SetGeneralRegistrationsDataGrid"
+                                        Grid.Row="2"
+                                        MaxHeight="360"
+                                        Margin="6"
+                                        AreRowDetailsFrozen="True"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="True"
+                                        CanUserDeleteRows="True"
+                                        CanUserReorderColumns="False"
+                                        CanUserResizeRows="False"
+                                        CanUserSortColumns="False"
+                                        RowHeight="32"
+                                        ScrollViewer.CanContentScroll="True"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                        SelectionMode="Single">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="80"
+                                                MinWidth="80"
+                                                Binding="{Binding WeekdayPeriod}"
+                                                Header="曜日時限" />
+                                            <DataGridTextColumn
+                                                Width="160"
+                                                MinWidth="160"
+                                                Binding="{Binding SubjectsName}"
+                                                Header="科目名" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Button
+                                        Name="SaveGeneralRegistrationsButton"
+                                        Margin="6"
+                                        Click="SaveGeneralRegistrationsButton_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:FontIcon
+                                                Name="SaveGeneralRegistrationsButtonFontIcon"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                Glyph="&#xE72C;"
+                                                Visibility="Visible" />
+                                            <ui:ProgressRing
+                                                Name="SaveGeneralRegistrationsButtonProgressRing"
+                                                IsActive="True"
+                                                Visibility="Collapsed" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                            </ui:Flyout>
+                        </ui:FlyoutBase.AttachedFlyout>
+                    </Button>
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
