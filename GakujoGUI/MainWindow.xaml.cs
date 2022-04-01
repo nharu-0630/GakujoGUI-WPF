@@ -101,6 +101,7 @@ namespace GakujoGUI
                 RefreshClassSharedFilesDataGrid();
                 RefreshLotteryRegistrationsDataGrid();
                 RefreshLotteryRegistrationsResultDataGrid();
+                RefreshGeneralRegistrationsDataGrid();
                 RefreshClassResultsDataGrid();
                 AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
                 AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
@@ -182,6 +183,8 @@ namespace GakujoGUI
                 LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
                 LoadLotteryRegistrationsResultButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoadLotteryRegistrationsResultButtonProgressRing.Visibility = Visibility.Visible;
+                LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
+                LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
                 LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             });
@@ -191,7 +194,7 @@ namespace GakujoGUI
             gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
             gakujoAPI.GetLotteryRegistrations(out _);
             gakujoAPI.GetLotteryRegistrationsResult();
-            //gakujoAPI.GetGeneralRegistrations();
+            gakujoAPI.GetGeneralRegistrations();
             //抽選履修登録
             //gakujoAPI.SetLotteryRegistrations(new List<LotteryRegistrationEntry>() { new LotteryRegistrationEntry() { SubjectsName = "心理と行動Ａ", ClassName = "情工１", AspirationOrder = 1 } });
             //一般履修登録
@@ -205,6 +208,7 @@ namespace GakujoGUI
                 RefreshClassSharedFilesDataGrid();
                 RefreshLotteryRegistrationsDataGrid();
                 RefreshLotteryRegistrationsResultDataGrid();
+                RefreshGeneralRegistrationsDataGrid();
                 RefreshClassResultsDataGrid();
                 if (classContactsDiffCount != gakujoAPI.ClassContacts.Count)
                 {
@@ -260,6 +264,8 @@ namespace GakujoGUI
                 LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
                 LoadLotteryRegistrationsResultButtonFontIcon.Visibility = Visibility.Visible;
                 LoadLotteryRegistrationsResultButtonProgressRing.Visibility = Visibility.Collapsed;
+                LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
+                LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
                 LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
             });
@@ -1389,6 +1395,32 @@ namespace GakujoGUI
 
         #endregion
 
+        private void LoadGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
+            LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
+            Task.Run(() =>
+            {
+                gakujoAPI.GetGeneralRegistrations();
+                Dispatcher.Invoke(() =>
+                {
+                    RefreshGeneralRegistrationsDataGrid();
+                    LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Visible;
+                    LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Collapsed;
+                });
+            });
+        }
+
+        private void RefreshGeneralRegistrationsDataGrid()
+        {
+            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _) }.View;
+            GeneralRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.GeneralRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
+            GeneralRegistrationsDataGrid.ItemsSource = collectionView;
+            GeneralRegistrationsDataGrid.Items.Refresh();
+            logger.Info("Refresh GeneralRegistrationsDataGrid.");
+        }
+
     }
 
     public class Settings
@@ -1399,7 +1431,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2021;
         public int SemesterCode { get; set; } = 3;
-        public string UserAgent { get; set; } = $"Chrome/99.0.4844.74 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
     }
 
