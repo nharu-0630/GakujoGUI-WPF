@@ -754,13 +754,35 @@ namespace GakujoGUI
 
         private void SetGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            SetGeneralRegistrationsDataGrid.ItemsSource = gakujoAPI.GeneralRegistrationEntries;
+            SetGeneralRegistrationsDataGrid.ItemsSource = new List<GeneralRegistrationEntry>(gakujoAPI.GeneralRegistrationEntries);
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
+        }
+
+        private void GeneralRegistrationsAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                List<string> suitableItems = new();
+                string[] splitText = GeneralRegistrationsAutoSuggestBox.Text.Split(" ");
+                foreach (GeneralRegistration generalRegistration in gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _))
+                {
+                    if (splitText.All((key) => { return generalRegistration.SubjectsName.Contains(key); }) && generalRegistration.SubjectsName != "") { suitableItems.Add(generalRegistration.SubjectsName); }
+                }
+                GeneralRegistrationsAutoSuggestBox.ItemsSource = suitableItems.Distinct();
+            }
+        }
+
+        private void GeneralRegistrationsAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            //GeneralRegistration generalRegistration = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _).Where(x => x.SubjectsName == GeneralRegistrationsAutoSuggestBox.Text).First();
+            //gakujoAPI.GeneralRegistrationEntries.Add(new GeneralRegistrationEntry() { WeekdayPeriod = generalRegistration.WeekdayPeriod, SubjectsName = generalRegistration.SubjectsName });
+            //GeneralRegistrationsAutoSuggestBox.Text = "";
         }
 
         private void SaveGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            gakujoAPI.SaveJsons();
+            //gakujoAPI.GeneralRegistrationEntries = SetGeneralRegistrationsDataGrid.Items.OfType<GeneralRegistrationEntry>().ToList();
+            //gakujoAPI.SaveJsons();
         }
 
         #endregion
@@ -1442,26 +1464,6 @@ namespace GakujoGUI
         }
 
         #endregion
-
-        private void GeneralRegistrationsAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                List<string> suitableItems = new();
-                string[] splitText = GeneralRegistrationsAutoSuggestBox.Text.Split(" ");
-                foreach (GeneralRegistration generalRegistration in gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _))
-                {
-                    if (splitText.All((key) => { return generalRegistration.SubjectsName.Contains(key); }) && generalRegistration.SubjectsName != "") { suitableItems.Add(generalRegistration.SubjectsName); }
-                }
-                GeneralRegistrationsAutoSuggestBox.ItemsSource = suitableItems.Distinct();
-            }
-        }
-
-        private void GeneralRegistrationsAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-        {
-            GeneralRegistrationsAutoSuggestBox.Text
-        }
-
     }
 
     public class Settings
