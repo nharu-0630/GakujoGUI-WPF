@@ -760,7 +760,7 @@ namespace GakujoGUI
 
         private void SaveGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-
+            gakujoAPI.SaveJsons();
         }
 
         #endregion
@@ -1031,11 +1031,10 @@ namespace GakujoGUI
                 {
                     foreach (ClassTableRow classTableRow in gakujoAPI.ClassTables)
                     {
-                        if (splitText.All((key) => { return classTableRow.Monday.SubjectsName.Contains(key); }) && classTableRow.Monday.SubjectsName != "") { suitableItems.Add(classTableRow.Monday.SubjectsName); }
-                        if (splitText.All((key) => { return classTableRow.Tuesday.SubjectsName.Contains(key); }) && classTableRow.Tuesday.SubjectsName != "") { suitableItems.Add(classTableRow.Tuesday.SubjectsName); }
-                        if (splitText.All((key) => { return classTableRow.Wednesday.SubjectsName.Contains(key); }) && classTableRow.Wednesday.SubjectsName != "") { suitableItems.Add(classTableRow.Wednesday.SubjectsName); }
-                        if (splitText.All((key) => { return classTableRow.Thursday.SubjectsName.Contains(key); }) && classTableRow.Thursday.SubjectsName != "") { suitableItems.Add(classTableRow.Thursday.SubjectsName); }
-                        if (splitText.All((key) => { return classTableRow.Friday.SubjectsName.Contains(key); }) && classTableRow.Friday.SubjectsName != "") { suitableItems.Add(classTableRow.Friday.SubjectsName); }
+                        for (int i = 0; i < 5; i++)
+                        {
+                            if (splitText.All((key) => { return classTableRow[i].SubjectsName.Contains(key); }) && classTableRow[i].SubjectsName != "") { suitableItems.Add(classTableRow[i].SubjectsName); }
+                        }
                     }
                 }
                 sender.ItemsSource = suitableItems.Distinct();
@@ -1443,6 +1442,25 @@ namespace GakujoGUI
         }
 
         #endregion
+
+        private void GeneralRegistrationsAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                List<string> suitableItems = new();
+                string[] splitText = GeneralRegistrationsAutoSuggestBox.Text.Split(" ");
+                foreach (GeneralRegistration generalRegistration in gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _))
+                {
+                    if (splitText.All((key) => { return generalRegistration.SubjectsName.Contains(key); }) && generalRegistration.SubjectsName != "") { suitableItems.Add(generalRegistration.SubjectsName); }
+                }
+                GeneralRegistrationsAutoSuggestBox.ItemsSource = suitableItems.Distinct();
+            }
+        }
+
+        private void GeneralRegistrationsAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
+        {
+            GeneralRegistrationsAutoSuggestBox.Text
+        }
 
     }
 
