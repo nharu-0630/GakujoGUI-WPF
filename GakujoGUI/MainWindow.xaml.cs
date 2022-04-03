@@ -1,4 +1,5 @@
 ﻿using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
 using ModernWpf.Controls;
 using ModernWpf.Controls.Primitives;
@@ -24,7 +25,6 @@ using System.Windows.Navigation;
 using System.Windows.Threading;
 using MessageBox = ModernWpf.MessageBox;
 using Path = System.IO.Path;
-using Microsoft.Web.WebView2.Core;
 
 namespace GakujoGUI
 {
@@ -1397,7 +1397,7 @@ namespace GakujoGUI
             Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
             version = Assembly.GetExecutingAssembly().GetName().Version!;
             string downloadUrl = "";
-            if (releases.Where(x => x.name.Contains("force")).Count() != 0)
+            if (releases.Where(x => x.name.Contains("force")).Any())
             {
                 Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).ToArray()[0].tag_name.TrimStart('v'));
                 if (forceVersion > version)
@@ -1406,7 +1406,7 @@ namespace GakujoGUI
                     downloadUrl = releases.Where(x => x.name.Contains("force")).ToArray()[0].assets[0].browser_download_url;
                 }
             }
-            if (releases.Where(x => x.prerelease).Count() != 0 && settings.UpdateBetaEnable)
+            if (releases.Where(x => x.prerelease).Any() && settings.UpdateBetaEnable)
             {
                 Version latestVersion = Version.Parse(releases.Where(x => x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
                 if (latestVersion > version)
@@ -1415,7 +1415,7 @@ namespace GakujoGUI
                     downloadUrl = releases.Where(x => x.prerelease).ToArray()[0].assets[0].browser_download_url;
                 }
             }
-            if (releases.Where(x => !x.prerelease).Count() != 0)
+            if (releases.Where(x => !x.prerelease).Any())
             {
                 Version releaseVersion = Version.Parse(releases.Where(x => !x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
                 if (releaseVersion > version)
