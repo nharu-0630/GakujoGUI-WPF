@@ -752,41 +752,6 @@ namespace GakujoGUI
             logger.Info("Refresh GeneralRegistrationsDataGrid.");
         }
 
-        private void SetGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
-        {
-            SetGeneralRegistrationsDataGrid.ItemsSource = new List<GeneralRegistrationEntry>(gakujoAPI.GeneralRegistrationEntries);
-            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
-
-        private void GeneralRegistrationsAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
-            {
-                List<string> suitableItems = new();
-                string[] splitText = GeneralRegistrationsAutoSuggestBox.Text.Split(" ");
-                foreach (GeneralRegistration generalRegistration in gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _))
-                {
-                    if (splitText.All((key) => { return generalRegistration.SubjectsName.Contains(key); }) && generalRegistration.SubjectsName != "") { suitableItems.Add(generalRegistration.SubjectsName); }
-                }
-                GeneralRegistrationsAutoSuggestBox.ItemsSource = suitableItems.Distinct();
-            }
-        }
-
-#pragma warning disable CA1822 // メンバーを static に設定します
-        private void GeneralRegistrationsAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
-#pragma warning restore CA1822 // メンバーを static に設定します
-        {
-            //GeneralRegistration generalRegistration = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _).Where(x => x.SubjectsName == GeneralRegistrationsAutoSuggestBox.Text).First();
-            //gakujoAPI.GeneralRegistrationEntries.Add(new GeneralRegistrationEntry() { WeekdayPeriod = generalRegistration.WeekdayPeriod, SubjectsName = generalRegistration.SubjectsName });
-            //GeneralRegistrationsAutoSuggestBox.Text = "";
-        }
-
-        private void SaveGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
-        {
-            //gakujoAPI.GeneralRegistrationEntries = SetGeneralRegistrationsDataGrid.Items.OfType<GeneralRegistrationEntry>().ToList();
-            //gakujoAPI.SaveJsons();
-        }
-
         #endregion
 
         #region 成績情報
@@ -952,7 +917,9 @@ namespace GakujoGUI
             logger.Info("Refresh ClassTablesDataGrid.");
         }
 
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
         private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
             if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
             DataGridRow dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
@@ -1394,7 +1361,7 @@ namespace GakujoGUI
         {
             Task.Run(() =>
             {
-                if (!GetLatestVersion(out string latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information)); }
+                if (!GetLatestVersion(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information)); }
                 else
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
@@ -1418,7 +1385,7 @@ namespace GakujoGUI
             });
         }
 
-        private bool GetLatestVersion(out string version)
+        private bool GetLatestVersion(out Version version)
         {
             logger.Info("Start Get latest version.");
             HttpClient httpClient = new();
@@ -1428,19 +1395,16 @@ namespace GakujoGUI
             logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
-            string releaseVersion = releases[0].tag_name.TrimStart('v');
-            string latestVersion = releases.Where(x => x.prerelease == false).ToArray()[0].tag_name.TrimStart('v');
+            Version releaseVersion = Version.Parse(releases[0].tag_name.TrimStart('v'));
+            Version latestVersion = Version.Parse(releases.Where(x => x.prerelease == false).ToArray()[0].tag_name.TrimStart('v'));
+            //Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).ToArray()[0].tag_name.TrimStart('v'));
             logger.Info($"releaseVersion={releaseVersion}");
             logger.Info($"latestVersion={latestVersion}");
-            version = (settings.UpdateBetaEnable ? releaseVersion : latestVersion);
-            if (Assembly.GetExecutingAssembly().GetName().Version!.ToString() == version)
+            //logger.Info($"forceVersion={latestVersion}");
+            version = settings.UpdateBetaEnable ? releaseVersion : latestVersion;
+            if (Assembly.GetExecutingAssembly().GetName().Version >= version)
             {
-                logger.Info("Return Get latest version by the same version.");
-                return false;
-            }
-            if (int.Parse(Assembly.GetExecutingAssembly().GetName().Version!.ToString().Replace(".", "")) > int.Parse(version.Replace(".", "")))
-            {
-                logger.Info("Return Get latest version by using newer version.");
+                logger.Info("Return Get latest version by using same or newer version.");
                 return false;
             }
             string latestZipUrl = (settings.UpdateBetaEnable ? releases[0].assets[0].browser_download_url : releases.Where(x => x.prerelease == false).ToArray()[0].assets[0].browser_download_url);
