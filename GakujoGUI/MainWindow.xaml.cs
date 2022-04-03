@@ -824,11 +824,9 @@ namespace GakujoGUI
 
         private ClassTableCell? GetSelectedClassTableCell()
         {
-            if (gakujoAPI.ClassTables != null)
-            {
-                return gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)][ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex];
-            }
-            return null;
+            if (ClassTablesDataGrid.SelectedCells.Count != 1) { return null; }
+            if (ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem) == -1) { return null; }
+            return gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)][ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex];
         }
 
         private void ClassTableCellControl_ClassContactButtonClick(object sender, RoutedEventArgs e)
