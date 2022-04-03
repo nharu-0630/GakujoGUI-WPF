@@ -1399,29 +1399,29 @@ namespace GakujoGUI
             string downloadUrl = "";
             if (releases.Where(x => x.name.Contains("force")).Any())
             {
-                Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).ToArray()[0].tag_name.TrimStart('v'));
+                Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).First().tag_name.TrimStart('v'));
                 if (forceVersion > version)
                 {
                     version = forceVersion;
-                    downloadUrl = releases.Where(x => x.name.Contains("force")).ToArray()[0].assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets[0].browser_download_url;
                 }
             }
             if (releases.Where(x => x.prerelease).Any() && settings.UpdateBetaEnable)
             {
-                Version latestVersion = Version.Parse(releases.Where(x => x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
+                Version latestVersion = Version.Parse(releases.Where(x => x.prerelease).First().tag_name.TrimStart('v'));
                 if (latestVersion > version)
                 {
                     version = latestVersion;
-                    downloadUrl = releases.Where(x => x.prerelease).ToArray()[0].assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => x.prerelease).First().assets[0].browser_download_url;
                 }
             }
             if (releases.Where(x => !x.prerelease).Any())
             {
-                Version releaseVersion = Version.Parse(releases.Where(x => !x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
+                Version releaseVersion = Version.Parse(releases.Where(x => !x.prerelease).First().tag_name.TrimStart('v'));
                 if (releaseVersion > version)
                 {
                     version = releaseVersion;
-                    downloadUrl = releases.Where(x => !x.prerelease).ToArray()[0].assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => !x.prerelease).First().assets[0].browser_download_url;
                 }
             }
             logger.Info($"latestVersion={version}");
