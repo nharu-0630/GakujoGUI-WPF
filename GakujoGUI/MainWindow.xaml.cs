@@ -1395,24 +1395,46 @@ namespace GakujoGUI
             logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
-            Version releaseVersion = Version.Parse(releases[0].tag_name.TrimStart('v'));
-            Version latestVersion = Version.Parse(releases.Where(x => x.prerelease == false).ToArray()[0].tag_name.TrimStart('v'));
-            //Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).ToArray()[0].tag_name.TrimStart('v'));
-            logger.Info($"releaseVersion={releaseVersion}");
-            logger.Info($"latestVersion={latestVersion}");
-            //logger.Info($"forceVersion={latestVersion}");
-            version = settings.UpdateBetaEnable ? releaseVersion : latestVersion;
+            version = Assembly.GetExecutingAssembly().GetName().Version!;
+            string downloadUrl = "";
+            if (releases.Where(x => x.name.Contains("force")).Count() != 0)
+            {
+                Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).ToArray()[0].tag_name.TrimStart('v'));
+                if (forceVersion > version)
+                {
+                    version = forceVersion;
+                    downloadUrl = releases.Where(x => x.name.Contains("force")).ToArray()[0].assets[0].browser_download_url;
+                }
+            }
+            if (releases.Where(x => x.prerelease).Count() != 0 && settings.UpdateBetaEnable)
+            {
+                Version latestVersion = Version.Parse(releases.Where(x => x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
+                if (latestVersion > version)
+                {
+                    version = latestVersion;
+                    downloadUrl = releases.Where(x => x.prerelease).ToArray()[0].assets[0].browser_download_url;
+                }
+            }
+            if (releases.Where(x => !x.prerelease).Count() != 0)
+            {
+                Version releaseVersion = Version.Parse(releases.Where(x => !x.prerelease).ToArray()[0].tag_name.TrimStart('v'));
+                if (releaseVersion > version)
+                {
+                    version = releaseVersion;
+                    downloadUrl = releases.Where(x => !x.prerelease).ToArray()[0].assets[0].browser_download_url;
+                }
+            }
+            logger.Info($"latestVersion={version}");
+            logger.Info($"downloadUrl={downloadUrl}");
             if (Assembly.GetExecutingAssembly().GetName().Version >= version)
             {
                 logger.Info("Return Get latest version by using same or newer version.");
                 return false;
             }
-            string latestZipUrl = (settings.UpdateBetaEnable ? releases[0].assets[0].browser_download_url : releases.Where(x => x.prerelease == false).ToArray()[0].assets[0].browser_download_url);
-            logger.Info($"latestZipUrl={latestZipUrl}");
             logger.Info("Start Download latest version.");
-            httpRequestMessage = new(new("GET"), latestZipUrl);
+            httpRequestMessage = new(new("GET"), downloadUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
-            logger.Info($"GET {latestZipUrl}");
+            logger.Info($"GET {downloadUrl}");
             using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
