@@ -4,8 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GakujoGUI"
-    xmlns:markdig="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:md="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+    xmlns:pw="clr-namespace:WpfPasswordBox"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
@@ -211,15 +212,15 @@
             Name="SyllabusClassTablesTabItem"
             Header="シラバス時間割"
             Visibility="Collapsed">
-            <markdig:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
-                <markdig:MarkdownViewer.Resources>
+            <md:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
+                <md:MarkdownViewer.Resources>
                     <ResourceDictionary>
                         <ResourceDictionary.MergedDictionaries>
                             <ResourceDictionary Source="Resources/generic.xaml" />
                         </ResourceDictionary.MergedDictionaries>
                     </ResourceDictionary>
-                </markdig:MarkdownViewer.Resources>
-            </markdig:MarkdownViewer>
+                </md:MarkdownViewer.Resources>
+            </md:MarkdownViewer>
         </TabItem>
         <TabItem Name="ClassContactsTabItem" Header="授業連絡">
             <Grid>
