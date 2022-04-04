@@ -878,7 +878,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form[1]/div/input") == null)
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form[1]/div/input") == null)
             {
                 cookieContainer = new CookieContainer();
                 httpClientHandler = new HttpClientHandler { AutomaticDecompression = ~DecompressionMethods.None, CookieContainer = cookieContainer };
@@ -956,7 +956,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrations."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
                 foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.LotteryRegistrations.Clear(); }
@@ -1059,7 +1059,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrationsResult."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrationsResult."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
                 foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.LotteryRegistrationsResult.Clear(); }
@@ -1102,7 +1102,8 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[3]/tr/td/font[1]/b") != null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
                 foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.GeneralRegistrations = new(); }
@@ -1143,7 +1144,7 @@ namespace GakujoGUI
             logger.Info("POST https://gakujo.shizuoka.ac.jp/kyoumu/searchKamokuName.do");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form/table[4]") == null) { logger.Warn("Not found RegisterableGeneralRegistrations."); }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]") == null) { logger.Warn("Not found RegisterableGeneralRegistrations."); }
             else
             {
                 for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]/tr/td/table").SelectNodes("tr").Count; i++)
@@ -1204,7 +1205,7 @@ namespace GakujoGUI
             logger.Info($"POST https://gakujo.shizuoka.ac.jp/kyoumu/searchKamoku.do");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/form/table[4]") == null) { logger.Warn("Not found RegisterableGeneralRegistrations."); return registerableGeneralRegistrations; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]") == null) { logger.Warn("Not found RegisterableGeneralRegistrations."); return registerableGeneralRegistrations; }
             for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]/tr/td/table").SelectNodes("tr").Count; i++)
             {
                 HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/table[4]/tr/td/table").SelectNodes("tr")[i];
@@ -1281,7 +1282,8 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[3]/tr/td/font[1]/b") != null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[int.Parse(jigen)].SelectNodes("td")[int.Parse(youbi)].SelectSingleNode("table/tr[2]/td/a");
             if (htmlNode == null) { logger.Warn("Not found class in GeneralRegistrations."); return; }
             string kamokuCode = ReplaceJSArgs(htmlNode.Attributes["href"].Value, 1);
@@ -1319,7 +1321,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             foreach (GeneralRegistrationEntry generalRegistrationEntry in generalRegistrationEntries)
             {
                 string youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
@@ -1357,7 +1359,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("//table[@class=\"txt12\"]") == null) { diffClassResults = new(); logger.Warn("Not found ClassResults list."); }
+            if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]") == null) { diffClassResults = new(); logger.Warn("Not found ClassResults list."); }
             else
             {
                 diffClassResults = new(SchoolGrade.ClassResults);
@@ -1461,7 +1463,7 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Return Get ClassTables by not found list."); return; }
+            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]") == null) { logger.Warn("Return Get ClassTables by not found list."); return; }
             for (int i = 0; i < 7; i++)
             {
                 if (ClassTables.Count < i + 1) { ClassTables.Add(new()); }
