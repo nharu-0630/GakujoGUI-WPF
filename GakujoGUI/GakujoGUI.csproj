@@ -47,7 +47,7 @@
     <PackageReference Include="ModernWpf.MessageBox" Version="0.5.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="NLog.Config" Version="4.7.14" />
+    <PackageReference Include="NLog.Config" Version="4.7.15" />
     <PackageReference Include="ReverseMarkdown" Version="3.23.0" />
     <PackageReference Include="Todoist.Net" Version="2.2.2" />
   </ItemGroup>
