@@ -94,15 +94,6 @@ namespace GakujoGUI
                 TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
                 DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
                 DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
-                RefreshClassTablesDataGrid();
-                RefreshClassContactsDataGrid();
-                RefreshReportsDataGrid();
-                RefreshQuizzesDataGrid();
-                RefreshClassSharedFilesDataGrid();
-                RefreshLotteryRegistrationsDataGrid();
-                RefreshLotteryRegistrationsResultDataGrid();
-                RefreshGeneralRegistrationsDataGrid();
-                RefreshClassResultsDataGrid();
                 AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
                 AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
                 StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -112,9 +103,17 @@ namespace GakujoGUI
                 UserAgentTextBox.Text = settings.UserAgent;
                 UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
                 VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+                RefreshClassTablesDataGrid();
+                RefreshClassContactsDataGrid();
+                RefreshReportsDataGrid();
+                RefreshQuizzesDataGrid();
+                RefreshClassSharedFilesDataGrid();
+                RefreshLotteryRegistrationsDataGrid();
+                RefreshLotteryRegistrationsResultDataGrid();
+                RefreshGeneralRegistrationsDataGrid();
+                RefreshClassResultsDataGrid();
                 Task.Run(() =>
                 {
-                    gakujoAPI.LoadJson();
                     Login();
                     Load();
                     Dispatcher.Invoke(() =>
@@ -212,43 +211,23 @@ namespace GakujoGUI
                 RefreshClassResultsDataGrid();
                 if (classContactsDiffCount != gakujoAPI.ClassContacts.Count)
                 {
-                    for (int i = 0; i < classContactsDiffCount; i++)
-                    {
-                        NotifyToast(gakujoAPI.ClassContacts[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.ClassContacts[i]);
-                    }
+                    gakujoAPI.ClassContacts.GetRange(0, classContactsDiffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                 }
                 if (diffReports.Count != gakujoAPI.Reports.Count)
                 {
-                    foreach (Report report in diffReports)
-                    {
-                        NotifyToast(report);
-                        notifyAPI.NotifyDiscord(report);
-                    }
+                    diffReports.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                 }
                 if (diffQuizzes.Count != gakujoAPI.Quizzes.Count)
                 {
-                    foreach (Quiz quiz in diffQuizzes)
-                    {
-                        NotifyToast(quiz);
-                        notifyAPI.NotifyDiscord(quiz);
-                    }
+                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                 }
                 if (classSharedFilesDiffCount != gakujoAPI.ClassSharedFiles.Count)
                 {
-                    for (int i = 0; i < classSharedFilesDiffCount; i++)
-                    {
-                        NotifyToast(gakujoAPI.ClassSharedFiles[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.ClassSharedFiles[i]);
-                    }
+                    gakujoAPI.ClassSharedFiles.GetRange(0, classSharedFilesDiffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                 }
                 if (diffClassResults.Count != gakujoAPI.SchoolGrade.ClassResults.Count)
                 {
-                    foreach (ClassResult classResult in diffClassResults)
-                    {
-                        NotifyToast(classResult);
-                        notifyAPI.NotifyDiscord(classResult, true);
-                    }
+                    diffClassResults.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x, true); });
                 }
                 notifyAPI.SetTodoistTask(gakujoAPI.Reports);
                 notifyAPI.SetTodoistTask(gakujoAPI.Quizzes);
@@ -291,11 +270,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassContactsDataGrid();
-                    for (int i = 0; i < diffCount; i++)
-                    {
-                        NotifyToast(gakujoAPI.ClassContacts[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.ClassContacts[i]);
-                    }
+                    gakujoAPI.ClassContacts.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                     LoadClassContactsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -386,11 +361,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     RefreshReportsDataGrid();
-                    foreach (Report report in diffReports)
-                    {
-                        NotifyToast(report);
-                        notifyAPI.NotifyDiscord(report);
-                    }
+                    diffReports.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                     LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -486,11 +457,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     RefreshQuizzesDataGrid();
-                    foreach (Quiz quiz in diffQuizzes)
-                    {
-                        NotifyToast(quiz);
-                        notifyAPI.NotifyDiscord(quiz);
-                    }
+                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                     LoadQuizzesButtonFontIcon.Visibility = Visibility.Visible;
                     LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -584,11 +551,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassSharedFilesDataGrid();
-                    for (int i = 0; i < diffCount; i++)
-                    {
-                        NotifyToast(gakujoAPI.ClassSharedFiles[i]);
-                        notifyAPI.NotifyDiscord(gakujoAPI.ClassSharedFiles[i]);
-                    }
+                    gakujoAPI.ClassSharedFiles.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
                     LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -776,11 +739,7 @@ namespace GakujoGUI
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassResultsDataGrid();
-                    foreach (ClassResult classResult in diffClassResults)
-                    {
-                        NotifyToast(classResult);
-                        notifyAPI.NotifyDiscord(classResult, true);
-                    }
+                    diffClassResults.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x, true); });
                     LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
