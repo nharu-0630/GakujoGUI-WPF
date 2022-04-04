@@ -1456,8 +1456,8 @@ namespace GakujoGUI
         public int AutoLoadSpan { get; set; } = 20;
         public bool StartUpEnable { get; set; } = false;
         public bool StartUpMinimize { get; set; } = false;
-        public int SchoolYear { get; set; } = 2021;
-        public int SemesterCode { get; set; } = 3;
+        public int SchoolYear { get; set; } = 2022;
+        public int SemesterCode { get; set; } = 0;
         public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
     }
