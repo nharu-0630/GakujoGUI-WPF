@@ -977,9 +977,9 @@ namespace GakujoGUI
                 {
                     foreach (ClassTableRow classTableRow in gakujoAPI.ClassTables)
                     {
-                        for (int i = 0; i < 5; i++)
+                        foreach (ClassTableCell classTableCell in classTableRow)
                         {
-                            if (splitText.All((key) => { return classTableRow[i].SubjectsName.Contains(key); }) && classTableRow[i].SubjectsName != "") { suitableItems.Add(classTableRow[i].SubjectsName); }
+                            if (splitText.All((key) => { return classTableCell.SubjectsName.Contains(key); }) && classTableCell.SubjectsName != "") { suitableItems.Add(classTableCell.SubjectsName); }
                         }
                     }
                 }
