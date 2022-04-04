@@ -457,13 +457,13 @@ namespace GakujoGUI
             if (ClassTables == null) { logger.Warn("Return Apply Reports to ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                for (int i = 0; i < 5; i++) { classTableRow[i].ReportCount = 0; }
+                foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.ReportCount = 0; }
             }
             foreach (Report report in Reports.Where(x => x.Unsubmitted))
             {
                 foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
-                    for (int i = 0; i < 5; i++) { if (report.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].ReportCount++; } }
+                    foreach (ClassTableCell classTableCell in classTableRow) { if (report.Subjects.Contains($"{classTableCell.SubjectsName}（{classTableCell.ClassName}）")) { classTableCell.ReportCount++; } }
                 }
             }
             logger.Info("End Apply Reports to ClassTables");
@@ -603,13 +603,13 @@ namespace GakujoGUI
             if (ClassTables == null) { logger.Warn("Return Apply Quizzes to ClassTables by ClassTables is null."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                for (int i = 0; i < 5; i++) { classTableRow[i].QuizCount = 0; }
+                foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.QuizCount = 0; }
             }
             foreach (Quiz quiz in Quizzes.Where(x => x.Unsubmitted))
             {
                 foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
-                    for (int i = 0; i < 5; i++) { if (quiz.Subjects.Contains($"{classTableRow[i].SubjectsName}（{classTableRow[i].ClassName}）")) { classTableRow[i].QuizCount++; } }
+                    foreach (ClassTableCell classTableCell in classTableRow) { if (quiz.Subjects.Contains($"{classTableCell.SubjectsName}（{classTableCell.ClassName}）")) { classTableCell.QuizCount++; } }
                 }
             }
             logger.Info("End Apply Quizzes to ClassTables.");
@@ -959,7 +959,7 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrations."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                for (int i = 0; i < 5; i++) { classTableRow[i].LotteryRegistrations = new(); }
+                foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.LotteryRegistrations.Clear(); }
             }
             jikanwariVector = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/input").Attributes["value"].Value;
             for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count; i++)
@@ -1062,7 +1062,7 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/form") == null) { logger.Warn("Not found LotteryRegistrationsResult."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                for (int i = 0; i < 5; i++) { classTableRow[i].LotteryRegistrationsResult = new(); }
+                foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.LotteryRegistrationsResult.Clear(); }
             }
             for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/form").SelectNodes("table").Count; i++)
             {
@@ -1105,7 +1105,7 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectNodes("/html/body/table[4]") == null) { logger.Warn("Not found GeneralRegistrations."); return; }
             foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
             {
-                for (int i = 0; i < 5; i++) { classTableRow[i].GeneralRegistrations = new(); }
+                foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.GeneralRegistrations = new(); }
             }
             for (int i = 0; i < 7; i++)
             {
@@ -2023,6 +2023,15 @@ namespace GakujoGUI
         public List<LotteryRegistrationResult> LotteryRegistrationsResult => new List<List<LotteryRegistrationResult>> { this[0].LotteryRegistrationsResult, this[1].LotteryRegistrationsResult, this[2].LotteryRegistrationsResult, this[3].LotteryRegistrationsResult, this[4].LotteryRegistrationsResult }.SelectMany(_ => _).ToList();
 
         public List<GeneralRegistration> RegisterableGeneralRegistrations => new List<List<GeneralRegistration>> { this[0].GeneralRegistrations.RegisterableGeneralRegistrations, this[1].GeneralRegistrations.RegisterableGeneralRegistrations, this[2].GeneralRegistrations.RegisterableGeneralRegistrations, this[3].GeneralRegistrations.RegisterableGeneralRegistrations, this[4].GeneralRegistrations.RegisterableGeneralRegistrations }.SelectMany(_ => _).Where(x => x.KamokuCode != "" && x.ClassCode != "").ToList();
+
+        public IEnumerator<ClassTableCell> GetEnumerator()
+        {
+            yield return this[0];
+            yield return this[1];
+            yield return this[2];
+            yield return this[3];
+            yield return this[4];
+        }
 
         public override string ToString()
         {
