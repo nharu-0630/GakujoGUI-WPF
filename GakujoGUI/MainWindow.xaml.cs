@@ -252,6 +252,12 @@ namespace GakujoGUI
 
         #endregion
 
+        private bool LoginStatusCheck()
+        {
+            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return false; }
+            return true;
+        }
+
         #region 授業連絡
 
         private void ClassContactsSearchAutoSuggestBox_QuerySubmitted(AutoSuggestBox sender, AutoSuggestBoxQuerySubmittedEventArgs args)
@@ -261,7 +267,7 @@ namespace GakujoGUI
 
         private void LoadClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -295,7 +301,7 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("授業連絡の詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        if (!LoginStatusCheck()) { return; }
                         int index = ClassContactsDataGrid.SelectedIndex;
                         Task.Run(() => gakujoAPI.GetClassContact(index));
                     }
@@ -351,7 +357,7 @@ namespace GakujoGUI
 
         private void LoadReportsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadReportsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -391,7 +397,7 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("レポートの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        if (!LoginStatusCheck()) { return; }
                         Task.Run(() => gakujoAPI.GetReport((Report)ReportsDataGrid.SelectedItem));
                     }
                 }
@@ -447,7 +453,7 @@ namespace GakujoGUI
 
         private void LoadQuizzesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadQuizzesButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -487,7 +493,7 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("小テストの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        if (!LoginStatusCheck()) { return; }
                         Task.Run(() => gakujoAPI.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
                     }
                 }
@@ -542,7 +548,7 @@ namespace GakujoGUI
 
         private void LoadClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -576,7 +582,7 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+                        if (!LoginStatusCheck()) { return; }
                         int index = ClassSharedFilesDataGrid.SelectedIndex;
                         Task.Run(() => gakujoAPI.GetClassSharedFile(index));
                     }
@@ -625,7 +631,7 @@ namespace GakujoGUI
 
         private void LoadLotteryRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -661,7 +667,7 @@ namespace GakujoGUI
 
         private void LoadLotteryRegistrationsResultButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadLotteryRegistrationsResultButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadLotteryRegistrationsResultButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -691,7 +697,7 @@ namespace GakujoGUI
 
         private void LoadGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -730,7 +736,7 @@ namespace GakujoGUI
 
         private void LoadClassResultsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -1267,7 +1273,7 @@ namespace GakujoGUI
 
         private void LoadAllClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadAllClassContactsButtonLabel.Visibility = Visibility.Collapsed;
             LoadAllClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -1284,7 +1290,7 @@ namespace GakujoGUI
 
         private void LoadAllClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return; }
+            if (!LoginStatusCheck()) { return; }
             LoadAllClassSharedFilesButtonLabel.Visibility = Visibility.Collapsed;
             LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
