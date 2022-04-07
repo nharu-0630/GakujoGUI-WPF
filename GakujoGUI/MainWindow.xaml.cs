@@ -682,9 +682,15 @@ namespace GakujoGUI
             });
         }
 
+        private void FilterLotteryRegistrationsResultCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            RefreshLotteryRegistrationsResultDataGrid();
+        }
+
         private void RefreshLotteryRegistrationsResultDataGrid()
         {
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.LotteryRegistrationsResult.SelectMany(_ => _) }.View;
+            collectionView.Filter = new Predicate<object>(item => (!(bool)FilterLotteryRegistrationsResultCheckBox.IsChecked! || ((LotteryRegistrationResult)item).IsWinning));
             LotteryRegistrationsResultDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.LotteryRegistrationResultDateTime:yyyy/MM/dd HH:mm:ss}";
             LotteryRegistrationsResultDataGrid.ItemsSource = collectionView;
             LotteryRegistrationsResultDataGrid.Items.Refresh();
@@ -1413,6 +1419,7 @@ namespace GakujoGUI
         }
 
         #endregion
+
     }
 
     public class Settings

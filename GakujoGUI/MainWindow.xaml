@@ -956,6 +956,12 @@
                         Margin="6"
                         VerticalAlignment="Center"
                         Content="最終更新" />
+                    <CheckBox
+                        Name="FilterLotteryRegistrationsResultCheckBox"
+                        Margin="6"
+                        Checked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged"
+                        Content="当選のみ"
+                        Unchecked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged" />
                 </StackPanel>
                 <GridSplitter
                     Grid.Row="1"
