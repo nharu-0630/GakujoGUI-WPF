@@ -250,13 +250,13 @@ namespace GakujoGUI
             });
         }
 
-        #endregion
-
         private bool LoginStatusCheck()
         {
             if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return false; }
             return true;
         }
+
+        #endregion
 
         #region 授業連絡
 
