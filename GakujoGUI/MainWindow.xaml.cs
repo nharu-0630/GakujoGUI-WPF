@@ -50,84 +50,61 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
         }
 
-#pragma warning disable CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         public MainWindow()
-#pragma warning restore CS8618 // null 非許容のフィールドには、コンストラクターの終了時に null 以外の値が入っていなければなりません。Null 許容として宣言することをご検討ください。
         {
             InitializeComponent();
-            Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Where(x => x.Id != Environment.ProcessId).ToArray();
-
-            if (processes.Length != 0 && !Environment.GetCommandLineArgs().Contains("-force"))
+            ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
+            if (File.Exists(GetJsonPath("Settings")))
             {
-                foreach (Process process in processes)
-                {
-                    MessageBox.Show("GakujoGUIはすでに起動しています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
-                    logger.Warn("Shutdown by double activation.");
-                    shutdownFlag = true;
-                    Application.Current.Shutdown();
-                    return;
-                }
+                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
+                logger.Info("Load Settings.");
             }
-            else
+            if (settings.StartUpMinimize)
             {
-                foreach (Process process in processes)
+                SetVisibility(Visibility.Hidden);
+                //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
+                logger.Info("Startup minimized.");
+            }
+            notifyAPI = new();
+            gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
+            UserIdTextBox.Text = gakujoAPI.Account.UserId;
+            PassWordPasswordBox.Password = gakujoAPI.Account.PassWord;
+            TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
+            DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
+            DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
+            AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
+            AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
+            StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
+            StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
+            SchoolYearNumberBox.Value = settings.SchoolYear;
+            SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
+            UserAgentTextBox.Text = settings.UserAgent;
+            UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
+            VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+            RefreshClassTablesDataGrid();
+            RefreshClassContactsDataGrid();
+            RefreshReportsDataGrid();
+            RefreshQuizzesDataGrid();
+            RefreshClassSharedFilesDataGrid();
+            RefreshLotteryRegistrationsDataGrid();
+            RefreshLotteryRegistrationsResultDataGrid();
+            RefreshGeneralRegistrationsDataGrid();
+            RefreshClassResultsDataGrid();
+            Task.Run(() =>
+            {
+                Login();
+                Load();
+                Dispatcher.Invoke(() =>
                 {
-                    process.Kill();
-                    logger.Warn($"Kill other GakujoGUI process processId={process.Id}.");
-                }
-                ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
-                if (File.Exists(GetJsonPath("Settings")))
-                {
-                    settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
-                    logger.Info("Load Settings.");
-                }
-                if (settings.StartUpMinimize)
-                {
-                    SetVisibility(Visibility.Hidden);
-                    //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
-                    logger.Info("Startup minimized.");
-                }
-                notifyAPI = new();
-                gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-                UserIdTextBox.Text = gakujoAPI.Account.UserId;
-                PassWordPasswordBox.Password = gakujoAPI.Account.PassWord;
-                TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
-                DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-                DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
-                AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
-                AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
-                StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
-                StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
-                SchoolYearNumberBox.Value = settings.SchoolYear;
-                SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
-                UserAgentTextBox.Text = settings.UserAgent;
-                UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
-                VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
-                RefreshClassTablesDataGrid();
-                RefreshClassContactsDataGrid();
-                RefreshReportsDataGrid();
-                RefreshQuizzesDataGrid();
-                RefreshClassSharedFilesDataGrid();
-                RefreshLotteryRegistrationsDataGrid();
-                RefreshLotteryRegistrationsResultDataGrid();
-                RefreshGeneralRegistrationsDataGrid();
-                RefreshClassResultsDataGrid();
-                Task.Run(() =>
-                {
-                    Login();
-                    Load();
-                    Dispatcher.Invoke(() =>
+                    autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
+                    autoLoadTimer.Tick += new EventHandler(LoadEvent);
+                    if (settings.AutoLoadEnable)
                     {
-                        autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
-                        autoLoadTimer.Tick += new EventHandler(LoadEvent);
-                        if (settings.AutoLoadEnable)
-                        {
-                            autoLoadTimer.Start();
-                            logger.Info("Start AutoLoadTimer.");
-                        }
-                    });
+                        autoLoadTimer.Start();
+                        logger.Info("Start AutoLoadTimer.");
+                    }
                 });
-            }
+            });
         }
 
         #region ログイン
