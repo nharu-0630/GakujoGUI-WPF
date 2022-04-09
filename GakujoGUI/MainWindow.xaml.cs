@@ -233,6 +233,20 @@ namespace GakujoGUI
             return true;
         }
 
+        private void StartProcessFile(string path)
+        {
+            if (!File.Exists(path)) { return; }
+            Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
+            logger.Info($"Start Process {path}");
+        }
+
+        private void StartProcessExplorer(string path)
+        {
+            if (!File.Exists(path)) { return; }
+            Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{path}\"", UseShellExecute = true });
+            logger.Info($"Start Process explorer.exe /e,/select,\"{path}\"");
+        }
+
         #endregion
 
         #region 授業連絡
@@ -301,26 +315,14 @@ namespace GakujoGUI
 
         private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassContactFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]) { UseShellExecute = true });
-                    logger.Info($"Start Process {((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}");
-                }
-            }
+            if (ClassContactFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessFile(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]);
         }
 
         private void OpenClassContactFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassContactFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
-                    logger.Info($"Start Process explorer.exe /e,/select,\"{((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]}\"");
-                }
-            }
+            if (ClassContactFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessExplorer(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -397,26 +399,14 @@ namespace GakujoGUI
 
         private void OpenReportFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ReportFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]) { UseShellExecute = true });
-                    logger.Info($"Start Process {((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}");
-                }
-            }
+            if (ReportFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessFile(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]);
         }
 
         private void OpenReportFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ReportFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
-                    logger.Info($"Start Process explorer.exe /e,/select,\"{((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]}\"");
-                }
-            }
+            if (ReportFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessExplorer(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -492,26 +482,14 @@ namespace GakujoGUI
 
         private void OpenQuizFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (QuizFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]) { UseShellExecute = true });
-                    logger.Info($"Start Process {((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}");
-                }
-            }
+            if (QuizFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessFile(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]);
         }
 
         private void OpenQuizFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (QuizFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
-                    logger.Info($"Start Process explorer.exe /e,/select,\"{((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]}\"");
-                }
-            }
+            if (QuizFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessExplorer(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -580,26 +558,14 @@ namespace GakujoGUI
 
         private void OpenClassSharedFileButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]) { UseShellExecute = true });
-                    logger.Info($"Start Process {((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}");
-                }
-            }
+            if (ClassSharedFileFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessFile(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]);
         }
 
         private void OpenClassSharedFolderButton_Click(object sender, RoutedEventArgs e)
         {
-            if (ClassSharedFileFilesComboBox.SelectedIndex != -1)
-            {
-                if (File.Exists(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]))
-                {
-                    Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}\"", UseShellExecute = true });
-                    logger.Info("Start Process explorer.exe /e,/select,\"{((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]}\"");
-                }
-            }
+            if (ClassSharedFileFilesComboBox.SelectedIndex == -1) { return; }
+            StartProcessExplorer(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]);
         }
 
         #endregion
