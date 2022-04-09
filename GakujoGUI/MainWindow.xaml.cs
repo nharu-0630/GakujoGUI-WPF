@@ -43,12 +43,14 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI"));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName));
             }
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI\{value}.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
         }
+
+        private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
         public MainWindow()
         {
@@ -62,7 +64,6 @@ namespace GakujoGUI
             if (settings.StartUpMinimize)
             {
                 SetVisibility(Visibility.Hidden);
-                //new ToastContentBuilder().AddText("GakujoGUI").AddText("最小化した状態で起動しました．").Show();
                 logger.Info("Startup minimized.");
             }
             notifyAPI = new();
@@ -123,7 +124,7 @@ namespace GakujoGUI
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
-            if (!gakujoAPI.Login()) { Dispatcher.Invoke(() => { MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); }); }
+            if (!gakujoAPI.Login()) { Dispatcher.Invoke(() => { MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error); }); }
             else
             {
                 gakujoAPI.GetClassTables();
@@ -229,7 +230,7 @@ namespace GakujoGUI
 
         private bool LoginStatusCheck()
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Error); return false; }
+            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false; }
             return true;
         }
 
@@ -290,7 +291,7 @@ namespace GakujoGUI
             {
                 if (!((ClassContact)ClassContactsDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("授業連絡の詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("授業連絡の詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
                         int index = ClassContactsDataGrid.SelectedIndex;
@@ -374,7 +375,7 @@ namespace GakujoGUI
             {
                 if (!((Report)ReportsDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("レポートの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("レポートの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
                         Task.Run(() => gakujoAPI.GetReport((Report)ReportsDataGrid.SelectedItem));
@@ -458,7 +459,7 @@ namespace GakujoGUI
             {
                 if (!((Quiz)QuizzesDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("小テストの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("小テストの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
                         Task.Run(() => gakujoAPI.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
@@ -535,7 +536,7 @@ namespace GakujoGUI
             {
                 if (!((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
                         int index = ClassSharedFilesDataGrid.SelectedIndex;
@@ -806,10 +807,10 @@ namespace GakujoGUI
             if (favorites.Count == 0)
             {
                 logger.Warn("Return Add Favorites by already exists.");
-                MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 classTableCell.Favorites.AddRange(favorites);
                 logger.Info($"Add {favorites.Count} Favorites to {classTableCell.SubjectsName}");
@@ -1168,12 +1169,12 @@ namespace GakujoGUI
             using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
             if (settings.StartUpEnable)
             {
-                registryKey.SetValue("GakujoGUI", Environment.ProcessPath!);
+                registryKey.SetValue(assemblyName, Environment.ProcessPath!);
                 logger.Info("Set RegistryKey enable.");
             }
             else
             {
-                registryKey.DeleteValue("GakujoGUI", false);
+                registryKey.DeleteValue(assemblyName, false);
                 logger.Info("Set RegistryKey disable.");
             }
             registryKey.Close();
@@ -1186,7 +1187,7 @@ namespace GakujoGUI
 
         private void SaveGakujoButton_Click(object sender, RoutedEventArgs e)
         {
-            switch (MessageBox.Show("適用するにはGakujoGUIを再起動する必要があります．\n再起動しますか．", "GakujoGUI", MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
+            switch (MessageBox.Show($"適用するには{assemblyName}を再起動する必要があります．\n再起動しますか．", assemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
             {
                 case MessageBoxResult.Yes:
                     settings.SchoolYear = (int)SchoolYearNumberBox.Value;
@@ -1263,21 +1264,21 @@ namespace GakujoGUI
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
             {
-                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"",
+                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)}\"",
                 UseShellExecute = true
             });
-            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"GakujoGUI")}\"");
+            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)}\"");
         }
 
         private void GetLatestVersionButton_Click(object sender, RoutedEventArgs e)
         {
             Task.Run(() =>
             {
-                if (!GetLatestVersion(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information)); }
+                if (!GetLatestVersion(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information)); }
                 else
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
-                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information); });
+                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Information); });
                     if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
                     {
                         Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
@@ -1373,7 +1374,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 0;
-        public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 GakujoGUI/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
     }
 
