@@ -50,6 +50,8 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
         }
 
+        private static string BackgroundImagePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\background.png");
+
         private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
         public MainWindow()
@@ -82,6 +84,14 @@ namespace GakujoGUI
             UserAgentTextBox.Text = settings.UserAgent;
             UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+            if (File.Exists(BackgroundImagePath))
+            {
+                ImageBrush imageBrush = new();
+                imageBrush.ImageSource = new BitmapImage(new Uri(BackgroundImagePath));
+                imageBrush.Stretch = Stretch.UniformToFill;
+                Background = imageBrush;
+                Background.Opacity = 0.3;
+            }
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
             RefreshReportsDataGrid();
