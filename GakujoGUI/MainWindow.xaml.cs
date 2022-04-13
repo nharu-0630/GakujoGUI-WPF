@@ -91,6 +91,7 @@ namespace GakujoGUI
                 imageBrush.Stretch = Stretch.UniformToFill;
                 Background = imageBrush;
                 Background.Opacity = 0.3;
+                logger.Info("Set Background ImageBrush.");
             }
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
