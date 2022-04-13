@@ -381,6 +381,14 @@ namespace GakujoGUI
                 report.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
                 report.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
                 if (!Reports.Contains(report)) { diffReports.Add(report); }
+                else
+                {
+                    if (Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).Count() == 1)
+                    {
+                        Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).First().Status = report.Status;
+                        Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).First().Operation = report.Operation;
+                    }
+                }
             }
             Reports.AddRange(diffReports);
             logger.Info($"Found {diffReports.Count} new Reports.");
@@ -530,6 +538,15 @@ namespace GakujoGUI
                 quiz.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
                 quiz.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
                 if (!Quizzes.Contains(quiz)) { diffQuizzes.Add(quiz); }
+                else
+                {
+                    if (Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).Count() == 1)
+                    {
+                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().Status = quiz.Status;
+                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().SubmissionStatus = quiz.SubmissionStatus;
+                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().Operation = quiz.Operation;
+                    }
+                }
             }
             Quizzes.AddRange(diffQuizzes);
             logger.Info($"Found {diffQuizzes.Count} new Quizzes.");

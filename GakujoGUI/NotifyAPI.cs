@@ -5,6 +5,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Todoist.Net;
 using Todoist.Net.Models;
@@ -71,6 +72,7 @@ namespace GakujoGUI
             try
             {
                 todoistClient = new(Tokens.TodoistToken);
+                TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 logger.Info("Login Todoist.");
             }
             catch (Exception exception) { logger.Error(exception, "Error Login Todoist."); }
@@ -88,22 +90,8 @@ namespace GakujoGUI
 
         private bool ExistsTodoistTask(string content, DateTime dateTime)
         {
-            if (dateTime < DateTime.Now)
-            {
-                return true;
-            }
-            foreach (Item item in TodoistResources.Items)
-            {
-                if (item.DueDate == null)
-                {
-                    continue;
-                }
-                if (item.Content == content && item.DueDate.Date == dateTime)
-                {
-                    return true;
-                }
-            }
-            return false;
+            if (dateTime < DateTime.Now) { return true; }
+            return TodoistResources.Items.Where(x => x.DueDate != null && x.Content == content && x.DueDate.Date == dateTime).Any();
         }
 
         private void AddTodoistTask(string content, DateTime dateTime)
@@ -112,8 +100,7 @@ namespace GakujoGUI
             {
                 if (!ExistsTodoistTask(content, dateTime))
                 {
-                    todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Wait();
-                    logger.Info("Add Todoist task.");
+                    logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Result}.");
                 }
             }
             catch (Exception exception) { logger.Error(exception, "Error Add Todoist task."); }
@@ -123,49 +110,31 @@ namespace GakujoGUI
         {
             try
             {
-                foreach (Item item in TodoistResources.Items)
+                TodoistResources.Items.Where(x => x.DueDate != null && x.Content == content && x.DueDate.Date == dateTime && x.IsChecked != true).ToList().ForEach(x =>
                 {
-                    if (item.DueDate == null) { continue; }
-                    if (item.Content == content && item.DueDate.Date == dateTime && item.IsArchived == false)
-                    {
-                        todoistClient!.Items.ArchiveAsync(item.Id).Wait();
-                        logger.Info("Archive Todoist task.");
-                    }
-                }
+                    todoistClient!.Items.CloseAsync(x.Id).Wait();
+                    logger.Info($"Archive Todoist task {x.Id}.");
+                });
             }
             catch (Exception exception) { logger.Error(exception, "Error Archive Todoist task."); }
         }
 
         public void SetTodoistTask(List<Report> reports)
         {
+            logger.Info("Start Set Todoist task reports.");
             if (TodoistResources == null) { logger.Warn("Return Set Todoist task reports by resource is null."); return; }
-            foreach (Report report in reports)
-            {
-                if (report.Unsubmitted)
-                {
-                    AddTodoistTask(report.ToShortString(), report.EndDateTime);
-                }
-                else
-                {
-                    ArchiveTodoistTask(report.ToShortString(), report.EndDateTime);
-                }
-            }
+            reports.Where(x => x.Unsubmitted).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
+            reports.Where(x => !x.Unsubmitted).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
+            logger.Info("End Set Todoist task reports.");
         }
 
         public void SetTodoistTask(List<Quiz> quizzes)
         {
+            logger.Info("Start Set Todoist task quizzes.");
             if (TodoistResources == null) { logger.Warn("Return Set Todoist task quizzes by resource is null."); return; }
-            foreach (Quiz quiz in quizzes)
-            {
-                if (quiz.Unsubmitted)
-                {
-                    AddTodoistTask(quiz.ToShortString(), quiz.EndDateTime);
-                }
-                else
-                {
-                    ArchiveTodoistTask(quiz.ToShortString(), quiz.EndDateTime);
-                }
-            }
+            quizzes.Where(x => x.Unsubmitted).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
+            quizzes.Where(x => !x.Unsubmitted).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
+            logger.Info("End Set Todoist task quizzes.");
         }
 
         #endregion
