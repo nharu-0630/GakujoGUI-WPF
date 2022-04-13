@@ -512,6 +512,10 @@ namespace GakujoGUI
             logger.Info($"Found {limitCount} quizzes.");
             for (int i = 0; i < limitCount; i++)
             {
+                string id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                string subjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4); ;
+                string classCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5); ;
+
                 Quiz quiz = new();
                 quiz.Subjects = ReplaceSpace(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText);
                 quiz.Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim();
