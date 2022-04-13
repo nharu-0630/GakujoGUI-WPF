@@ -323,6 +323,13 @@ namespace GakujoGUI
                     ClassContactFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
+            else
+            {
+                ClassContactContactDateTimeLabel.Content = "連絡日時";
+                ClassContactContentTextBox.Text = "内容";
+                ClassContactFilesComboBox.ItemsSource = null;
+                ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
+            }
         }
 
         private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
@@ -407,6 +414,14 @@ namespace GakujoGUI
                     ReportFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
+            else
+            {
+                ReportStartEndDateTimeLabel.Content = "提出期間";
+                ReportDescriptionTextBox.Text = "説明";
+                ReportMessageTextBox.Text = "伝達事項";
+                ReportFilesComboBox.ItemsSource = null;
+                ReportFilesStackPanel.Visibility = Visibility.Hidden;
+            }
         }
 
         private void OpenReportFileButton_Click(object sender, RoutedEventArgs e)
@@ -490,6 +505,13 @@ namespace GakujoGUI
                     QuizFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
+            else
+            {
+                QuizStartEndDateTimeLabel.Content = "提出期間";
+                QuizDescriptionTextBox.Text = "説明";
+                QuizFilesComboBox.ItemsSource = null;
+                QuizFilesStackPanel.Visibility = Visibility.Hidden;
+            }
         }
 
         private void OpenQuizFileButton_Click(object sender, RoutedEventArgs e)
@@ -565,6 +587,12 @@ namespace GakujoGUI
                     ClassSharedFileFilesComboBox.ItemsSource = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
                     ClassSharedFileFilesComboBox.SelectedIndex = 0;
                 }
+            }
+            else
+            {
+                ClassSharedFileUpdateDateTimeLabel.Content = "更新日時";
+                ClassSharedFileDescriptionTextBox.Text = "ファイル説明";
+                ClassSharedFileFilesComboBox.ItemsSource = null;
             }
         }
 
