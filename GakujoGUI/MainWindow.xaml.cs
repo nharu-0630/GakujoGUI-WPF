@@ -1115,9 +1115,9 @@ namespace GakujoGUI
 
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
-            ReportMenuItem.Header = $"レポート {gakujoAPI.Reports.Count(x => x.Unsubmitted)}";
+            ReportMenuItem.Header = $"レポート ({gakujoAPI.Reports.Count(x => x.Unsubmitted)})";
             ReportMenuItem.Visibility = gakujoAPI.Reports.Any(x => x.Unsubmitted) ? Visibility.Visible : Visibility.Collapsed;
-            QuizMenuItem.Header = $"小テスト {gakujoAPI.Quizzes.Count(x => x.Unsubmitted)}";
+            QuizMenuItem.Header = $"小テスト ({gakujoAPI.Quizzes.Count(x => x.Unsubmitted)})";
             QuizMenuItem.Visibility = gakujoAPI.Quizzes.Any(x => x.Unsubmitted) ? Visibility.Visible : Visibility.Collapsed;
             logger.Info("Opened ContextMenu.");
         }
