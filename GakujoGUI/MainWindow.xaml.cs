@@ -1024,24 +1024,32 @@ namespace GakujoGUI
                 switch (toastArguments.Get("Type"))
                 {
                     case "ClassContact":
-                        ClassContactsTabItem.IsSelected = true;
+                        ClassContactsSearchAutoSuggestBox.Text = "";
+                        RefreshClassContactsDataGrid();
                         ClassContactsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        ClassContactsTabItem.IsSelected = true;
                         break;
                     case "Report":
-                        ReportsTabItem.IsSelected = true;
+                        ReportsSearchAutoSuggestBox.Text = "";
+                        RefreshReportsDataGrid();
                         ReportsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        ReportsTabItem.IsSelected = true;
                         break;
                     case "Quiz":
-                        QuizzesTabItem.IsSelected = true;
+                        QuizzesSearchAutoSuggestBox.Text = "";
+                        RefreshQuizzesDataGrid();
                         QuizzesDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        QuizzesTabItem.IsSelected = true;
                         break;
                     case "ClassSharedFile":
-                        ClassSharedFilesTabItem.IsSelected = true;
+                        ClassSharedFilesSearchAutoSuggestBox.Text = "";
+                        RefreshClassSharedFilesDataGrid();
                         ClassSharedFilesDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        ClassSharedFilesTabItem.IsSelected = true;
                         break;
                     case "ClassResult":
-                        ClassResultsTabItem.IsSelected = true;
                         ClassResultsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
+                        ClassResultsTabItem.IsSelected = true;
                         break;
                 }
             });
