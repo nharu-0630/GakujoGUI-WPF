@@ -248,10 +248,22 @@ namespace GakujoGUI
             else { lastCallerMemberName = callerMemberName; return false; }
         }
 
-        public bool Login()
+        public bool Login(out bool networkAvailable)
         {
             logger.Info("Start Login.");
+            networkAvailable = true;
             if (3 <= DateTime.Now.Hour && DateTime.Now.Hour < 5) { logger.Warn("Return Login by overtime."); return false; }
+            try
+            {
+                httpRequestMessage = new(new("GET"), "http://clients3.google.com/generate_204");
+                httpClient.SendAsync(httpRequestMessage).Wait();
+            }
+            catch
+            {
+                logger.Warn("Return Login by not network available.");
+                networkAvailable = false;
+                return false;
+            }
             cookieContainer = new();
             httpClientHandler = new() { AutomaticDecompression = ~DecompressionMethods.None, CookieContainer = cookieContainer };
             httpClient = new(httpClientHandler);
@@ -895,6 +907,16 @@ namespace GakujoGUI
         private bool CheckConnection()
         {
             logger.Info("Start Check connection.");
+            try
+            {
+                httpRequestMessage = new(new("GET"), "http://clients3.google.com/generate_204");
+                httpClient.SendAsync(httpRequestMessage).Wait();
+            }
+            catch
+            {
+                logger.Warn("Return Check connection by not network available.");
+                return false;
+            }
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&headTitle=ホーム&menuCode=Z07&nextPath=/home/home/initialize&_screenIdentifier=&_screenInfoDisp=&_scrollTop=0");

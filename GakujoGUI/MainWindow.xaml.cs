@@ -135,7 +135,11 @@ namespace GakujoGUI
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
-            if (!gakujoAPI.Login()) { Dispatcher.Invoke(() => { MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error); }); }
+            if (!gakujoAPI.Login(out bool networkAvailable))
+            {
+                Dispatcher.Invoke(() =>
+                    MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
+            }
             else
             {
                 gakujoAPI.GetClassTables();
