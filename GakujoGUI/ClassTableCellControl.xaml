@@ -64,6 +64,10 @@
                     Click="SyllabusMenuItem_Click"
                     Header="シラバス" />
                 <MenuItem
+                    Name="VideoMenuItem"
+                    Click="VideoMenuItem_Click"
+                    Header="授業動画" />
+                <MenuItem
                     Name="FavoritesMenuItem"
                     Click="FavoritesMenuItem_Click"
                     Header="お気に入り"

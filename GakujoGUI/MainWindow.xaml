@@ -136,7 +136,8 @@
                                         DataContext="{Binding Monday}"
                                         QuizButtonClick="ClassTableCellControl_QuizButtonClick"
                                         ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -152,7 +153,8 @@
                                         DataContext="{Binding Tuesday}"
                                         QuizButtonClick="ClassTableCellControl_QuizButtonClick"
                                         ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -168,7 +170,8 @@
                                         DataContext="{Binding Wednesday}"
                                         QuizButtonClick="ClassTableCellControl_QuizButtonClick"
                                         ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -184,7 +187,8 @@
                                         DataContext="{Binding Thursday}"
                                         QuizButtonClick="ClassTableCellControl_QuizButtonClick"
                                         ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
@@ -200,7 +204,8 @@
                                         DataContext="{Binding Friday}"
                                         QuizButtonClick="ClassTableCellControl_QuizButtonClick"
                                         ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick" />
+                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

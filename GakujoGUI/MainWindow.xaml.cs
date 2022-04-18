@@ -833,6 +833,14 @@ namespace GakujoGUI
             SyllabusClassTablesTabItem.IsSelected = true;
         }
 
+        private void ClassTableCellControl_VideoMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null) { return; }
+            Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/portal/educationalvideo/search/params/locale=ja&year={settings.SchoolYear}&faculty=&department=&course={classTableCell.SubjectsName}&instructor=?year={settings.SchoolYear}&facultyCode=&courseName={classTableCell.SubjectsName}&instructorName=&locale=ja") { UseShellExecute = true });
+            logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/portal/educationalvideo/search/params/locale=ja&year={settings.SchoolYear}&faculty=&department=&course={classTableCell.SubjectsName}&instructor=?year={settings.SchoolYear}&facultyCode=&courseName={classTableCell.SubjectsName}&instructorName=&locale=ja");
+        }
+
         private void ClassTablesDataGrid_PreviewDrop(object sender, DragEventArgs e)
         {
             if ((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext is not ClassTableCell classTableCell) { return; }

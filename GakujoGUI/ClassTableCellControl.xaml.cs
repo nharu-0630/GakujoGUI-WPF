@@ -23,6 +23,7 @@ namespace GakujoGUI
         public static readonly RoutedEvent ReportButtonClickEvent = EventManager.RegisterRoutedEvent("ReportButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent QuizButtonClickEvent = EventManager.RegisterRoutedEvent("QuizButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
+        public static readonly RoutedEvent VideoMenuItemClickEvent = EventManager.RegisterRoutedEvent("VideoMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -50,6 +51,12 @@ namespace GakujoGUI
             remove { RemoveHandler(SyllabusMenuItemClickEvent, value); }
         }
 
+        public event RoutedEventHandler VideoMenuItemClick
+        {
+            add { AddHandler(VideoMenuItemClickEvent, value); }
+            remove { RemoveHandler(VideoMenuItemClickEvent,value); }
+        }
+
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(ClassContactButtonClickEvent);
@@ -71,6 +78,12 @@ namespace GakujoGUI
         private void SyllabusMenuItem_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(SyllabusMenuItemClickEvent);
+            RaiseEvent(routedEventArgs);
+        }
+
+        private void VideoMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            RoutedEventArgs routedEventArgs = new(VideoMenuItemClickEvent);
             RaiseEvent(routedEventArgs);
         }
 
@@ -96,5 +109,6 @@ namespace GakujoGUI
                 }
             }
         }
+
     }
 }
