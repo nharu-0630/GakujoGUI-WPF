@@ -54,7 +54,7 @@ namespace GakujoGUI
         public event RoutedEventHandler VideoMenuItemClick
         {
             add { AddHandler(VideoMenuItemClickEvent, value); }
-            remove { RemoveHandler(VideoMenuItemClickEvent,value); }
+            remove { RemoveHandler(VideoMenuItemClickEvent, value); }
         }
 
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)

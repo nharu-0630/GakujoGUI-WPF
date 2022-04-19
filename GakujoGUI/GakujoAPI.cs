@@ -1407,30 +1407,35 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]") == null) { diffClassResults = new(); logger.Warn("Not found ClassResults list."); }
+            diffClassResults = new();
+            if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]") == null) { logger.Warn("Not found ClassResults list."); return; }
             else
             {
                 diffClassResults = new(SchoolGrade.ClassResults);
-                SchoolGrade.ClassResults.Clear();
-                logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1} ClassResults.");
-                for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count; i++)
+                if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1 > 0)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr")[i];
-                    ClassResult classResult = new();
-                    classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
-                    classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
-                    classResult.SubjectsSection = htmlNode.SelectNodes("td")[2].InnerText.Trim();
-                    classResult.SelectionSection = htmlNode.SelectNodes("td")[3].InnerText.Trim();
-                    classResult.Credit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
-                    classResult.Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim();
-                    if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "") { classResult.Score = double.Parse(htmlNode.SelectNodes("td")[6].InnerText.Trim()); }
-                    if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "") { classResult.GP = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim()); }
-                    classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
-                    classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
-                    classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
-                    SchoolGrade.ClassResults.Add(classResult);
+                    SchoolGrade.ClassResults.Clear();
+                    logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1} ClassResults.");
+                    for (int i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count; i++)
+                    {
+                        HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr")[i];
+                        ClassResult classResult = new();
+                        classResult.Subjects = htmlNode.SelectNodes("td")[0].InnerText.Trim();
+                        classResult.TeacherName = htmlNode.SelectNodes("td")[1].InnerText.Trim();
+                        classResult.SubjectsSection = htmlNode.SelectNodes("td")[2].InnerText.Trim();
+                        classResult.SelectionSection = htmlNode.SelectNodes("td")[3].InnerText.Trim();
+                        classResult.Credit = int.Parse(htmlNode.SelectNodes("td")[4].InnerText.Trim());
+                        classResult.Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim();
+                        if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "") { classResult.Score = double.Parse(htmlNode.SelectNodes("td")[6].InnerText.Trim()); }
+                        if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "") { classResult.GP = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim()); }
+                        classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
+                        classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
+                        classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
+                        SchoolGrade.ClassResults.Add(classResult);
+                    }
+                    diffClassResults = SchoolGrade.ClassResults.Except(diffClassResults).ToList();
                 }
-                diffClassResults = SchoolGrade.ClassResults.Except(diffClassResults).ToList();
+                else { logger.Warn("Not found ClassResults list."); return; }
             }
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/hyoukabetuTaniSearch.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
