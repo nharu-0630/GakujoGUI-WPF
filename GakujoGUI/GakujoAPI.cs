@@ -395,11 +395,12 @@ namespace GakujoGUI
                 if (!Reports.Contains(report)) { diffReports.Add(report); }
                 else
                 {
-                    if (Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).Count() == 1)
+                    Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).ToList().ForEach(x =>
                     {
-                        Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).First().Status = report.Status;
-                        Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).First().Operation = report.Operation;
-                    }
+                        x.Status = report.Status;
+                        x.Operation = report.Operation;
+                        x.SubmittedDateTime = report.SubmittedDateTime;
+                    });
                 }
             }
             Reports.AddRange(diffReports);
@@ -552,12 +553,12 @@ namespace GakujoGUI
                 if (!Quizzes.Contains(quiz)) { diffQuizzes.Add(quiz); }
                 else
                 {
-                    if (Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).Count() == 1)
+                    Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).ToList().ForEach(x =>
                     {
-                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().Status = quiz.Status;
-                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().SubmissionStatus = quiz.SubmissionStatus;
-                        Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).First().Operation = quiz.Operation;
-                    }
+                        x.Status = quiz.Status;
+                        x.SubmissionStatus = quiz.SubmissionStatus;
+                        x.Operation = quiz.Operation;
+                    });
                 }
             }
             Quizzes.AddRange(diffQuizzes);
