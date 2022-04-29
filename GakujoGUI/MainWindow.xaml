@@ -1381,6 +1381,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="220" />
+                    <ColumnDefinition Width="220" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0" Margin="6">
@@ -1390,120 +1391,45 @@
                             <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E5%A4%96%E9%83%A8%E9%80%A3%E6%90%BA" RequestNavigate="Hyperlink_RequestNavigate">連携方法</Hyperlink>
                         </TextBlock>
                     </StackPanel>
+                    <Label Margin="6" Content="Todoistトークン" />
                     <PasswordBox
                         Name="TodoistTokenPasswordBox"
                         Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Todoistトークン" />
+                        Margin="6,0" />
+                    <Label Margin="6" Content="Discordチャンネル" />
                     <TextBox
                         Name="DiscordChannelTextBox"
                         Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Discordチャンネル" />
+                        Margin="6,0" />
+                    <Label Margin="6" Content="Discordトークン" />
                     <PasswordBox
                         Name="DiscordTokenPasswordBox"
                         Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="Discordトークン" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button
-                            Name="SaveTokensButton"
-                            Margin="6"
-                            Click="SaveTokensButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <ui:FontIcon
-                                    Name="SaveTokensButtonFontIcon"
-                                    FontFamily="Segoe MDL2 Assets"
-                                    Glyph="&#xE72C;"
-                                    Visibility="Visible" />
-                                <ui:ProgressRing
-                                    Name="SaveTokensButtonProgressRing"
-                                    IsActive="True"
-                                    Visibility="Collapsed" />
-                            </StackPanel>
-                        </Button>
-                        <Button
-                            Name="NotificationButton"
-                            Margin="6"
-                            Click="NotificationButton_Click"
-                            Content="通知設定"
-                            Visibility="Hidden">
-                            <ui:FlyoutBase.AttachedFlyout>
-                                <ui:Flyout Placement="Bottom">
-                                    <StackPanel Orientation="Vertical">
-                                        <Label Margin="6" Content="Todoist" />
-                                        <CheckBox Margin="6" Content="レポート" />
-                                        <CheckBox Margin="6" Content="小テスト" />
-                                        <Separator Margin="6" />
-                                        <Label Margin="6" Content="Discord" />
-                                        <CheckBox Margin="6" Content="授業連絡" />
-                                        <CheckBox Margin="6" Content="レポート" />
-                                        <CheckBox Margin="6" Content="小テスト" />
-                                        <CheckBox Margin="6" Content="授業共有ファイル" />
-                                        <CheckBox Margin="6" Content="成績情報" />
-                                        <Label Margin="6" Content="Windows" />
-                                        <CheckBox Margin="6" Content="授業連絡" />
-                                        <CheckBox Margin="6" Content="レポート" />
-                                        <CheckBox Margin="6" Content="小テスト" />
-                                        <CheckBox Margin="6" Content="授業共有ファイル" />
-                                        <CheckBox Margin="6" Content="成績情報" />
-                                    </StackPanel>
-                                </ui:Flyout>
-                            </ui:FlyoutBase.AttachedFlyout>
-                        </Button>
-                    </StackPanel>
+                        Margin="6,0" />
                     <Separator Margin="6" />
-                    <Label Margin="6" Content="自動更新" />
-                    <CheckBox
-                        Name="AutoLoadEnableCheckBox"
-                        Margin="6"
-                        Checked="AutoLoadEnableCheckBox_CheckStateChanged"
-                        Content="自動的に更新する"
-                        Unchecked="AutoLoadEnableCheckBox_CheckStateChanged" />
-                    <ui:NumberBox
-                        Name="AutoLoadSpanNumberBox"
-                        Margin="6"
-                        Header="更新間隔 (分)"
-                        Maximum="60"
-                        Minimum="5"
-                        SmallChange="5"
-                        SpinButtonPlacementMode="Inline"
-                        ValueChanged="AutoLoadSpanNumberBox_ValueChanged" />
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="Windows設定" />
-                    <CheckBox
-                        Name="StartUpEnableCheckBox"
-                        Margin="6"
-                        Checked="StartUpEnableCheckBox_CheckStateChanged"
-                        Content="GakujoGUIを開く"
-                        Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="StartUpMinimizeCheckBox"
-                        Margin="6"
-                        Checked="StartUpMinimizeCheckBox_CheckStateChanged"
-                        Content="最小化した状態で起動する"
-                        Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Margin="6">
                     <Label Margin="6" Content="学情設定" />
-                    <ui:NumberBox
-                        Name="SchoolYearNumberBox"
-                        Margin="6"
-                        Header="取得年度"
-                        Maximum="2050"
-                        Minimum="2020"
-                        SmallChange="1"
-                        SpinButtonPlacementMode="Inline" />
-                    <Label Margin="6" Content="取得学期" />
-                    <ComboBox
-                        Name="SchoolSemesterComboBox"
-                        Width="Auto"
-                        Margin="6">
-                        <ComboBoxItem Content="前期前半" />
-                        <ComboBoxItem Content="前期後半" />
-                        <ComboBoxItem Content="後期前半" />
-                        <ComboBoxItem Content="後期後半" />
-                    </ComboBox>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:NumberBox
+                            Name="SchoolYearNumberBox"
+                            Margin="6"
+                            Header="取得年度"
+                            Maximum="2050"
+                            Minimum="2020"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="Compact" />
+                        <StackPanel Orientation="Vertical">
+                            <Label Margin="6" Content="取得学期" />
+                            <ComboBox
+                                Name="SchoolSemesterComboBox"
+                                Width="Auto"
+                                Margin="6,0">
+                                <ComboBoxItem Content="前期前半" />
+                                <ComboBoxItem Content="前期後半" />
+                                <ComboBoxItem Content="後期前半" />
+                                <ComboBoxItem Content="後期後半" />
+                            </ComboBox>
+                        </StackPanel>
+                    </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label
                             Margin="6"
@@ -1524,17 +1450,17 @@
                         VerticalScrollBarVisibility="Auto" />
                     <StackPanel Orientation="Horizontal">
                         <Button
-                            Name="SaveGakujoButton"
+                            Name="SaveTokensButton"
                             Margin="6"
-                            Click="SaveGakujoButton_Click">
+                            Click="SaveTokensButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <ui:FontIcon
-                                    Name="SaveGakujoButtonFontIcon"
+                                    Name="SaveTokensButtonFontIcon"
                                     FontFamily="Segoe MDL2 Assets"
-                                    Glyph="&#xE72C;"
+                                    Glyph="&#xE74E;"
                                     Visibility="Visible" />
                                 <ui:ProgressRing
-                                    Name="SaveGakujoButtonProgressRing"
+                                    Name="SaveTokensButtonProgressRing"
                                     IsActive="True"
                                     Visibility="Collapsed" />
                             </StackPanel>
@@ -1551,6 +1477,25 @@
                             </Label.Content>
                         </Label>
                     </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Margin="6">
+                    <Label Margin="6" Content="自動更新" />
+                    <CheckBox
+                        Name="AutoLoadEnableCheckBox"
+                        Margin="6"
+                        Checked="AutoLoadEnableCheckBox_CheckStateChanged"
+                        Content="自動的に更新する"
+                        Unchecked="AutoLoadEnableCheckBox_CheckStateChanged" />
+                    <ui:NumberBox
+                        Name="AutoLoadSpanNumberBox"
+                        Margin="6"
+                        Header="更新間隔 (分)"
+                        Maximum="60"
+                        Minimum="5"
+                        SmallChange="5"
+                        SpinButtonPlacementMode="Inline"
+                        ValueChanged="AutoLoadSpanNumberBox_ValueChanged" />
+                    <Separator Margin="6" />
                     <Label Margin="6" Content="詳細を一括取得する" />
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <Button
@@ -1598,6 +1543,47 @@
                     <TextBlock Margin="6" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
                     </TextBlock>
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="6">
+                    <Label Margin="6" Content="Windows設定" />
+                    <CheckBox
+                        Name="StartUpEnableCheckBox"
+                        Margin="6"
+                        Checked="StartUpEnableCheckBox_CheckStateChanged"
+                        Content="GakujoGUIを開く"
+                        Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="StartUpMinimizeCheckBox"
+                        Margin="6"
+                        Checked="StartUpMinimizeCheckBox_CheckStateChanged"
+                        Content="最小化した状態で起動する"
+                        Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
+                    <Separator Margin="6" />
+                    <Label Margin="6" Content="背景画像" />
+                    <Label Margin="6" Content="画像パス" />
+                    <StackPanel Orientation="Horizontal">
+                        <Label
+                            Name="BackgroundImagePathLabel"
+                            Margin="6"
+                            Content="" />
+                        <Button
+                            Name="OpenBackgroundImageButton"
+                            Margin="6"
+                            Click="OpenBackgroundImageButton_Click">
+                            <ui:FontIcon
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xE8DA;"
+                                Visibility="Visible" />
+                        </Button>
+                    </StackPanel>
+                    <Label Margin="6" Content="不透明度" />
+                    <Slider
+                        Name="BackgroundImageOpacitySlider"
+                        Margin="6,0"
+                        Maximum="100"
+                        Minimum="0"
+                        ValueChanged="BackgroundImageOpacitySlider_ValueChanged"
+                        Value="30" />
                 </StackPanel>
             </Grid>
         </TabItem>

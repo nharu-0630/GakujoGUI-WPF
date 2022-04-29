@@ -38,17 +38,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net.WebSocket" Version="3.4.1" />
+    <PackageReference Include="Discord.Net.WebSocket" Version="3.6.0" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.42" />
     <PackageReference Include="Markdig.Wpf" Version="0.5.0.1" />
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.2" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1150.38" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1185.39" />
     <PackageReference Include="ModernWpf.MessageBox" Version="0.5.2" />
     <PackageReference Include="ModernWpfUI" Version="0.9.4" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog.Config" Version="4.7.15" />
-    <PackageReference Include="ReverseMarkdown" Version="3.23.0" />
+    <PackageReference Include="ReverseMarkdown" Version="3.23.1" />
     <PackageReference Include="Todoist.Net" Version="2.2.2" />
   </ItemGroup>
 

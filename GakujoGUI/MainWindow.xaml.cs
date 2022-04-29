@@ -39,6 +39,7 @@ namespace GakujoGUI
         private readonly NotifyAPI notifyAPI;
         private readonly Settings settings = new();
         private readonly DispatcherTimer autoLoadTimer = new();
+        private bool settingsFlag = false;
         private bool shutdownFlag = false;
 
         private static string GetJsonPath(string value)
@@ -50,7 +51,6 @@ namespace GakujoGUI
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
         }
 
-        private static string BackgroundImagePath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\background.png");
 
         private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
@@ -62,6 +62,7 @@ namespace GakujoGUI
             {
                 settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
                 logger.Info("Load Settings.");
+                settingsFlag = true;
             }
             if (settings.StartUpMinimize)
             {
@@ -84,15 +85,7 @@ namespace GakujoGUI
             UserAgentTextBox.Text = settings.UserAgent;
             UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
-            if (File.Exists(BackgroundImagePath))
-            {
-                ImageBrush imageBrush = new();
-                imageBrush.ImageSource = new BitmapImage(new Uri(BackgroundImagePath));
-                imageBrush.Stretch = Stretch.UniformToFill;
-                Background = imageBrush;
-                Background.Opacity = 0.3;
-                logger.Info("Set Background ImageBrush.");
-            }
+            RefreshBackgroundImage();
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
             RefreshReportsDataGrid();
@@ -118,6 +111,8 @@ namespace GakujoGUI
                 });
             });
         }
+
+
 
         #region ログイン
 
@@ -1175,11 +1170,36 @@ namespace GakujoGUI
 
         private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() =>
+            switch (MessageBox.Show($"適用するには{assemblyName}を再起動する必要があります．\n再起動しますか．", assemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
             {
-                Dispatcher.Invoke(() => { notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password); });
-                notifyAPI.Login();
-            });
+                case MessageBoxResult.Yes:
+                    notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
+                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
+                    settings.UserAgent = UserAgentTextBox.Text;
+                    SaveJson();
+                    Process.Start(Environment.ProcessPath!);
+                    logger.Info($"Start Process {Environment.ProcessPath!}");
+                    logger.Info("Shutdown by apply Settings.");
+                    shutdownFlag = true;
+                    Application.Current.Shutdown();
+                    break;
+                case MessageBoxResult.No:
+                    notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
+                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
+                    settings.UserAgent = UserAgentTextBox.Text;
+                    SaveJson();
+                    break;
+                case MessageBoxResult.Cancel:
+                    TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
+                    DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
+                    DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
+                    SchoolYearNumberBox.Value = settings.SchoolYear;
+                    SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
+                    UserAgentTextBox.Text = settings.UserAgent;
+                    break;
+            }
         }
 
         private void NotificationButton_Click(object sender, RoutedEventArgs e)
@@ -1242,35 +1262,6 @@ namespace GakujoGUI
         private void ResetUserAgentButton_Click(object sender, RoutedEventArgs e)
         {
             UserAgentTextBox.Text = new Settings().UserAgent;
-        }
-
-        private void SaveGakujoButton_Click(object sender, RoutedEventArgs e)
-        {
-            switch (MessageBox.Show($"適用するには{assemblyName}を再起動する必要があります．\n再起動しますか．", assemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
-            {
-                case MessageBoxResult.Yes:
-                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
-                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
-                    settings.UserAgent = UserAgentTextBox.Text;
-                    SaveJson();
-                    Process.Start(Environment.ProcessPath!);
-                    logger.Info($"Start Process {Environment.ProcessPath!}");
-                    logger.Info("Shutdown by apply Settings.");
-                    shutdownFlag = true;
-                    Application.Current.Shutdown();
-                    break;
-                case MessageBoxResult.No:
-                    settings.SchoolYear = (int)SchoolYearNumberBox.Value;
-                    settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
-                    settings.UserAgent = UserAgentTextBox.Text;
-                    SaveJson();
-                    break;
-                case MessageBoxResult.Cancel:
-                    SchoolYearNumberBox.Value = settings.SchoolYear;
-                    SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
-                    UserAgentTextBox.Text = settings.UserAgent;
-                    break;
-            }
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
@@ -1423,6 +1414,38 @@ namespace GakujoGUI
 
         #endregion
 
+        private void BackgroundImageOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            settings.BackgroundImageOpacity = (int)BackgroundImageOpacitySlider.Value;
+            RefreshBackgroundImage();
+        }
+
+        private void OpenBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                settings.BackgroundImagePath = openFileDialog.FileName;
+                RefreshBackgroundImage();
+            }
+        }
+
+        private void RefreshBackgroundImage()
+        {
+            if (!settingsFlag) { return; }
+            BackgroundImagePathLabel.Content = Path.GetFileName(settings.BackgroundImagePath);
+            BackgroundImageOpacitySlider.Value = settings.BackgroundImageOpacity;
+            SaveJson();
+            if (File.Exists(settings.BackgroundImagePath))
+            {
+                ImageBrush imageBrush = new();
+                imageBrush.ImageSource = new BitmapImage(new Uri(settings.BackgroundImagePath));
+                imageBrush.Stretch = Stretch.UniformToFill;
+                Background = imageBrush;
+                Background.Opacity = 1.0 * settings.BackgroundImageOpacity / 100;
+                logger.Info("Set Background ImageBrush.");
+            }
+        }
     }
 
     public class Settings
@@ -1435,6 +1458,8 @@ namespace GakujoGUI
         public int SemesterCode { get; set; } = 0;
         public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
+        public string BackgroundImagePath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{Assembly.GetExecutingAssembly().GetName().Name}\background.png");
+        public int BackgroundImageOpacity { get; set; } = 30;
     }
 
 #pragma warning disable IDE1006 // 命名スタイル
