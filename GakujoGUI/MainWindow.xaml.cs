@@ -1442,7 +1442,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 0;
-        public string UserAgent { get; set; } = $"Chrome/100.0.4896.60 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/101.0.4951.41 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
         public string BackgroundImagePath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{Assembly.GetExecutingAssembly().GetName().Name}\background.png");
         public int BackgroundImageOpacity { get; set; } = 30;
