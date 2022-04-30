@@ -85,6 +85,8 @@ namespace GakujoGUI
             UserAgentTextBox.Text = settings.UserAgent;
             UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
+            autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
+            autoLoadTimer.Tick += new EventHandler(LoadEvent);
             RefreshBackgroundImage();
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
@@ -101,8 +103,6 @@ namespace GakujoGUI
                 Load();
                 Dispatcher.Invoke(() =>
                 {
-                    autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
-                    autoLoadTimer.Tick += new EventHandler(LoadEvent);
                     if (settings.AutoLoadEnable)
                     {
                         autoLoadTimer.Start();
@@ -111,8 +111,6 @@ namespace GakujoGUI
                 });
             });
         }
-
-
 
         #region ログイン
 
@@ -132,17 +130,16 @@ namespace GakujoGUI
             });
             if (!gakujoAPI.Login(out bool networkAvailable))
             {
-                Dispatcher.Invoke(() =>
-                    MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
+                Dispatcher.Invoke(() => MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
             }
             else
             {
                 gakujoAPI.GetClassTables();
-                Dispatcher.Invoke(() => { RefreshClassTablesDataGrid(); });
+                notifyAPI.Login();
             }
-            notifyAPI.Login();
             Dispatcher.Invoke(() =>
             {
+                RefreshClassTablesDataGrid();
                 LoginButtonFontIcon.Visibility = Visibility.Visible;
                 LoginButtonProgressRing.Visibility = Visibility.Collapsed;
             });
@@ -1023,10 +1020,7 @@ namespace GakujoGUI
             {
                 SetVisibility(Visibility.Visible);
                 logger.Info("Activate MainForm by Toast.");
-                if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index"))
-                {
-                    return;
-                }
+                if (!toastArguments.Contains("Type") || !toastArguments.Contains("Index")) { return; }
                 logger.Info($"Click Toast Type={toastArguments.Get("Type")}, Index={toastArguments.GetInt("Index")}");
                 switch (toastArguments.Get("Type"))
                 {
@@ -1202,13 +1196,9 @@ namespace GakujoGUI
             }
         }
 
-        private void NotificationButton_Click(object sender, RoutedEventArgs e)
-        {
-            FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
-        }
-
         private void AutoLoadEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
+            if (!settingsFlag) { return; }
             settings.AutoLoadEnable = (bool)AutoLoadEnableCheckBox.IsChecked!;
             SaveJson();
             if (settings.AutoLoadEnable)
@@ -1225,38 +1215,31 @@ namespace GakujoGUI
 
         private void AutoLoadSpanNumberBox_ValueChanged(NumberBox sender, NumberBoxValueChangedEventArgs args)
         {
+            if (!settingsFlag) { return; }
             settings.AutoLoadSpan = (int)AutoLoadSpanNumberBox.Value;
+            logger.Info($"Set AutoLoadSpan {(int)AutoLoadSpanNumberBox.Value}.");
             SaveJson();
             autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
         }
 
         private void StartUpEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
+            if (!settingsFlag) { return; }
             settings.StartUpEnable = (bool)StartUpEnableCheckBox.IsChecked!;
+            logger.Info($"Set StartUpEnable {(settings.StartUpEnable ? "enable" : "disable")}.");
             SaveJson();
-            SetStartUp();
+            using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
+            if (settings.StartUpEnable) { registryKey.SetValue(assemblyName, Environment.ProcessPath!); }
+            else { registryKey.DeleteValue(assemblyName, false); }
+            registryKey.Close();
         }
 
         private void StartUpMinimizeCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
+            if (!settingsFlag) { return; }
             settings.StartUpMinimize = (bool)StartUpMinimizeCheckBox.IsChecked!;
+            logger.Info($"Set StartUpMinimize {(settings.StartUpMinimize ? "enable" : "disable")}.");
             SaveJson();
-        }
-
-        private void SetStartUp()
-        {
-            using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
-            if (settings.StartUpEnable)
-            {
-                registryKey.SetValue(assemblyName, Environment.ProcessPath!);
-                logger.Info("Set RegistryKey enable.");
-            }
-            else
-            {
-                registryKey.DeleteValue(assemblyName, false);
-                logger.Info("Set RegistryKey disable.");
-            }
-            registryKey.Close();
         }
 
         private void ResetUserAgentButton_Click(object sender, RoutedEventArgs e)
@@ -1306,7 +1289,9 @@ namespace GakujoGUI
         }
         private void UpdateBetaEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
+            if (!settingsFlag) { return; }
             settings.UpdateBetaEnable = (bool)UpdateBetaEnableCheckBox.IsChecked!;
+            logger.Info($"Set UpdateBetaEnable {(settings.UpdateBetaEnable ? "enable" : "disable")}.");
             SaveJson();
         }
 
@@ -1412,10 +1397,9 @@ namespace GakujoGUI
             return true;
         }
 
-        #endregion
-
         private void BackgroundImageOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!settingsFlag) { return; }
             settings.BackgroundImageOpacity = (int)BackgroundImageOpacitySlider.Value;
             RefreshBackgroundImage();
         }
@@ -1432,9 +1416,10 @@ namespace GakujoGUI
 
         private void RefreshBackgroundImage()
         {
-            if (!settingsFlag) { return; }
             BackgroundImagePathLabel.Content = Path.GetFileName(settings.BackgroundImagePath);
             BackgroundImageOpacitySlider.Value = settings.BackgroundImageOpacity;
+            logger.Info($"Set BackgroundImagePath {settings.BackgroundImagePath}.");
+            logger.Info($"Set BackgroundImageOpacity {settings.BackgroundImageOpacity}.");
             SaveJson();
             if (File.Exists(settings.BackgroundImagePath))
             {
@@ -1446,6 +1431,7 @@ namespace GakujoGUI
                 logger.Info("Set Background ImageBrush.");
             }
         }
+        #endregion
     }
 
     public class Settings

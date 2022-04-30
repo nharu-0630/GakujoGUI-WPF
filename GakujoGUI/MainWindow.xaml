@@ -6,7 +6,6 @@
     xmlns:local="clr-namespace:GakujoGUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:md="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
-    xmlns:pw="clr-namespace:WpfPasswordBox"
     xmlns:tb="http://www.hardcodet.net/taskbar"
     xmlns:ui="http://schemas.modernwpf.com/2019"
     xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
@@ -1565,6 +1564,7 @@
                         <Label
                             Name="BackgroundImagePathLabel"
                             Margin="6"
+                            VerticalAlignment="Center"
                             Content="" />
                         <Button
                             Name="OpenBackgroundImageButton"
