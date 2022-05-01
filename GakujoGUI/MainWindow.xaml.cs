@@ -1351,7 +1351,7 @@ namespace GakujoGUI
                 if (forceVersion > version)
                 {
                     version = forceVersion;
-                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
                 }
             }
             if (releases.Where(x => x.prerelease).Any() && settings.UpdateBetaEnable)
@@ -1360,7 +1360,7 @@ namespace GakujoGUI
                 if (latestVersion > version)
                 {
                     version = latestVersion;
-                    downloadUrl = releases.Where(x => x.prerelease).First().assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => x.prerelease).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
                 }
             }
             if (releases.Where(x => !x.prerelease).Any())
@@ -1369,7 +1369,7 @@ namespace GakujoGUI
                 if (releaseVersion > version)
                 {
                     version = releaseVersion;
-                    downloadUrl = releases.Where(x => !x.prerelease).First().assets[0].browser_download_url;
+                    downloadUrl = releases.Where(x => !x.prerelease).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
                 }
             }
             logger.Info($"latestVersion={version}");
