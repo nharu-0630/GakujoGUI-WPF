@@ -58,7 +58,7 @@
       <PackagePath>\</PackagePath>
     </None>
     <None Update="Update.bat">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 
