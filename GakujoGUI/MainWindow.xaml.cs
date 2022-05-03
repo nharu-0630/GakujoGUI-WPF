@@ -1315,18 +1315,18 @@ namespace GakujoGUI
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
                     Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Information); });
-                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat")))
+                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
                     {
-                        Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "Update.bat"));
-                        logger.Info("Start Process update bat file.");
+                        Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"), "/SILENT");
+                        logger.Info("Start Process setup file.");
                         shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
                     }
                     else
                     {
-                        if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
+                        if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
                         {
-                            File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"));
+                            File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"));
                             logger.Info("Delete Download latest version.");
                         }
                     }
@@ -1352,7 +1352,7 @@ namespace GakujoGUI
                 if (forceVersion > version)
                 {
                     version = forceVersion;
-                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
+                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
                 }
             }
             if (releases.Where(x => x.prerelease).Any() && settings.UpdateBetaEnable)
@@ -1361,7 +1361,7 @@ namespace GakujoGUI
                 if (latestVersion > version)
                 {
                     version = latestVersion;
-                    downloadUrl = releases.Where(x => x.prerelease).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
+                    downloadUrl = releases.Where(x => x.prerelease).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
                 }
             }
             if (releases.Where(x => !x.prerelease).Any())
@@ -1370,7 +1370,7 @@ namespace GakujoGUI
                 if (releaseVersion > version)
                 {
                     version = releaseVersion;
-                    downloadUrl = releases.Where(x => !x.prerelease).First().assets.Where(x => x.name == "net6.0-windows10.0.18362.0.zip").First().browser_download_url;
+                    downloadUrl = releases.Where(x => !x.prerelease).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
                 }
             }
             logger.Info($"latestVersion={version}");
@@ -1384,12 +1384,12 @@ namespace GakujoGUI
             httpRequestMessage = new(new("GET"), downloadUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
             logger.Info($"GET {downloadUrl}");
-            using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip"), FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"), FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download latest version.");
-            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "net6.0-windows10.0.18362.0.zip")))
+            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
             {
                 logger.Warn("Return Get latest version by the file is missing.");
                 return false;

@@ -260,7 +260,7 @@ end;
 #endif
 
 #define MyAppName "GakujoGUI"
-#define MyAppVersion "1.3.4.3"
+#define MyAppVersion "1.3.4.4"
 #define MyAppPublisher "xyzyxJP"
 #define MyAppURL "https://xyzyxjp.github.io/GakujoGUI/"
 #define MyAppExeName "GakujoGUI.exe"
@@ -289,6 +289,7 @@ Compression=lzma
 SolidCompression=yes
 VersionInfoVersion={#MyAppVersion}
 WizardStyle=modern
+DisableDirPage=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
