@@ -169,41 +169,49 @@ namespace GakujoGUI
             if (File.Exists(GetJsonPath("Reports" + SchoolYearSemesterCodeSuffix)))
             {
                 Reports = JsonConvert.DeserializeObject<List<Report>>(File.ReadAllText(GetJsonPath("Reports" + SchoolYearSemesterCodeSuffix)))!;
+                if (Reports == null) { Reports = new(); }
                 logger.Info("Load Reports.");
             }
             if (File.Exists(GetJsonPath("Quizzes" + SchoolYearSemesterCodeSuffix)))
             {
                 Quizzes = JsonConvert.DeserializeObject<List<Quiz>>(File.ReadAllText(GetJsonPath("Quizzes" + SchoolYearSemesterCodeSuffix)))!;
+                if (Quizzes == null) { Quizzes = new(); }
                 logger.Info("Load Quizzes.");
             }
             if (File.Exists(GetJsonPath($"ClassContacts" + SchoolYearSemesterCodeSuffix)))
             {
                 ClassContacts = JsonConvert.DeserializeObject<List<ClassContact>>(File.ReadAllText(GetJsonPath("ClassContacts" + SchoolYearSemesterCodeSuffix)))!;
+                if (ClassContacts == null) { ClassContacts = new(); }
                 logger.Info("Load ClassContacts.");
             }
             if (File.Exists(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix)))
             {
                 ClassSharedFiles = JsonConvert.DeserializeObject<List<ClassSharedFile>>(File.ReadAllText(GetJsonPath("ClassSharedFiles" + SchoolYearSemesterCodeSuffix)))!;
+                if (ClassSharedFiles == null) { ClassSharedFiles = new(); }
                 logger.Info("Load ClassSharedFiles.");
             }
-            if (File.Exists(GetJsonPath("lotteryRegistrationEntries")))
+            if (File.Exists(GetJsonPath("LotteryRegistrationEntries")))
             {
-                lotteryRegistrationEntries = JsonConvert.DeserializeObject<List<LotteryRegistrationEntry>>(File.ReadAllText(GetJsonPath("lotteryRegistrationEntries")))!;
-                logger.Info("Load lotteryRegistrationEntries.");
+                LotteryRegistrationEntries = JsonConvert.DeserializeObject<List<LotteryRegistrationEntry>>(File.ReadAllText(GetJsonPath("LotteryRegistrationEntries")))!;
+                if (LotteryRegistrationEntries == null) { LotteryRegistrationEntries = new(); }
+                logger.Info("Load LotteryRegistrationEntries.");
             }
             if (File.Exists(GetJsonPath("GeneralRegistrationEntries")))
             {
                 GeneralRegistrationEntries = JsonConvert.DeserializeObject<List<GeneralRegistrationEntry>>(File.ReadAllText(GetJsonPath("GeneralRegistrationEntries")))!;
+                if (GeneralRegistrationEntries == null) { GeneralRegistrationEntries = new(); }
                 logger.Info("Load GeneralRegistrationEntries.");
             }
             if (File.Exists(GetJsonPath("SchoolGrade")))
             {
                 SchoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))!;
+                if (SchoolGrade == null) { SchoolGrade = new(); }
                 logger.Info("Load SchoolGrade.");
             }
             if (File.Exists(GetJsonPath("ClassTables")))
             {
                 ClassTables = JsonConvert.DeserializeObject<List<ClassTableRow>>(File.ReadAllText(GetJsonPath("ClassTables")))!;
+                if (ClassTables == null) { ClassTables = new(); }
                 logger.Info("Load ClassTables.");
             }
             ApplyReportsClassTables();
