@@ -260,7 +260,7 @@ end;
 #endif
 
 #define MyAppName "GakujoGUI"
-#define MyAppVersion "1.3.4.2"
+#define MyAppVersion "1.3.4.3"
 #define MyAppPublisher "xyzyxJP"
 #define MyAppURL "https://xyzyxjp.github.io/GakujoGUI/"
 #define MyAppExeName "GakujoGUI.exe"
@@ -276,6 +276,7 @@ AppPublisher={#MyAppPublisher}
 AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
+AppCopyright={#MyAppPublisher}
 DefaultDirName={localappdata}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
