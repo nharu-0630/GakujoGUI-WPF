@@ -336,7 +336,7 @@ Source: "bin\Release\net6.0-windows10.0.18362.0\System.Linq.Async.dll"; DestDir:
 Source: "bin\Release\net6.0-windows10.0.18362.0\Todoist.Net.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\Release\net6.0-windows10.0.18362.0\Update.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "bin\Release\net6.0-windows10.0.18362.0\WinRT.Runtime.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "bin\Release\net6.0-windows10.0.18362.0\runtimes\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "bin\Release\net6.0-windows10.0.18362.0\runtimes\*"; DestDir: "{app}\runtimes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
