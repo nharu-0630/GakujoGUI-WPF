@@ -219,6 +219,7 @@ namespace GakujoGUI
             if (File.Exists(GetJsonPath("Account")))
             {
                 Account = JsonConvert.DeserializeObject<Account>(File.ReadAllText(GetJsonPath("Account")))!;
+                if (Account == null) { Account = new(); }
                 logger.Info("Load Account.");
                 return true;
             }

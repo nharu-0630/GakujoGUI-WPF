@@ -61,6 +61,7 @@ namespace GakujoGUI
             if (File.Exists(GetJsonPath("Settings")))
             {
                 settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
+                if (settings == null) { settings = new(); }
                 logger.Info("Load Settings.");
                 settingsFlag = true;
             }
