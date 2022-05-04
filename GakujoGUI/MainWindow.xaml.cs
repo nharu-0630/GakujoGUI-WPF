@@ -39,7 +39,7 @@ namespace GakujoGUI
         private readonly NotifyAPI notifyAPI;
         private readonly Settings settings = new();
         private readonly DispatcherTimer autoLoadTimer = new();
-        private bool settingsFlag = false;
+        private readonly bool settingsFlag = false;
         private bool shutdownFlag = false;
 
         private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
@@ -1483,7 +1483,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 0;
-        public string UserAgent { get; set; } = $"Chrome/101.0.4951.41 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/101.0.4951.54 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
         public string BackgroundImagePath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{Assembly.GetExecutingAssembly().GetName().Name}\background.png");
         public int BackgroundImageOpacity { get; set; } = 30;
