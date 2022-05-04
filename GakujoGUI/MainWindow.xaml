@@ -1044,7 +1044,7 @@
                 </TabItem>
             </TabControl>
         </TabItem>
-        <TabItem Name="GeneralRegistrationstTabItem" Header="一般履修">
+        <TabItem Name="GeneralRegistrationsTabItem" Header="一般履修">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -1542,8 +1542,7 @@
                     <TextBlock Margin="6" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
                     </TextBlock>
-                </StackPanel>
-                <StackPanel Grid.Column="2" Margin="6">
+                    <Separator Margin="6" />
                     <Label Margin="6" Content="Windows設定" />
                     <CheckBox
                         Name="StartUpEnableCheckBox"
@@ -1553,11 +1552,12 @@
                         Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
                     <CheckBox
                         Name="StartUpMinimizeCheckBox"
-                        Margin="6"
+                        Margin="6,0"
                         Checked="StartUpMinimizeCheckBox_CheckStateChanged"
                         Content="最小化した状態で起動する"
                         Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
-                    <Separator Margin="6" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Margin="6">
                     <Label Margin="6" Content="背景画像" />
                     <Label Margin="6" Content="画像パス" />
                     <StackPanel Orientation="Horizontal">
@@ -1582,8 +1582,57 @@
                         Margin="6,0"
                         Maximum="100"
                         Minimum="0"
-                        ValueChanged="BackgroundImageOpacitySlider_ValueChanged"
-                        Value="30" />
+                        ValueChanged="BackgroundImageOpacitySlider_ValueChanged" />
+                    <Separator Margin="6" />
+                    <Label Margin="6" Content="表示タブ" />
+                    <CheckBox
+                        Name="ClassContactsTabVisibilityCheckBox"
+                        Margin="6"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="授業連絡"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="ReportsTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="レポート"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="QuizzesTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="小テスト"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="ClassSharedFilesTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="授業共有ファイル"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="LotteryRegistrationsTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="抽選履修"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="GeneralRegistrationsTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="一般履修"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="ClassResultsTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="成績情報"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    <CheckBox
+                        Name="SyllabusSearchTabVisibilityCheckBox"
+                        Margin="6,0"
+                        Checked="TabVisibilityCheckBox_CheckStateChanged"
+                        Content="シラバス検索"
+                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
                 </StackPanel>
             </Grid>
         </TabItem>

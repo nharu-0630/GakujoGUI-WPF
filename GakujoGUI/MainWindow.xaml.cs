@@ -63,7 +63,6 @@ namespace GakujoGUI
                 settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
                 if (settings == null) { settings = new(); }
                 logger.Info("Load Settings.");
-                settingsFlag = true;
             }
             if (settings.StartUpMinimize)
             {
@@ -85,6 +84,22 @@ namespace GakujoGUI
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
             UpdateBetaEnableCheckBox.IsChecked = settings.UpdateBetaEnable;
+            ClassContactsTabVisibilityCheckBox.IsChecked = settings.ClassContactsTabVisibility;
+            ReportsTabVisibilityCheckBox.IsChecked = settings.ReportsTabVisibility;
+            QuizzesTabVisibilityCheckBox.IsChecked = settings.QuizzesTabVisibility;
+            ClassSharedFilesTabVisibilityCheckBox.IsChecked = settings.ClassSharedFilesTabVisibility;
+            LotteryRegistrationsTabVisibilityCheckBox.IsChecked = settings.LotteryRegistrationsTabVisibility;
+            GeneralRegistrationsTabVisibilityCheckBox.IsChecked = settings.GeneralRegistrationsTabVisibility;
+            ClassResultsTabVisibilityCheckBox.IsChecked = settings.ClassResultsTabVisibility;
+            SyllabusSearchTabVisibilityCheckBox.IsChecked = settings.SyllabusSearchTabVisibility;
+            ClassContactsTabItem.Visibility = settings.ClassContactsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ReportsTabItem.Visibility = settings.ReportsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            QuizzesTabItem.Visibility = settings.QuizzesTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ClassSharedFilesTabItem.Visibility = settings.ClassSharedFilesTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            LotteryRegistrationsTabItem.Visibility = settings.LotteryRegistrationsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            GeneralRegistrationsTabItem.Visibility = settings.GeneralRegistrationsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ClassResultsTabItem.Visibility = settings.ClassResultsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            SyllabusSearchTabItem.Visibility = settings.SyllabusSearchTabVisibility ? Visibility.Visible : Visibility.Collapsed;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
             autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
             autoLoadTimer.Tick += new EventHandler(LoadEvent);
@@ -98,6 +113,7 @@ namespace GakujoGUI
             RefreshLotteryRegistrationsResultDataGrid();
             RefreshGeneralRegistrationsDataGrid();
             RefreshClassResultsDataGrid();
+            settingsFlag = true;
             Task.Run(() =>
             {
                 Login();
@@ -1288,6 +1304,37 @@ namespace GakujoGUI
                 });
             });
         }
+
+        private void TabVisibilityCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            if (!settingsFlag) { return; }
+            settings.ClassContactsTabVisibility = (bool)ClassContactsTabVisibilityCheckBox.IsChecked!;
+            settings.ReportsTabVisibility = (bool)ReportsTabVisibilityCheckBox.IsChecked!;
+            settings.QuizzesTabVisibility = (bool)QuizzesTabVisibilityCheckBox.IsChecked!;
+            settings.ClassSharedFilesTabVisibility = (bool)ClassSharedFilesTabVisibilityCheckBox.IsChecked!;
+            settings.LotteryRegistrationsTabVisibility = (bool)LotteryRegistrationsTabVisibilityCheckBox.IsChecked!;
+            settings.GeneralRegistrationsTabVisibility = (bool)GeneralRegistrationsTabVisibilityCheckBox.IsChecked!;
+            settings.ClassResultsTabVisibility = (bool)ClassResultsTabVisibilityCheckBox.IsChecked!;
+            settings.SyllabusSearchTabVisibility = (bool)SyllabusSearchTabVisibilityCheckBox.IsChecked!;
+            logger.Info($"Set ClassContactsTabVisibility {(settings.ClassContactsTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set ReportsTabVisibility {(settings.ReportsTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set QuizzesTabVisibility {(settings.QuizzesTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set ClassSharedFilesTabVisibility {(settings.ClassSharedFilesTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set LotteryRegistrationsTabVisibility {(settings.LotteryRegistrationsTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set GeneralRegistrationsTabVisibility {(settings.GeneralRegistrationsTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set ClassResultsTabVisibility {(settings.ClassResultsTabVisibility ? "visible" : "hidden")}.");
+            logger.Info($"Set SyllabusSearchTabVisibility {(settings.SyllabusSearchTabVisibility ? "visible" : "hidden")}.");
+            SaveJson();
+            ClassContactsTabItem.Visibility = settings.ClassContactsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ReportsTabItem.Visibility = settings.ReportsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            QuizzesTabItem.Visibility = settings.QuizzesTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ClassSharedFilesTabItem.Visibility = settings.ClassSharedFilesTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            LotteryRegistrationsTabItem.Visibility = settings.LotteryRegistrationsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            GeneralRegistrationsTabItem.Visibility = settings.GeneralRegistrationsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            ClassResultsTabItem.Visibility = settings.ClassResultsTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+            SyllabusSearchTabItem.Visibility = settings.SyllabusSearchTabVisibility ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void UpdateBetaEnableCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
         {
             if (!settingsFlag) { return; }
@@ -1482,6 +1529,7 @@ namespace GakujoGUI
                 logger.Info("Set Background ImageBrush.");
             }
         }
+
         #endregion
     }
 
@@ -1497,6 +1545,14 @@ namespace GakujoGUI
         public bool UpdateBetaEnable { get; set; } = false;
         public string BackgroundImagePath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{Assembly.GetExecutingAssembly().GetName().Name}\background.png");
         public int BackgroundImageOpacity { get; set; } = 30;
+        public bool ClassContactsTabVisibility { get; set; } = true;
+        public bool ReportsTabVisibility { get; set; } = true;
+        public bool QuizzesTabVisibility { get; set; } = true;
+        public bool ClassSharedFilesTabVisibility { get; set; } = true;
+        public bool LotteryRegistrationsTabVisibility { get; set; } = true;
+        public bool GeneralRegistrationsTabVisibility { get; set; } = true;
+        public bool ClassResultsTabVisibility { get; set; } = true;
+        public bool SyllabusSearchTabVisibility { get; set; } = true;
     }
 
 #pragma warning disable IDE1006 // 命名スタイル
