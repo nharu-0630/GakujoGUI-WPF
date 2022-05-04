@@ -42,6 +42,7 @@ namespace GakujoGUI
         private bool settingsFlag = false;
         private bool shutdownFlag = false;
 
+        private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
         private static string GetJsonPath(string value)
         {
             if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)))
@@ -50,13 +51,12 @@ namespace GakujoGUI
             }
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
         }
-
-
-        private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
+        private static readonly string setupFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, $"{assemblyName}_Setup.exe");
 
         public MainWindow()
         {
             InitializeComponent();
+            GetForceVersion();
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
             if (File.Exists(GetJsonPath("Settings")))
             {
@@ -1310,23 +1310,23 @@ namespace GakujoGUI
         {
             Task.Run(() =>
             {
-                if (!GetLatestVersion(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information)); }
+                if (!GetLatestVersions(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information)); }
                 else
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
                     Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Information); });
-                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
+                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(setupFilePath))
                     {
-                        Process.Start(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"), "/SILENT");
+                        Process.Start(setupFilePath, "/SILENT");
                         logger.Info("Start Process setup file.");
                         shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
                     }
                     else
                     {
-                        if (File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
+                        if (File.Exists(setupFilePath))
                         {
-                            File.Delete(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"));
+                            File.Delete(setupFilePath);
                             logger.Info("Delete Download latest version.");
                         }
                     }
@@ -1334,9 +1334,20 @@ namespace GakujoGUI
             });
         }
 
-        private bool GetLatestVersion(out Version version)
+        private static void GetLatestVersion(Release[] releases, ref Version version, ref string url)
         {
-            logger.Info("Start Get latest version.");
+            if (!releases.Any()) { return; }
+            if (!releases.First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").Any()) { return; }
+            if (version < Version.Parse(releases.First().tag_name.TrimStart('v')))
+            {
+                version = Version.Parse(releases.First().tag_name.TrimStart('v'));
+                url = releases.First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
+            }
+        }
+
+        private bool GetLatestVersions(out Version latestVersion)
+        {
+            logger.Info("Start Get latest versions.");
             HttpClient httpClient = new();
             HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
@@ -1344,57 +1355,86 @@ namespace GakujoGUI
             logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
-            version = Assembly.GetExecutingAssembly().GetName().Version!;
+            latestVersion = Assembly.GetExecutingAssembly().GetName().Version!;
             string downloadUrl = "";
-            if (releases.Where(x => x.name.Contains("force")).Any())
-            {
-                Version forceVersion = Version.Parse(releases.Where(x => x.name.Contains("force")).First().tag_name.TrimStart('v'));
-                if (forceVersion > version)
-                {
-                    version = forceVersion;
-                    downloadUrl = releases.Where(x => x.name.Contains("force")).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
-                }
-            }
-            if (releases.Where(x => x.prerelease).Any() && settings.UpdateBetaEnable)
-            {
-                Version latestVersion = Version.Parse(releases.Where(x => x.prerelease).First().tag_name.TrimStart('v'));
-                if (latestVersion > version)
-                {
-                    version = latestVersion;
-                    downloadUrl = releases.Where(x => x.prerelease).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
-                }
-            }
-            if (releases.Where(x => !x.prerelease).Any())
-            {
-                Version releaseVersion = Version.Parse(releases.Where(x => !x.prerelease).First().tag_name.TrimStart('v'));
-                if (releaseVersion > version)
-                {
-                    version = releaseVersion;
-                    downloadUrl = releases.Where(x => !x.prerelease).First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
-                }
-            }
-            logger.Info($"latestVersion={version}");
+            GetLatestVersion(releases.Where(x => x.name.Contains("force")).ToArray(), ref latestVersion, ref downloadUrl);
+            if (settings.UpdateBetaEnable) { GetLatestVersion(releases.Where(x => x.prerelease).ToArray(), ref latestVersion, ref downloadUrl); }
+            GetLatestVersion(releases.Where(x => !x.prerelease).ToArray(), ref latestVersion, ref downloadUrl);
+            logger.Info($"latestVersion={latestVersion}");
             logger.Info($"downloadUrl={downloadUrl}");
-            if (Assembly.GetExecutingAssembly().GetName().Version >= version)
+            if (Assembly.GetExecutingAssembly().GetName().Version >= latestVersion)
             {
-                logger.Info("Return Get latest version by using same or newer version.");
+                logger.Info("Return Get latest versions by using same or newer version.");
                 return false;
             }
             logger.Info("Start Download latest version.");
             httpRequestMessage = new(new("GET"), downloadUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
             logger.Info($"GET {downloadUrl}");
-            using (FileStream fileStream = new(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe"), FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream fileStream = new(setupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download latest version.");
-            if (!File.Exists(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, "GakujoGUI_Setup.exe")))
+            if (!File.Exists(setupFilePath))
             {
-                logger.Warn("Return Get latest version by the file is missing.");
+                logger.Warn("Return Get latest versions by the file is missing.");
                 return false;
             }
-            logger.Info("End Get latest version.");
+            logger.Info("End Get latest versions.");
+            return true;
+        }
+
+        private bool GetForceVersion()
+        {
+            logger.Info("Start Get force version.");
+            HttpClient httpClient = new();
+            HttpRequestMessage httpRequestMessage;
+            try
+            {
+                httpRequestMessage = new(new("GET"), "http://clients3.google.com/generate_204");
+                httpClient.SendAsync(httpRequestMessage).Wait();
+            }
+            catch
+            {
+                logger.Warn("Return Get force version by not network available.");
+                return false;
+            }
+            httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
+            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
+            Version forceVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+            string downloadUrl = "";
+            GetLatestVersion(releases.Where(x => x.name.Contains("force")).ToArray(), ref forceVersion, ref downloadUrl);
+            logger.Info($"forceVersion={forceVersion}");
+            logger.Info($"downloadUrl={downloadUrl}");
+            if (Assembly.GetExecutingAssembly().GetName().Version >= forceVersion)
+            {
+                logger.Info("Return Get force version by using same or newer version.");
+                return false;
+            }
+            logger.Info("Start Download force version.");
+            httpRequestMessage = new(new("GET"), downloadUrl);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
+            logger.Info($"GET {downloadUrl}");
+            using (FileStream fileStream = new(setupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            {
+                httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
+            }
+            logger.Info("End Download force version.");
+            if (!File.Exists(setupFilePath))
+            {
+                logger.Warn("Return Get force version by the file is missing.");
+                return false;
+            }
+            Process.Start(setupFilePath, "/SILENT");
+            logger.Info("Start Process setup file.");
+            shutdownFlag = true;
+            Application.Current.Shutdown();
+            logger.Info("End Get force version.");
             return true;
         }
 
