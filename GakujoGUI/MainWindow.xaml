@@ -1633,12 +1633,18 @@
                         </Label.Content>
                     </Label>
                 </StackPanel>
-                <Button
-                    Name="OpenJsonFolderButton"
-                    Margin="6"
-                    HorizontalAlignment="Center"
-                    Click="OpenJsonFolderButton_Click"
-                    Content="設定フォルダを開く" />
+                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Button
+                        Name="OpenSettingsFolderButton"
+                        Margin="6"
+                        Click="OpenSettingsFolderButton_Click"
+                        Content="設定フォルダを開く" />
+                    <Button
+                        Name="OpenAssemblyFolderButton"
+                        Margin="6"
+                        Click="OpenAssemblyFolderButton_Click"
+                        Content="実行フォルダを開く" />
+                </StackPanel>
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                     <TextBlock Margin="6" HorizontalAlignment="Center">
                         <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>

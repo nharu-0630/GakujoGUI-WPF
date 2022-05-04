@@ -1296,7 +1296,7 @@ namespace GakujoGUI
             SaveJson();
         }
 
-        private void OpenJsonFolderButton_Click(object sender, RoutedEventArgs e)
+        private void OpenSettingsFolderButton_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
             {
@@ -1304,6 +1304,16 @@ namespace GakujoGUI
                 UseShellExecute = true
             });
             logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)}\"");
+        }
+
+        private void OpenAssemblyFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo("explorer.exe")
+            {
+                Arguments = $"\"{Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!}\"",
+                UseShellExecute = true
+            });
+            logger.Info($"Start Process explorer.exe \"{Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!}\"");
         }
 
         private void GetLatestVersionButton_Click(object sender, RoutedEventArgs e)
@@ -1447,7 +1457,7 @@ namespace GakujoGUI
 
         private void OpenBackgroundImageButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new();
+            OpenFileDialog openFileDialog = new() { Filter = "画像 (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif" };
             if (openFileDialog.ShowDialog() == true)
             {
                 settings.BackgroundImagePath = openFileDialog.FileName;
