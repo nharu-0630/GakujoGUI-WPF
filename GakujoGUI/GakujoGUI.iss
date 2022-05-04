@@ -237,9 +237,29 @@ begin
   // https://dotnet.microsoft.com/download/dotnet/6.0
   if not Dependency_IsNetCoreInstalled('Microsoft.WindowsDesktop.App 6.0.4') then begin
     Dependency_Add('dotnet60desktop' + Dependency_ArchSuffix + '.exe',
-      '/lcid ' + IntToStr(GetUILanguage) + ' /passive /norestart',
+      '/lcid ' + IntToStr(GetUILanguage) + ' /passive /install /quiet /norestart',
       '.NET Desktop Runtime 6.0.4' + Dependency_ArchTitle,
       Dependency_String('https://download.visualstudio.microsoft.com/download/pr/05b30243-5cd2-48c3-a9bb-6ac83d7d481b/03a25aecb5cf4ba53c8b9cf5194e3c86/windowsdesktop-runtime-6.0.4-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/f13d7b5c-608f-432b-b7ec-8fe84f4030a1/5e06998f9ce23c620b9d6bac2dae6c1d/windowsdesktop-runtime-6.0.4-win-x64.exe'),
+      '', False, False);
+  end;
+end;
+
+function Dependency_IsWebviewInstalled(): Boolean;
+begin
+  if Dependency_IsX64 then begin
+    Result := RegKeyExists(HKLM, 'SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}') or RegKeyExists(HKCU, 'Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}')
+  end else begin
+    Result := RegKeyExists(HKLM, 'SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}') or RegKeyExists(HKCU, 'Software\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}')
+  end;
+end;
+
+procedure Dependency_AddWebview;
+begin
+  if not Dependency_IsWebviewInstalled() then begin
+    Dependency_Add('MicrosoftEdgeWebView2RuntimeInstaller' + Dependency_ArchSuffix + '.exe',
+      '/silent /install',
+      'WebView2 Runtime' + Dependency_ArchTitle,
+      Dependency_String('https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/beebacad-9157-418a-b81e-2b49ec58a667/MicrosoftEdgeWebView2RuntimeInstallerX86.exe', 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/664448d2-682d-40a1-ace7-e515a4006ae6/MicrosoftEdgeWebView2RuntimeInstallerX64.exe'),
       '', False, False);
   end;
 end;
@@ -258,6 +278,8 @@ end;
 #ifdef UseNetCoreCheck
   #define UseDotNet60Desktop
 #endif
+
+#define UseWebview
 
 #define MyAppName "GakujoGUI"
 #define MyAppVersion "1.3.4.4"
@@ -353,6 +375,9 @@ function InitializeSetup: Boolean;
 begin
 #ifdef UseDotNet60Desktop
   Dependency_AddDotNet60Desktop;
+#endif
+#ifdef UseWebview
+  Dependency_AddWebview;
 #endif
   Result := True;
 end;
