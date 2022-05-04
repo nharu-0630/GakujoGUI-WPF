@@ -11,7 +11,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -53,7 +52,6 @@ namespace GakujoGUI
         private HttpRequestMessage httpRequestMessage = new();
         private HttpResponseMessage httpResponseMessage = new();
 
-        private readonly string cookiesPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\Cookies");
         private readonly string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\Download\");
 
         private readonly string schoolYear = "";
@@ -114,7 +112,6 @@ namespace GakujoGUI
             this.semesterCode = semesterCode;
             this.userAgent = userAgent;
             logger.Info($"Initialize GakujoAPI schoolYear={schoolYear}, semesterCode={semesterCode}, userAgent={userAgent}.");
-            LoadCookies();
             LoadJson();
         }
 
@@ -124,44 +121,6 @@ namespace GakujoGUI
             Account.PassWord = passWord;
             logger.Info($"Set Account.");
             SaveJsons();
-        }
-
-        private void SaveCookies()
-        {
-            using Stream stream = File.Create(cookiesPath);
-            BinaryFormatter binaryFormatter = new();
-#pragma warning disable SYSLIB0011 // 型またはメンバーが旧型式です
-            binaryFormatter.Serialize(stream, cookieContainer);
-#pragma warning restore SYSLIB0011 // 型またはメンバーが旧型式です
-            logger.Info("Save Cookies.");
-        }
-
-        private bool LoadCookies()
-        {
-            if (File.Exists(cookiesPath))
-            {
-                try
-                {
-                    using (Stream stream = File.Open(cookiesPath, FileMode.Open))
-                    {
-                        BinaryFormatter binaryFormatter = new();
-#pragma warning disable SYSLIB0011 // 型またはメンバーが旧型式です
-                        cookieContainer = (CookieContainer)binaryFormatter.Deserialize(stream);
-#pragma warning restore SYSLIB0011 // 型またはメンバーが旧型式です
-                    }
-                    httpClientHandler = new HttpClientHandler
-                    {
-                        AutomaticDecompression = ~DecompressionMethods.None,
-                        CookieContainer = cookieContainer
-                    };
-                    httpClient = new HttpClient(httpClientHandler);
-                    logger.Info("Load Cookies.");
-                }
-                catch (Exception exception) { logger.Error(exception, "Error Load Cookies."); }
-                return CheckConnection();
-            }
-            cookieContainer = new CookieContainer();
-            return false;
         }
 
         public bool LoadJson()
@@ -342,7 +301,6 @@ namespace GakujoGUI
             Account.LoginDateTime = DateTime.Now;
             logger.Info("End Login.");
             SaveJsons();
-            SaveCookies();
             loginStatus = true;
             return true;
         }
@@ -377,7 +335,6 @@ namespace GakujoGUI
                 logger.Info("End Get Reports.");
                 ApplyReportsClassTables();
                 SaveJsons();
-                SaveCookies();
                 return;
             }
             diffReports = new();
@@ -419,7 +376,6 @@ namespace GakujoGUI
             logger.Info("End Get Reports.");
             ApplyReportsClassTables();
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetReport(Report report)
@@ -483,7 +439,6 @@ namespace GakujoGUI
             }
             logger.Info($"End Get Report reportId={report.Id}.");
             SaveJsons();
-            SaveCookies();
         }
 
         private void ApplyReportsClassTables()
@@ -534,7 +489,6 @@ namespace GakujoGUI
                 logger.Info("End Get Quizzes.");
                 ApplyQuizzesClassTables();
                 SaveJsons();
-                SaveCookies();
                 return;
             }
             diffQuizzes = new();
@@ -577,7 +531,6 @@ namespace GakujoGUI
             logger.Info("End Get Quizzes.");
             ApplyQuizzesClassTables();
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetQuiz(Quiz quiz)
@@ -642,7 +595,6 @@ namespace GakujoGUI
             }
             logger.Info($"End Get Quiz quizId={quiz.Id}.");
             SaveJsons();
-            SaveCookies();
         }
 
         private void ApplyQuizzesClassTables()
@@ -694,7 +646,6 @@ namespace GakujoGUI
                 Account.ClassContactDateTime = DateTime.Now;
                 logger.Info("End Get ClassContacts.");
                 SaveJsons();
-                SaveCookies();
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -721,7 +672,6 @@ namespace GakujoGUI
             Account.ClassContactDateTime = DateTime.Now;
             logger.Info("End Get ClassContacts.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetClassContact(int indexCount)
@@ -789,7 +739,6 @@ namespace GakujoGUI
             }
             logger.Info($"End Get ClassContact indexCount={indexCount}.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetClassSharedFiles(out int diffCount, int maxCount = 10)
@@ -823,7 +772,6 @@ namespace GakujoGUI
                 Account.ClassSharedFileDateTime = DateTime.Now;
                 logger.Info("End Get ClassSharedFiles.");
                 SaveJsons();
-                SaveCookies();
                 return;
             }
             int limitCount = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr").Count;
@@ -846,7 +794,6 @@ namespace GakujoGUI
             Account.ClassSharedFileDateTime = DateTime.Now;
             logger.Info("End Get ClassSharedFiles.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetClassSharedFile(int indexCount)
@@ -911,45 +858,6 @@ namespace GakujoGUI
             }
             logger.Info($"End Get ClassSharedFile indexCount={indexCount}.");
             SaveJsons();
-            SaveCookies();
-        }
-
-        private bool CheckConnection()
-        {
-            logger.Info("Start Check connection.");
-            try
-            {
-                httpRequestMessage = new(new("GET"), "http://clients3.google.com/generate_204");
-                httpClient.SendAsync(httpRequestMessage).Wait();
-            }
-            catch
-            {
-                logger.Warn("Return Check connection by not network available.");
-                return false;
-            }
-            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&headTitle=ホーム&menuCode=Z07&nextPath=/home/home/initialize&_screenIdentifier=&_screenInfoDisp=&_scrollTop=0");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
-            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            HtmlDocument htmlDocument = new();
-            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form[1]/div/input") == null)
-            {
-                cookieContainer = new CookieContainer();
-                httpClientHandler = new HttpClientHandler { AutomaticDecompression = ~DecompressionMethods.None, CookieContainer = cookieContainer };
-                httpClient = new HttpClient(httpClientHandler);
-                logger.Warn("Return Check connection by not found token.");
-                return false;
-            }
-            Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form[1]/div/input").Attributes["value"].Value;
-            logger.Info("End Check connection.");
-            SaveJsons();
-            SaveCookies();
-            loginStatus = true;
-            return true;
         }
 
         private bool SetAcademicSystem(out bool lotteryRegistrationEnabled, out bool lotteryRegistrationResultEnabled, out bool generalRegistrationEnabled)
@@ -997,7 +905,6 @@ namespace GakujoGUI
             generalRegistrationEnabled = htmlDocument.DocumentNode.SelectNodes("//a[contains(@onclick,\"mainMenuCode=002&parentMenuCode=001\")]") != null;
             logger.Info("End Set AcademicSystem.");
             SaveJsons();
-            SaveCookies();
             return true;
         }
 
@@ -1051,7 +958,6 @@ namespace GakujoGUI
             logger.Info("End Get LotteryRegistrations.");
             Account.LotteryRegistrationDateTime = DateTime.Now;
             SaveJsons();
-            SaveCookies();
         }
 
         public void SetLotteryRegistrations(List<LotteryRegistrationEntry> lotteryRegistrationEntries, bool notifyMail = false)
@@ -1102,7 +1008,6 @@ namespace GakujoGUI
             }
             logger.Info("End Set LotteryRegistrations.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetLotteryRegistrationsResult()
@@ -1145,7 +1050,6 @@ namespace GakujoGUI
             logger.Info("End Get LotteryRegistrationsResult.");
             Account.LotteryRegistrationResultDateTime = DateTime.Now;
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetGeneralRegistrations()
@@ -1237,7 +1141,6 @@ namespace GakujoGUI
             logger.Info("End Get GeneralRegistrations.");
             Account.GeneralRegistrationDateTime = DateTime.Now;
             SaveJsons();
-            SaveCookies();
         }
 
         private List<GeneralRegistration> GetRegisterableGeneralRegistrations(string youbi, string jigen, out string faculty, out string department, out string course, out string grade)
@@ -1325,7 +1228,6 @@ namespace GakujoGUI
             }
             logger.Info($"Set GeneralRegistration {generalRegistration}");
             SaveJsons();
-            SaveCookies();
             result = 0;
             return true;
         }
@@ -1364,7 +1266,6 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             logger.Info("End Set GeneralRegistrationClear.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void SetGeneralRegistrations(List<GeneralRegistrationEntry> generalRegistrationEntries, bool overwrite = false)
@@ -1403,7 +1304,6 @@ namespace GakujoGUI
             }
             logger.Info("End Set GeneralRegistrations.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetClassResults(out List<ClassResult> diffClassResults)
@@ -1512,7 +1412,6 @@ namespace GakujoGUI
             Account.ClassResultDateTime = DateTime.Now;
             logger.Info("End Get ClassResults.");
             SaveJsons();
-            SaveCookies();
         }
 
         public void GetClassTables()
@@ -1581,7 +1480,6 @@ namespace GakujoGUI
             ApplyReportsClassTables();
             ApplyQuizzesClassTables();
             SaveJsons();
-            SaveCookies();
         }
 
         private ClassTableCell GetClassTableCell(string detailKamokuCode, string detailClassCode)
