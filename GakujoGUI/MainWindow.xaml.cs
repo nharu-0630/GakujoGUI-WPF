@@ -1179,6 +1179,11 @@ namespace GakujoGUI
             catch (Exception exception) { logger.Error(exception, "Error Save Settings."); }
         }
 
+        private void ResetUserAgentHyperlink_Click(object sender, RoutedEventArgs e)
+        {
+            UserAgentTextBox.Text = new Settings().UserAgent;
+        }
+
         private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
         {
             switch (MessageBox.Show($"適用するには{assemblyName}を再起動する必要があります．\n再起動しますか．", assemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
@@ -1257,11 +1262,6 @@ namespace GakujoGUI
             settings.StartUpMinimize = (bool)StartUpMinimizeCheckBox.IsChecked!;
             logger.Info($"Set StartUpMinimize {(settings.StartUpMinimize ? "enable" : "disable")}.");
             SaveJson();
-        }
-
-        private void ResetUserAgentButton_Click(object sender, RoutedEventArgs e)
-        {
-            UserAgentTextBox.Text = new Settings().UserAgent;
         }
 
         private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)

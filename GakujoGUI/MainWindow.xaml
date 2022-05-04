@@ -1404,24 +1404,27 @@
                     <PasswordBox
                         Name="DiscordTokenPasswordBox"
                         Width="Auto"
-                        Margin="6,0" />
+                        Margin="6,0,6,6" />
                     <Separator Margin="6" />
                     <Label Margin="6" Content="学情設定" />
                     <StackPanel Orientation="Horizontal">
-                        <ui:NumberBox
-                            Name="SchoolYearNumberBox"
-                            Margin="6"
-                            Header="取得年度"
-                            Maximum="2050"
-                            Minimum="2020"
-                            SmallChange="1"
-                            SpinButtonPlacementMode="Compact" />
+                        <StackPanel Orientation="Vertical">
+                            <Label Margin="6" Content="取得年度" />
+                            <ui:NumberBox
+                                Name="SchoolYearNumberBox"
+                                Width="Auto"
+                                Margin="6"
+                                Maximum="2050"
+                                Minimum="2020"
+                                SmallChange="1"
+                                SpinButtonPlacementMode="Compact" />
+                        </StackPanel>
                         <StackPanel Orientation="Vertical">
                             <Label Margin="6" Content="取得学期" />
                             <ComboBox
                                 Name="SchoolSemesterComboBox"
                                 Width="Auto"
-                                Margin="6,0">
+                                Margin="6">
                                 <ComboBoxItem Content="前期前半" />
                                 <ComboBoxItem Content="前期後半" />
                                 <ComboBoxItem Content="後期前半" />
@@ -1434,11 +1437,9 @@
                             Margin="6"
                             VerticalAlignment="Center"
                             Content="UserAgent" />
-                        <Button
-                            Name="ResetUserAgentButton"
-                            Margin="6"
-                            Click="ResetUserAgentButton_Click"
-                            Content="リセットする" />
+                        <TextBlock Margin="6">
+                            <Hyperlink Name="ResetUserAgentHyperlink" Click="ResetUserAgentHyperlink_Click">リセット</Hyperlink>
+                        </TextBlock>
                     </StackPanel>
                     <TextBox
                         Name="UserAgentTextBox"
@@ -1546,7 +1547,7 @@
                     <Label Margin="6" Content="Windows設定" />
                     <CheckBox
                         Name="StartUpEnableCheckBox"
-                        Margin="6"
+                        Margin="6,6,6,0"
                         Checked="StartUpEnableCheckBox_CheckStateChanged"
                         Content="GakujoGUIを開く"
                         Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
@@ -1559,7 +1560,6 @@
                 </StackPanel>
                 <StackPanel Grid.Column="2" Margin="6">
                     <Label Margin="6" Content="背景画像" />
-                    <Label Margin="6" Content="画像パス" />
                     <StackPanel Orientation="Horizontal">
                         <Label
                             Name="BackgroundImagePathLabel"
@@ -1587,7 +1587,7 @@
                     <Label Margin="6" Content="表示タブ" />
                     <CheckBox
                         Name="ClassContactsTabVisibilityCheckBox"
-                        Margin="6"
+                        Margin="6,6,0,0"
                         Checked="TabVisibilityCheckBox_CheckStateChanged"
                         Content="授業連絡"
                         Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
