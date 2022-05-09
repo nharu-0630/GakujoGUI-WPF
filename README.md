@@ -26,13 +26,6 @@
 
 [インストール版](https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest/download/GakujoGUI_Setup.exe)
 
-不足したランタイムの自動インストールが行われるため，インストール版を推奨いたします．
-
-[ポータブル版](https://github.com/xyzyxJP/GakujoGUI-WPF/releases/latest/download/net6.0-windows10.0.18362.0.zip)
-
-Zipファイルをダウンロードし，すべて展開を行ったあとに，`GakujoGUI.exe`を実行してください．  
-ランタイムエラーが表示される場合は，[こちら](https://github.com/xyzyxJP/GakujoGUI-WPF#%EF%B8%8F-troubleshooting)を参照してください．
-
 ## ⚙️ Usage
 
 ### ログイン
@@ -246,30 +239,6 @@ Discordを開き，`設定`の`詳細設定`より`開発者モード`を有効�
 ## ⚠️ Troubleshooting
 
 ### v1.2.1.0以前のバージョンからの更新は手動でお願いします．
-
-### ランタイムエラー
-
-<details>
-<summary>解決方法</summary>
-
-<img src="https://user-images.githubusercontent.com/8305330/155836834-c9401ec2-e2c2-4d54-991a-30edfe8c314a.png" width="640">
-
-上記画像のエラーが表示された場合は，実行に必要なランタイムが不足しています．
-
-[https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime](https://dotnet.microsoft.com/ja-jp/download/dotnet/6.0/runtime)  
-上記リンクよりランタイムをインストールしてください．
-
-<img src="https://user-images.githubusercontent.com/8305330/155836978-a9be93bb-2636-47bc-9ac6-b73293c4bb22.png" width="640">
-
-ページ中央にある`デスクトップアプリを実行する`の`X64のダウンロード`をクリックしてください．
-
-<img src="https://user-images.githubusercontent.com/8305330/155836991-0ec624ee-5141-4dcb-9451-7d1d6b9a8385.png" width="640">
-
-インストールをクリックし，下記画像のメッセージが表示されれば完了です．
-
-<img src="https://user-images.githubusercontent.com/8305330/155837022-cde00c30-ee15-4d1c-ac85-11dc61c3f036.png" width="640">
-
-</details>
 
 ### ログインメール
 
