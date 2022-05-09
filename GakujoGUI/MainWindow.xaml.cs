@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -80,6 +81,7 @@ namespace GakujoGUI
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
             StartUpMinimizeCheckBox.IsChecked = settings.StartUpMinimize;
+            AlwaysVisibleTrayIconCheckBox.IsChecked = settings.AlwaysVisibleTrayIcon;
             SchoolYearNumberBox.Value = settings.SchoolYear;
             SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
             UserAgentTextBox.Text = settings.UserAgent;
@@ -128,6 +130,7 @@ namespace GakujoGUI
                 });
             });
         }
+
 
         #region ログイン
 
@@ -1015,7 +1018,7 @@ namespace GakujoGUI
                     Visibility = Visibility.Visible;
                     Activate();
                     ShowInTaskbar = true;
-                    TaskBarIcon.Visibility = Visibility.Collapsed;
+                    if (!settings.AlwaysVisibleTrayIcon) { TaskBarIcon.Visibility = Visibility.Collapsed; }
                     logger.Info("Set visibility to Visible.");
                     SyllabusSearchWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
                     logger.Info($"Navigate SyllabusSearch https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
@@ -1156,7 +1159,7 @@ namespace GakujoGUI
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!shutdownFlag)
+            if (!shutdownFlag && Keyboard.Modifiers != ModifierKeys.Shift)
             {
                 e.Cancel = true;
                 SetVisibility(Visibility.Hidden);
@@ -1261,6 +1264,14 @@ namespace GakujoGUI
             if (!settingsFlag) { return; }
             settings.StartUpMinimize = (bool)StartUpMinimizeCheckBox.IsChecked!;
             logger.Info($"Set StartUpMinimize {(settings.StartUpMinimize ? "enable" : "disable")}.");
+            SaveJson();
+        }
+
+        private void AlwaysVisibleTrayIconCheckBox_CheckStateChanged(object sender, RoutedEventArgs e)
+        {
+            if (!settingsFlag) { return; }
+            settings.AlwaysVisibleTrayIcon = (bool)AlwaysVisibleTrayIconCheckBox.IsChecked!;
+            logger.Info($"Set AlwaysVisibleTrayIcon {(settings.AlwaysVisibleTrayIcon ? "enable" : "disable")}.");
             SaveJson();
         }
 
@@ -1531,6 +1542,7 @@ namespace GakujoGUI
         }
 
         #endregion
+
     }
 
     public class Settings
@@ -1539,6 +1551,7 @@ namespace GakujoGUI
         public int AutoLoadSpan { get; set; } = 20;
         public bool StartUpEnable { get; set; } = false;
         public bool StartUpMinimize { get; set; } = false;
+        public bool AlwaysVisibleTrayIcon { get; set; } = true;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 0;
         public string UserAgent { get; set; } = $"Chrome/101.0.4951.54 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
