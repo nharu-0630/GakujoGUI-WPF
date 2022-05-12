@@ -1573,6 +1573,15 @@
                             VerticalAlignment="Center"
                             Content="" />
                         <Button
+                            Name="ClearBackgroundImageButton"
+                            Margin="6"
+                            Click="ClearBackgroundImageButton_Click">
+                            <ui:FontIcon
+                                FontFamily="Segoe MDL2 Assets"
+                                Glyph="&#xEDAE;"
+                                Visibility="Visible" />
+                        </Button>
+                        <Button
                             Name="OpenBackgroundImageButton"
                             Margin="6"
                             Click="OpenBackgroundImageButton_Click">

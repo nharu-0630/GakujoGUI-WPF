@@ -1513,6 +1513,12 @@ namespace GakujoGUI
             RefreshBackgroundImage();
         }
 
+        private void ClearBackgroundImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            settings.BackgroundImagePath = string.Empty;
+            RefreshBackgroundImage();
+        }
+
         private void OpenBackgroundImageButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new() { Filter = "画像 (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif" };
@@ -1538,6 +1544,11 @@ namespace GakujoGUI
                 Background = imageBrush;
                 Background.Opacity = 1.0 * settings.BackgroundImageOpacity / 100;
                 logger.Info("Set Background ImageBrush.");
+            }
+            else
+            {
+                Background = null;
+                logger.Info("Set Background Null.");
             }
         }
 

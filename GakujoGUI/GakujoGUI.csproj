@@ -12,9 +12,9 @@
     <PackageIcon>GakujoGUI.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/xyzyxJP/GakujoGUI-WPF</RepositoryUrl>
-    <AssemblyVersion>1.3.4.8</AssemblyVersion>
-    <FileVersion>1.3.4.8</FileVersion>
-    <InformationalVersion>1.3.4.8</InformationalVersion>
+    <AssemblyVersion>1.3.4.9</AssemblyVersion>
+    <FileVersion>1.3.4.9</FileVersion>
+    <InformationalVersion>1.3.4.9</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
