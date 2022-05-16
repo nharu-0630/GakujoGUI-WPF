@@ -1110,6 +1110,27 @@ namespace GakujoGUI
 
         #region タスクバー
 
+        private void ApplyAssignmentsTaskBarIcon()
+        {
+            bool badgeVisible = gakujoAPI.Reports.Any(x => x.Unsubmitted) || gakujoAPI.Quizzes.Any(x => x.Unsubmitted);
+            bool importantEnable = gakujoAPI.Reports.Any(x => x.Unsubmitted && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoAPI.Quizzes.Any(x => x.Unsubmitted && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
+            if (badgeVisible)
+            {
+                if (importantEnable)
+                {
+
+                }
+                else
+                {
+
+                }
+            }
+            else
+            {
+                TaskBarIcon.IconSource = new BitmapImage(new Uri("Resources/GakujoGUI.ico", UriKind.Relative));
+            }
+        }
+
         private void OpenMenuItem_Click(object sender, RoutedEventArgs e)
         {
             SetVisibility(Visibility.Visible);
@@ -1553,7 +1574,6 @@ namespace GakujoGUI
         }
 
         #endregion
-
     }
 
     public class Settings
