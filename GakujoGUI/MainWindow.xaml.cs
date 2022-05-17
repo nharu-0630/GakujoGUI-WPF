@@ -1529,7 +1529,6 @@ namespace GakujoGUI
 
         private void BackgroundImageOpacitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!settingsFlag) { return; }
             settings.BackgroundImageOpacity = (int)BackgroundImageOpacitySlider.Value;
             RefreshBackgroundImage();
         }
@@ -1552,24 +1551,27 @@ namespace GakujoGUI
 
         private void RefreshBackgroundImage()
         {
+            if (!settingsFlag) { return; }
             BackgroundImagePathLabel.Content = Path.GetFileName(settings.BackgroundImagePath);
             BackgroundImageOpacitySlider.Value = settings.BackgroundImageOpacity;
             logger.Info($"Set BackgroundImagePath {settings.BackgroundImagePath}.");
             logger.Info($"Set BackgroundImageOpacity {settings.BackgroundImageOpacity}.");
             SaveJson();
-            if (File.Exists(settings.BackgroundImagePath))
+            if (File.Exists(settings.BackgroundImagePath) && !string.IsNullOrEmpty(settings.BackgroundImagePath))
             {
-                ImageBrush imageBrush = new();
-                imageBrush.ImageSource = new BitmapImage(new Uri(settings.BackgroundImagePath));
-                imageBrush.Stretch = Stretch.UniformToFill;
+                ImageBrush imageBrush = new()
+                {
+                    ImageSource = new BitmapImage(new Uri(settings.BackgroundImagePath)),
+                    Stretch = Stretch.UniformToFill
+                };
                 Background = imageBrush;
                 Background.Opacity = 1.0 * settings.BackgroundImageOpacity / 100;
                 logger.Info("Set Background ImageBrush.");
             }
             else
             {
-                Background = null;
-                logger.Info("Set Background Null.");
+                Background = FindResource(SystemColors.WindowColorKey) as Brush;
+                logger.Info("Set Background Default.");
             }
         }
 
@@ -1587,7 +1589,7 @@ namespace GakujoGUI
         public int SemesterCode { get; set; } = 0;
         public string UserAgent { get; set; } = $"Chrome/101.0.4951.54 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
-        public string BackgroundImagePath { get; set; } = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{Assembly.GetExecutingAssembly().GetName().Name}\background.png");
+        public string BackgroundImagePath { get; set; } = "";
         public int BackgroundImageOpacity { get; set; } = 30;
         public bool ClassContactsTabVisibility { get; set; } = true;
         public bool ReportsTabVisibility { get; set; } = true;

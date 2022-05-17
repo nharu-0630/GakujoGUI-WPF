@@ -81,10 +81,12 @@ namespace HyperlinkTextBlock
                             }
                         }
                     }
-                    Hyperlink hyperlink = new();
-                    hyperlink.TextDecorations = null;
-                    hyperlink.Foreground = textBlock.Foreground;
-                    hyperlink.NavigateUri = new Uri(tag);
+                    Hyperlink hyperlink = new()
+                    {
+                        TextDecorations = null,
+                        Foreground = textBlock.Foreground,
+                        NavigateUri = new Uri(tag)
+                    };
                     hyperlink.RequestNavigate += new RequestNavigateEventHandler(RequestNavigate);
                     hyperlink.MouseEnter += new MouseEventHandler(MouseEnter);
                     hyperlink.MouseLeave += new MouseEventHandler(MouseLeave);
