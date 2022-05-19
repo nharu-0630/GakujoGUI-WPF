@@ -114,6 +114,7 @@
                     CanUserResizeRows="False"
                     CanUserSortColumns="False"
                     DragOver="ClassTablesDataGrid_DragOver"
+                    LoadingRow="ClassTablesDataGrid_LoadingRow"
                     MinRowHeight="96"
                     PreviewDrop="ClassTablesDataGrid_PreviewDrop"
                     ScrollViewer.CanContentScroll="False"

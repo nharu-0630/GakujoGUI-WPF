@@ -893,6 +893,11 @@ namespace GakujoGUI
             logger.Info("Refresh ClassTablesDataGrid.");
         }
 
+        private void ClassTablesDataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
 #pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
         private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
 #pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
