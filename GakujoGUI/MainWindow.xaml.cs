@@ -105,7 +105,6 @@ namespace GakujoGUI
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
             autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
             autoLoadTimer.Tick += new EventHandler(LoadEvent);
-            RefreshBackgroundImage();
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
             RefreshReportsDataGrid();
@@ -116,6 +115,7 @@ namespace GakujoGUI
             RefreshGeneralRegistrationsDataGrid();
             RefreshClassResultsDataGrid();
             settingsFlag = true;
+            RefreshBackgroundImage();
             Task.Run(() =>
             {
                 Login();
