@@ -1575,7 +1575,7 @@ namespace GakujoGUI
             }
             else
             {
-                Background = FindResource(SystemColors.WindowColorKey) as Brush;
+                ClearValue(BackgroundProperty);
                 logger.Info("Set Background Default.");
             }
         }
