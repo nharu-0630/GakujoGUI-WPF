@@ -1591,7 +1591,7 @@ namespace GakujoGUI
         public bool StartUpMinimize { get; set; } = false;
         public bool AlwaysVisibleTrayIcon { get; set; } = true;
         public int SchoolYear { get; set; } = 2022;
-        public int SemesterCode { get; set; } = 0;
+        public int SemesterCode { get; set; } = 1;
         public string UserAgent { get; set; } = $"Chrome/101.0.4951.54 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
         public string BackgroundImagePath { get; set; } = "";
