@@ -6,7 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Text;
+using System.Web;
 using Todoist.Net;
 using Todoist.Net.Models;
 
@@ -217,6 +221,24 @@ namespace GakujoGUI
         }
 
         #endregion
+
+        #region LINE
+
+        public void NotifyLINE(string content)
+        {
+            logger.Info("Notify LINE.");
+            using HttpClient httpClient = new();
+            HttpRequestMessage httpRequestMessage = new(new("POST"), "https://notify-api.line.me/api/notify");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Authorization", $"Bearer {Tokens.LineToken}");
+            httpRequestMessage.Content = new StringContent($"message={HttpUtility.UrlEncode(content, Encoding.UTF8)}");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://notify-api.line.me/api/notify");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            httpClient.Dispose();
+        }
+
+        #endregion
     }
 
     public class Tokens
@@ -224,5 +246,6 @@ namespace GakujoGUI
         public string TodoistToken { get; set; } = "";
         public ulong DiscordChannel { get; set; }
         public string DiscordToken { get; set; } = "";
+        public string LineToken { get; set; } = "";
     }
 }
