@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using Todoist.Net;
@@ -64,9 +65,9 @@ namespace GakujoGUI
 
         public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
-            Tokens.TodoistToken = todoistToken;
+            Tokens.TodoistToken = GakujoAPI.Protect(todoistToken, null!, DataProtectionScope.CurrentUser);
             Tokens.DiscordChannel = ulong.Parse(discordChannel);
-            Tokens.DiscordToken = discordToken;
+            Tokens.DiscordToken = GakujoAPI.Protect(discordToken, null!, DataProtectionScope.CurrentUser);
             try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented)); }
             catch (Exception exception) { logger.Error(exception, "Error Save Tokens."); }
         }
@@ -75,7 +76,7 @@ namespace GakujoGUI
         {
             try
             {
-                todoistClient = new(Tokens.TodoistToken);
+                todoistClient = new(GakujoAPI.Unprotect(Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser));
                 TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 logger.Info("Login Todoist.");
             }
@@ -83,7 +84,7 @@ namespace GakujoGUI
             try
             {
                 discordSocketClient = new();
-                discordSocketClient.LoginAsync(TokenType.Bot, Tokens.DiscordToken).Wait();
+                discordSocketClient.LoginAsync(TokenType.Bot, GakujoAPI.Unprotect(Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser)).Wait();
                 discordSocketClient.StartAsync().Wait();
                 logger.Info("Login Discord.");
             }

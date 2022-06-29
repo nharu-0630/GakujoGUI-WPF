@@ -13,6 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -72,11 +73,11 @@ namespace GakujoGUI
             }
             notifyAPI = new();
             gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-            UserIdTextBox.Text = gakujoAPI.Account.UserId;
-            PassWordPasswordBox.Password = gakujoAPI.Account.PassWord;
-            TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
+            UserIdTextBox.Text = GakujoAPI.Unprotect(gakujoAPI.Account.UserId, null!, DataProtectionScope.CurrentUser);
+            PassWordPasswordBox.Password = GakujoAPI.Unprotect(gakujoAPI.Account.PassWord, null!, DataProtectionScope.CurrentUser);
+            TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
             DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
+            DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -1237,9 +1238,9 @@ namespace GakujoGUI
                     SaveJson();
                     break;
                 case MessageBoxResult.Cancel:
-                    TodoistTokenPasswordBox.Password = notifyAPI.Tokens.TodoistToken;
+                    TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
                     DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-                    DiscordTokenPasswordBox.Password = notifyAPI.Tokens.DiscordToken;
+                    DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
                     SchoolYearNumberBox.Value = settings.SchoolYear;
                     SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
                     UserAgentTextBox.Text = settings.UserAgent;
@@ -1586,13 +1587,13 @@ namespace GakujoGUI
     public class Settings
     {
         public bool AutoLoadEnable { get; set; } = true;
-        public int AutoLoadSpan { get; set; } = 20;
+        public int AutoLoadSpan { get; set; } = 30;
         public bool StartUpEnable { get; set; } = false;
         public bool StartUpMinimize { get; set; } = false;
         public bool AlwaysVisibleTrayIcon { get; set; } = true;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 1;
-        public string UserAgent { get; set; } = $"Chrome/101.0.4951.54 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/103.0.5060.66 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; } = false;
         public string BackgroundImagePath { get; set; } = "";
         public int BackgroundImageOpacity { get; set; } = 30;

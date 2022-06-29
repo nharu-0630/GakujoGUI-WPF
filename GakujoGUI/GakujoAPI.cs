@@ -11,6 +11,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -73,6 +75,14 @@ namespace GakujoGUI
 
         private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
+        public static string Protect(string stringToEncrypt, string optionalEntropy, DataProtectionScope scope) => Convert.ToBase64String(ProtectedData.Protect(Encoding.UTF8.GetBytes(stringToEncrypt), optionalEntropy != null ? Encoding.UTF8.GetBytes(optionalEntropy) : null, scope));
+
+        public static string Unprotect(string encryptedString, string optionalEntropy, DataProtectionScope scope)
+        {
+            try { return Encoding.UTF8.GetString(ProtectedData.Unprotect(Convert.FromBase64String(encryptedString), optionalEntropy != null ? Encoding.UTF8.GetBytes(optionalEntropy) : null, scope)); }
+            catch { return encryptedString; }
+        }
+
         private static string ReplaceColon(string value) => value.Replace("&#x3a;", ":").Trim();
 
         private static string ReplaceSpace(string value) => Regex.Replace(Regex.Replace(value.Replace("\r", "").Replace("\n", "").Replace("\t", "").Replace("&nbsp;", "").Trim(), @"\s+", " "), @" +", " ").Trim();
@@ -117,8 +127,8 @@ namespace GakujoGUI
 
         public void SetAccount(string userId, string passWord)
         {
-            Account.UserId = userId;
-            Account.PassWord = passWord;
+            Account.UserId = Protect(userId, null!, DataProtectionScope.CurrentUser);
+            Account.PassWord = Protect(passWord, null!, DataProtectionScope.CurrentUser);
             logger.Info($"Set Account.");
             SaveJsons();
         }
@@ -256,12 +266,12 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             httpRequestMessage = new(new("POST"), "https://idp.shizuoka.ac.jp/idp/profile/SAML2/Redirect/SSO?execution=e1s1");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"j_username={Account.UserId}&j_password={Account.PassWord}&_eventId_proceed=");
+            httpRequestMessage.Content = new StringContent($"j_username={Unprotect(Account.UserId, null!, DataProtectionScope.CurrentUser)}&j_password={Unprotect(Account.PassWord, null!, DataProtectionScope.CurrentUser)}&_eventId_proceed=");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://idp.shizuoka.ac.jp/idp/profile/SAML2/Redirect/SSO?execution=e1s1");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (HttpUtility.HtmlDecode(httpResponseMessage.Content.ReadAsStringAsync().Result).Contains("ユーザ名またはパスワードが正しくありません。"))
+            if (HttpUtility.HtmlDecode(httpResponseMessage.Content.ReadAsStringAsync().Result).Contains("ユーザ名またはパスワードが正しくありません。") || HttpUtility.HtmlDecode(httpResponseMessage.Content.ReadAsStringAsync().Result).Contains("このサービスを利用するには，静大IDとパスワードが必要です。"))
             {
                 logger.Warn("Return Login by wrong username or password.");
                 return false;

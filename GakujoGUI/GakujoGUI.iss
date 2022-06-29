@@ -282,7 +282,7 @@ end;
 #define UseWebview
 
 #define MyAppName "GakujoGUI"
-#define MyAppVersion "1.3.5.2"
+#define MyAppVersion "1.3.6.0"
 #define MyAppPublisher "xyzyxJP"
 #define MyAppURL "https://xyzyxjp.github.io/GakujoGUI/"
 #define MyAppExeName "GakujoGUI.exe"
@@ -290,7 +290,7 @@ end;
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{F58EE923-10BC-4E90-A927-588BBF57535E}
+AppId={{F58EE923-10BC-4E90-A927-588BBF57535E}}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 AppVerName={#MyAppName} {#MyAppVersion}
@@ -373,6 +373,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [Code]
 function InitializeSetup: Boolean;
 begin
+DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Account.json'));
+DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Tokens.json'));
 #ifdef UseDotNet60Desktop
   Dependency_AddDotNet60Desktop;
 #endif
