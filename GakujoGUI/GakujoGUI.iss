@@ -373,8 +373,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [Code]
 function InitializeSetup: Boolean;
 begin
-DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Account.json'));
-DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Tokens.json'));
+(* DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Account.json')); *)
+(* DeleteFile(ExpandConstant('{userappdata}\{#MyAppName}\Tokens.json')); *)
 #ifdef UseDotNet60Desktop
   Dependency_AddDotNet60Desktop;
 #endif
