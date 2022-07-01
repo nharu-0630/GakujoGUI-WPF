@@ -89,7 +89,14 @@ namespace GakujoGUI
 
         private static string ReplaceJSArgs(string value, int index) => value.Split(',')[index].Replace("'", "").Replace("(", "").Replace(")", "").Replace(";", "").Trim();
 
-        private static DateTime ReplaceTimeSpan(string value, int index) => DateTime.Parse(value.Trim().Split('～')[index]);
+        private static DateTime ReplaceTimeSpan(string value, int index) => ReplaceDateTime(value.Trim().Split('～')[index]);
+
+        private static DateTime ReplaceDateTime(string value)
+        {
+            string replacedValue = Regex.Replace(value, @"24:(\d\d)$", "00:$1");
+            DateTime replacedDateTime = DateTime.Parse(replacedValue);
+            return value == replacedValue ? replacedDateTime : replacedDateTime.AddDays(1);
+        }
 
         private static string ReplaceHtmlNewLine(string value) => Regex.Replace(HttpUtility.HtmlDecode(value).Replace("<br>", " \r\n").Trim('\r').Trim('\n'), "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline).Trim();
 
