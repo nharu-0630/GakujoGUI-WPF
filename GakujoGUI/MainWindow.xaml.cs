@@ -397,7 +397,7 @@ namespace GakujoGUI
         private void RefreshReportsDataGrid()
         {
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.Reports }.View;
-            collectionView.Filter = new Predicate<object>(item => (((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text)) && (!(bool)FilterReportsCheckBox.IsChecked! || ((Report)item).Unsubmitted));
+            collectionView.Filter = new Predicate<object>(item => (((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text)) && (!(bool)FilterReportsCheckBox.IsChecked! || ((Report)item).IsSubmittable));
             ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
             ReportsDataGrid.ItemsSource = collectionView;
             ReportsDataGrid.Items.Refresh();
@@ -489,7 +489,7 @@ namespace GakujoGUI
         private void RefreshQuizzesDataGrid()
         {
             ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.Quizzes }.View;
-            collectionView.Filter = new Predicate<object>(item => (((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text)) && (!(bool)FilterQuizzesCheckBox.IsChecked! || ((Quiz)item).Unsubmitted));
+            collectionView.Filter = new Predicate<object>(item => (((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text)) && (!(bool)FilterQuizzesCheckBox.IsChecked! || ((Quiz)item).IsSubmittable));
             QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
             QuizzesDataGrid.ItemsSource = collectionView;
             QuizzesDataGrid.Items.Refresh();
@@ -1118,8 +1118,8 @@ namespace GakujoGUI
 
         private void ApplyAssignmentsTaskBarIcon()
         {
-            bool badgeVisible = gakujoAPI.Reports.Any(x => x.Unsubmitted) || gakujoAPI.Quizzes.Any(x => x.Unsubmitted);
-            bool importantEnable = gakujoAPI.Reports.Any(x => x.Unsubmitted && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoAPI.Quizzes.Any(x => x.Unsubmitted && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
+            bool badgeVisible = gakujoAPI.Reports.Any(x => x.IsSubmittable) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable);
+            bool importantEnable = gakujoAPI.Reports.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
             if (badgeVisible)
             {
                 if (importantEnable)
@@ -1163,10 +1163,10 @@ namespace GakujoGUI
 
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
-            ReportMenuItem.Header = $"レポート ({gakujoAPI.Reports.Count(x => x.Unsubmitted)})";
-            ReportMenuItem.Visibility = gakujoAPI.Reports.Any(x => x.Unsubmitted) ? Visibility.Visible : Visibility.Collapsed;
-            QuizMenuItem.Header = $"小テスト ({gakujoAPI.Quizzes.Count(x => x.Unsubmitted)})";
-            QuizMenuItem.Visibility = gakujoAPI.Quizzes.Any(x => x.Unsubmitted) ? Visibility.Visible : Visibility.Collapsed;
+            ReportMenuItem.Header = $"レポート ({gakujoAPI.Reports.Count(x => x.IsSubmittable)})";
+            ReportMenuItem.Visibility = gakujoAPI.Reports.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
+            QuizMenuItem.Header = $"小テスト ({gakujoAPI.Quizzes.Count(x => x.IsSubmittable)})";
+            QuizMenuItem.Visibility = gakujoAPI.Quizzes.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
             logger.Info("Opened ContextMenu.");
         }
 

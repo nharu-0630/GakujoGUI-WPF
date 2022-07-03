@@ -17,6 +17,12 @@
     ui:WindowHelper.UseModernWindowStyle="True"
     Closing="Window_Closing"
     mc:Ignorable="d">
+    <Window.Resources>
+        <local:BoolToContentConverter
+            x:Key="SubmissionStatusConverter"
+            FalseContent="未提出"
+            TrueContent="提出済" />
+    </Window.Resources>
     <Window.DataContext>
         <tb:TaskbarIcon
             Name="TaskBarIcon"
@@ -447,6 +453,12 @@
                                 Header="状態"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding IsSubmit, Converter={StaticResource SubmissionStatusConverter}}"
+                                Header="提出状況"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
                                 Width="120"
                                 MinWidth="120"
                                 Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
@@ -611,8 +623,8 @@
                                 Header="状態"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
+                                Width="100"
+                                MinWidth="100"
                                 Binding="{Binding SubmissionStatus}"
                                 Header="提出状況"
                                 IsReadOnly="True" />

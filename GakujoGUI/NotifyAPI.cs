@@ -128,8 +128,8 @@ namespace GakujoGUI
         {
             logger.Info("Start Set Todoist task reports.");
             if (TodoistResources == null) { logger.Warn("Return Set Todoist task reports by resource is null."); return; }
-            reports.Where(x => x.Unsubmitted).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
-            reports.Where(x => !x.Unsubmitted).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
+            reports.Where(x => x.IsSubmittable).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
+            reports.Where(x => !x.IsSubmittable).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
             logger.Info("End Set Todoist task reports.");
         }
 
@@ -137,8 +137,8 @@ namespace GakujoGUI
         {
             logger.Info("Start Set Todoist task quizzes.");
             if (TodoistResources == null) { logger.Warn("Return Set Todoist task quizzes by resource is null."); return; }
-            quizzes.Where(x => x.Unsubmitted).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
-            quizzes.Where(x => !x.Unsubmitted).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
+            quizzes.Where(x => x.IsSubmittable).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
+            quizzes.Where(x => !x.IsSubmittable).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
             logger.Info("End Set Todoist task quizzes.");
         }
 

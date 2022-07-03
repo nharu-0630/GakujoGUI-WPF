@@ -468,7 +468,7 @@ namespace GakujoGUI
             {
                 foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.ReportCount = 0; }
             }
-            foreach (Report report in Reports.Where(x => x.Unsubmitted))
+            foreach (Report report in Reports.Where(x => x.IsSubmittable))
             {
                 foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
@@ -626,7 +626,7 @@ namespace GakujoGUI
             {
                 foreach (ClassTableCell classTableCell in classTableRow) { classTableCell.QuizCount = 0; }
             }
-            foreach (Quiz quiz in Quizzes.Where(x => x.Unsubmitted))
+            foreach (Quiz quiz in Quizzes.Where(x => x.IsSubmittable))
             {
                 foreach (ClassTableRow classTableRow in ClassTables.Where(x => x != null))
                 {
@@ -1641,8 +1641,8 @@ namespace GakujoGUI
         public string[] Files { get; set; } = Array.Empty<string>();
         public string Message { get; set; } = "";
         public bool IsAcquired => EvaluationMethod != "";
-
-        public bool Unsubmitted => Status == "受付中" && SubmittedDateTime == new DateTime();
+        public bool IsSubmit => SubmittedDateTime != new DateTime();
+        public bool IsSubmittable => Status == "受付中" && SubmittedDateTime == new DateTime();
 
         public override string ToString()
         {
@@ -1687,8 +1687,8 @@ namespace GakujoGUI
         public string[] Files { get; set; } = Array.Empty<string>();
         public string Message { get; set; } = "";
         public bool IsAcquired => EvaluationMethod != "";
-
-        public bool Unsubmitted => Status == "受付中" && SubmissionStatus == "未提出";
+        public bool IsSubmit => SubmissionStatus != "未提出";
+        public bool IsSubmittable => Status == "受付中" && SubmissionStatus == "未提出";
 
         public override string ToString()
         {
