@@ -105,7 +105,7 @@ namespace GakujoGUI
             {
                 if (!ExistsTodoistTask(content, dateTime))
                 {
-                    logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime + TimeSpan.FromHours(9)) }).Result}.");
+                    logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime.ToLocalTime()) }).Result}.");
                 }
             }
             catch (Exception exception) { logger.Error(exception, "Error Add Todoist task."); }
@@ -227,16 +227,20 @@ namespace GakujoGUI
 
         public void NotifyLINE(string content)
         {
-            logger.Info("Notify LINE.");
-            using HttpClient httpClient = new();
-            HttpRequestMessage httpRequestMessage = new(new("POST"), "https://notify-api.line.me/api/notify");
-            httpRequestMessage.Headers.TryAddWithoutValidation("Authorization", $"Bearer {Tokens.LineToken}");
-            httpRequestMessage.Content = new StringContent($"message={HttpUtility.UrlEncode(content, Encoding.UTF8)}");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            logger.Info("POST https://notify-api.line.me/api/notify");
-            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            httpClient.Dispose();
+            try
+            {
+                logger.Info("Notify LINE.");
+                using HttpClient httpClient = new();
+                HttpRequestMessage httpRequestMessage = new(new("POST"), "https://notify-api.line.me/api/notify");
+                httpRequestMessage.Headers.TryAddWithoutValidation("Authorization", $"Bearer {Tokens.LineToken}");
+                httpRequestMessage.Content = new StringContent($"message={HttpUtility.UrlEncode(content, Encoding.UTF8)}");
+                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+                HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                logger.Info("POST https://notify-api.line.me/api/notify");
+                logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                httpClient.Dispose();
+            }
+            catch (Exception exception) { logger.Error(exception, "Error Notify LINE."); }
         }
 
         #endregion
