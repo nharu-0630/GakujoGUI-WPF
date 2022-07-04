@@ -22,6 +22,10 @@
             x:Key="SubmissionStatusConverter"
             FalseContent="未提出"
             TrueContent="提出済" />
+        <local:BoolToContentConverter
+            x:Key="WinningConverter"
+            FalseContent="落選"
+            TrueContent="当選" />
     </Window.Resources>
     <Window.DataContext>
         <tb:TaskbarIcon
@@ -1048,7 +1052,7 @@
                                 <DataGridTextColumn
                                     Width="80"
                                     MinWidth="80"
-                                    Binding="{Binding IsWinning}"
+                                    Binding="{Binding IsWinning, Converter={StaticResource WinningConverter}}"
                                     Header="抽選結果"
                                     IsReadOnly="True" />
                             </DataGrid.Columns>
