@@ -322,6 +322,43 @@ namespace GakujoGUI
             return true;
         }
 
+        public void GetNews()
+        {
+            logger.Info("Start Get News.");
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent("EXCLUDE_SET=");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Account.ApacheToken = GetApacheToken(htmlDocument);
+            int limitCount = htmlDocument.GetElementbyId("tbl_news").SelectSingleNode("tbody").SelectNodes("tr").Count;
+            logger.Info($"Found {limitCount} news.");
+            for (int i = 0; i < limitCount; i++)
+            {
+                HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("tbl_news").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
+                string type = htmlNodes[0].InnerText;
+                DateTime dateTime = DateTime.Parse(htmlNodes[1].InnerText);
+                string title = type == "学内連絡" ? htmlNodes[2].InnerText : Regex.Replace(htmlNodes[2].InnerText, @"\[.*] ", "");
+                switch (htmlNodes[0].InnerText)
+                {
+                    case "レポート":
+                        break;
+                    case "授業連絡":
+                        break;
+                    case "小テスト":
+                        break;
+                    case "授業共有ファイル":
+                        break;
+                }
+            }
+            logger.Info("End Get News.");
+            SaveJsons();
+        }
+
         public void GetReports(out List<Report> diffReports)
         {
             logger.Info("Start Get Reports.");
@@ -359,24 +396,25 @@ namespace GakujoGUI
             logger.Info($"Found {limitCount} reports.");
             for (int i = 0; i < limitCount; i++)
             {
+                HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
                 Report report = new()
                 {
-                    Subjects = ReplaceSpace(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText),
-                    Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim(),
-                    Id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1),
-                    SchoolYear = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 3),
-                    SubjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4),
-                    ClassCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5),
-                    Status = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim(),
-                    StartDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 0),
-                    EndDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 1)
+                    Subjects = ReplaceSpace(htmlNodes[0].InnerText),
+                    Title = htmlNodes[1].SelectSingleNode("a").InnerText.Trim(),
+                    Id = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 1),
+                    SchoolYear = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 3),
+                    SubjectCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 4),
+                    ClassCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 5),
+                    Status = htmlNodes[2].InnerText.Trim(),
+                    StartDateTime = ReplaceTimeSpan(htmlNodes[3].InnerText, 0),
+                    EndDateTime = ReplaceTimeSpan(htmlNodes[3].InnerText, 1)
                 };
-                if (htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim() != "")
+                if (htmlNodes[4].InnerText.Trim() != "")
                 {
-                    report.SubmittedDateTime = DateTime.Parse(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim());
+                    report.SubmittedDateTime = DateTime.Parse(htmlNodes[4].InnerText.Trim());
                 }
-                report.ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim();
-                report.Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim();
+                report.ImplementationFormat = htmlNodes[5].InnerText.Trim();
+                report.Operation = htmlNodes[6].InnerText.Trim();
                 if (!Reports.Contains(report)) { diffReports.Add(report); }
                 else
                 {
@@ -428,15 +466,16 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
-            report.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText;
-            report.Description = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerHtml);
-            report.Message = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerHtml);
-            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a") != null)
+            HtmlNodeCollection htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr");
+            report.EvaluationMethod = htmlNodes[2].SelectSingleNode("td").InnerText;
+            report.Description = ReplaceHtmlNewLine(htmlNodes[3].SelectSingleNode("td").InnerHtml);
+            report.Message = ReplaceHtmlNewLine(htmlNodes[5].SelectSingleNode("td").InnerHtml);
+            if (htmlNodes[4].SelectSingleNode("td").SelectNodes("a") != null)
             {
-                report.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a").Count; i++)
+                report.Files = new string[htmlNodes[4].SelectSingleNode("td").SelectNodes("a").Count];
+                for (int i = 0; i < htmlNodes[4].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").SelectNodes("a")[i];
+                    HtmlNode htmlNode = htmlNodes[4].SelectSingleNode("td").SelectNodes("a")[i];
                     string selectedKey = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 0).Replace("fileDownload", "");
                     string prefix = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classsupport/fileDownload/temporaryFileDownload?EXCLUDE_SET=");
@@ -515,24 +554,25 @@ namespace GakujoGUI
             logger.Info($"Found {limitCount} quizzes.");
             for (int i = 0; i < limitCount; i++)
             {
-                string id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
-                string subjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4); ;
-                string classCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5); ;
+                HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
+                string id = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                string subjectCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 4); ;
+                string classCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 5); ;
 
                 Quiz quiz = new()
                 {
-                    Subjects = ReplaceSpace(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[0].InnerText),
-                    Title = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").InnerText.Trim(),
-                    Id = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 1),
-                    SchoolYear = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 3),
-                    SubjectCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 4),
-                    ClassCode = ReplaceJSArgs(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].SelectSingleNode("a").Attributes["onclick"].Value, 5),
-                    Status = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim(),
-                    StartDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 0),
-                    EndDateTime = ReplaceTimeSpan(htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText, 1),
-                    SubmissionStatus = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText.Trim(),
-                    ImplementationFormat = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim(),
-                    Operation = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim()
+                    Subjects = ReplaceSpace(htmlNodes[0].InnerText),
+                    Title = htmlNodes[1].SelectSingleNode("a").InnerText.Trim(),
+                    Id = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 1),
+                    SchoolYear = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 3),
+                    SubjectCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 4),
+                    ClassCode = ReplaceJSArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 5),
+                    Status = htmlNodes[2].InnerText.Trim(),
+                    StartDateTime = ReplaceTimeSpan(htmlNodes[3].InnerText, 0),
+                    EndDateTime = ReplaceTimeSpan(htmlNodes[3].InnerText, 1),
+                    SubmissionStatus = htmlNodes[4].InnerText.Trim(),
+                    ImplementationFormat = htmlNodes[5].InnerText.Trim(),
+                    Operation = htmlNodes[6].InnerText.Trim()
                 };
                 if (!Quizzes.Contains(quiz)) { diffQuizzes.Add(quiz); }
                 else
@@ -585,16 +625,17 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
-            quiz.QuestionsCount = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText.Replace("問", "").Trim());
-            quiz.EvaluationMethod = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td").InnerText;
-            quiz.Description = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerHtml);
-            quiz.Message = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerHtml);
-            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a") != null)
+            HtmlNodeCollection htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr");
+            quiz.QuestionsCount = int.Parse(htmlNodes[2].SelectSingleNode("td").InnerText.Replace("問", "").Trim());
+            quiz.EvaluationMethod = htmlNodes[3].SelectSingleNode("td").InnerText;
+            quiz.Description = ReplaceHtmlNewLine(htmlNodes[4].SelectSingleNode("td").InnerHtml);
+            quiz.Message = ReplaceHtmlNewLine(htmlNodes[6].SelectSingleNode("td").InnerHtml);
+            if (htmlNodes[5].SelectSingleNode("td").SelectNodes("a") != null)
             {
-                quiz.Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a").Count; i++)
+                quiz.Files = new string[htmlNodes[5].SelectSingleNode("td").SelectNodes("a").Count];
+                for (int i = 0; i < htmlNodes[5].SelectSingleNode("td").SelectNodes("a").Count; i++)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form/div[3]/div/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").SelectNodes("a")[i];
+                    HtmlNode htmlNode = htmlNodes[5].SelectSingleNode("td").SelectNodes("a")[i];
                     string selectedKey = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 0).Replace("fileDownload", "");
                     string prefix = ReplaceJSArgs(htmlNode.Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classsupport/fileDownload/temporaryFileDownload?EXCLUDE_SET=");
@@ -673,17 +714,18 @@ namespace GakujoGUI
             logger.Info($"Found {limitCount} ClassContacts.");
             for (int i = 0; i < limitCount; i++)
             {
+                HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
                 ClassContact classContact = new()
                 {
-                    Subjects = ReplaceSpace(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText),
-                    TeacherName = htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].InnerText.Trim(),
-                    Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].SelectSingleNode("a").InnerText).Trim()
+                    Subjects = ReplaceSpace(htmlNodes[1].InnerText),
+                    TeacherName = htmlNodes[2].InnerText.Trim(),
+                    Title = HttpUtility.HtmlDecode(htmlNodes[3].SelectSingleNode("a").InnerText).Trim()
                 };
-                if (htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim() != "")
+                if (htmlNodes[5].InnerText.Trim() != "")
                 {
-                    classContact.TargetDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[5].InnerText.Trim());
+                    classContact.TargetDateTime = DateTime.Parse(htmlNodes[5].InnerText.Trim());
                 }
-                classContact.ContactDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_A01_01").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[6].InnerText.Trim());
+                classContact.ContactDateTime = DateTime.Parse(htmlNodes[6].InnerText.Trim());
                 if (classContact.Equals(lastClassContact)) { logger.Info("Break by equals last ClassContact."); break; }
                 diffClassContacts.Add(classContact);
             }
@@ -729,18 +771,19 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
-            ClassContacts[indexCount].ContactType = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[0].SelectSingleNode("td").InnerText;
-            ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[4].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].ReferenceURL = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[5].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].Severity = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[6].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].WebReplyRequest = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[8].SelectSingleNode("td").InnerText;
-            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div") != null)
+            HtmlNodeCollection htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr");
+            ClassContacts[indexCount].ContactType = htmlNodes[0].SelectSingleNode("td").InnerText;
+            ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlNodes[4].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].ReferenceURL = ReplaceSpace(htmlNodes[5].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].Severity = ReplaceSpace(htmlNodes[6].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].WebReplyRequest = htmlNodes[8].SelectSingleNode("td").InnerText;
+            if (htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div") != null)
             {
-                ClassContacts[indexCount].Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
+                ClassContacts[indexCount].Files = new string[htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div").Count];
+                for (int i = 0; i < htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr")[3].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div")[i];
                     string prefix = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("fileDownLoad", "");
                     string no = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
@@ -801,12 +844,13 @@ namespace GakujoGUI
             logger.Info($"Found {limitCount} ClassSharedFiles.");
             for (int i = 0; i < limitCount; i++)
             {
+                HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
                 ClassSharedFile classSharedFile = new()
                 {
-                    Subjects = ReplaceSpace(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[1].InnerText),
-                    Title = HttpUtility.HtmlDecode(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[2].SelectSingleNode("a").InnerText).Trim(),
-                    Size = htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[3].InnerText,
-                    UpdateDateTime = DateTime.Parse(htmlDocument.GetElementbyId("tbl_classFile").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td")[4].InnerText)
+                    Subjects = ReplaceSpace(htmlNodes[1].InnerText),
+                    Title = HttpUtility.HtmlDecode(htmlNodes[2].SelectSingleNode("a").InnerText).Trim(),
+                    Size = htmlNodes[3].InnerText,
+                    UpdateDateTime = DateTime.Parse(htmlNodes[4].InnerText)
                 };
                 if (classSharedFile.Equals(lastClassSharedFile)) { logger.Info("Break by equals last ClassSharedFile."); break; }
                 diffClassSharedFiles.Add(classSharedFile);
@@ -851,14 +895,15 @@ namespace GakujoGUI
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
-            ClassSharedFiles[indexCount].Description = HttpUtility.HtmlDecode(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[2].SelectSingleNode("td").InnerText);
-            ClassSharedFiles[indexCount].PublicPeriod = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[3].SelectSingleNode("td").InnerText);
-            if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div") != null)
+            HtmlNodeCollection htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr");
+            ClassSharedFiles[indexCount].Description = HttpUtility.HtmlDecode(htmlNodes[2].SelectSingleNode("td").InnerText);
+            ClassSharedFiles[indexCount].PublicPeriod = ReplaceSpace(htmlNodes[3].SelectSingleNode("td").InnerText);
+            if (htmlNodes[1].SelectSingleNode("td/div") != null)
             {
-                ClassSharedFiles[indexCount].Files = new string[htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count];
-                for (int i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
+                ClassSharedFiles[indexCount].Files = new string[htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div").Count];
+                for (int i = 0; i < htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    HtmlNode htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr")[1].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    HtmlNode htmlNode = htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div")[i];
                     string prefix = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("fileDownLoad", "");
                     string no = ReplaceJSArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
