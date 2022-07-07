@@ -1568,10 +1568,10 @@ namespace GakujoGUI
                 ImageBrush imageBrush = new()
                 {
                     ImageSource = new BitmapImage(new Uri(settings.BackgroundImagePath)),
-                    Stretch = Stretch.UniformToFill
+                    Stretch = Stretch.UniformToFill,
+                    Opacity = 1.0 * settings.BackgroundImageOpacity / 100,
                 };
-                Background = imageBrush;
-                Background.Opacity = 1.0 * settings.BackgroundImageOpacity / 100;
+                Grid.Background = imageBrush;
                 logger.Info("Set Background ImageBrush.");
             }
             else

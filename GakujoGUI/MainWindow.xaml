@@ -60,1428 +60,1493 @@
             </tb:TaskbarIcon.ContextMenu>
         </tb:TaskbarIcon>
     </Window.DataContext>
-    <TabControl SelectionChanged="TabControl_SelectionChanged">
-        <TabItem
-            Name="LoginTabItem"
-            Header="ログイン"
-            IsSelected="True">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="180"
-                        MinWidth="180"
-                        MaxWidth="180" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Vertical">
-                    <TextBox
-                        Name="UserIdTextBox"
-                        Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="静大ID" />
-                    <PasswordBox
-                        Name="PassWordPasswordBox"
-                        Width="Auto"
-                        Margin="6"
-                        ui:ControlHelper.PlaceholderText="パスワード" />
-                    <Button
-                        Name="LoginButton"
-                        Margin="6"
-                        Click="LoginButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoginButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72A;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoginButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="LoginDateTimeLabel"
-                        Margin="6"
-                        Content="最終ログイン" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Column="1"
-                    Width="5"
-                    HorizontalAlignment="Stretch" />
-                <DataGrid
-                    Name="ClassTablesDataGrid"
-                    Grid.Column="2"
-                    Margin="6"
-                    AllowDrop="True"
-                    AreRowDetailsFrozen="True"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserResizeColumns="False"
-                    CanUserResizeRows="False"
-                    CanUserSortColumns="False"
-                    DragOver="ClassTablesDataGrid_DragOver"
-                    LoadingRow="ClassTablesDataGrid_LoadingRow"
-                    MinRowHeight="96"
-                    PreviewDrop="ClassTablesDataGrid_PreviewDrop"
-                    ScrollViewer.CanContentScroll="False"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionMode="Single"
-                    SelectionUnit="Cell"
-                    Visibility="Visible">
-                    <DataGrid.Columns>
-                        <DataGridTemplateColumn
-                            Width="*"
-                            MinWidth="130"
-                            Header="月曜日"
-                            IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <local:ClassTableCellControl
-                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
-                                        DataContext="{Binding Monday}"
-                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
-                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
-                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn
-                            Width="*"
-                            MinWidth="130"
-                            Header="火曜日"
-                            IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <local:ClassTableCellControl
-                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
-                                        DataContext="{Binding Tuesday}"
-                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
-                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
-                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn
-                            Width="*"
-                            MinWidth="130"
-                            Header="水曜日"
-                            IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <local:ClassTableCellControl
-                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
-                                        DataContext="{Binding Wednesday}"
-                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
-                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
-                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn
-                            Width="*"
-                            MinWidth="130"
-                            Header="木曜日"
-                            IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <local:ClassTableCellControl
-                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
-                                        DataContext="{Binding Thursday}"
-                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
-                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
-                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                        <DataGridTemplateColumn
-                            Width="*"
-                            MinWidth="130"
-                            Header="金曜日"
-                            IsReadOnly="True">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <local:ClassTableCellControl
-                                        ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
-                                        DataContext="{Binding Friday}"
-                                        QuizButtonClick="ClassTableCellControl_QuizButtonClick"
-                                        ReportButtonClick="ClassTableCellControl_ReportButtonClick"
-                                        SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
-                                        VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </TabItem>
-        <TabItem
-            Name="SyllabusClassTablesTabItem"
-            Header="シラバス時間割"
-            Visibility="Collapsed">
-            <md:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
-                <md:MarkdownViewer.Resources>
-                    <ResourceDictionary>
-                        <ResourceDictionary.MergedDictionaries>
-                            <ResourceDictionary Source="Resources/generic.xaml" />
-                        </ResourceDictionary.MergedDictionaries>
-                    </ResourceDictionary>
-                </md:MarkdownViewer.Resources>
-            </md:MarkdownViewer>
-        </TabItem>
-        <TabItem Name="ClassContactsTabItem" Header="授業連絡">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <ui:AutoSuggestBox
-                        Name="ClassContactsSearchAutoSuggestBox"
-                        MinWidth="300"
-                        Margin="6"
-                        QueryIcon="Find"
-                        QuerySubmitted="ClassContactsSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="SearchAutoSuggestBox_TextChanged" />
-                    <Button
-                        Name="LoadClassContactsButton"
-                        Margin="6"
-                        Click="LoadClassContactsButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadClassContactsButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadClassContactsButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="ClassContactsDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <Grid Grid.Row="2">
+    <Grid Name="Grid">
+        <TabControl SelectionChanged="TabControl_SelectionChanged">
+            <TabItem
+                Name="LoginTabItem"
+                Header="ログイン"
+                IsSelected="True">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MinWidth="100" />
+                        <ColumnDefinition
+                            Width="180"
+                            MinWidth="180"
+                            MaxWidth="180" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" MinWidth="100" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <DataGrid
-                        Name="ClassContactsDataGrid"
-                        Grid.Column="0"
-                        Margin="6"
-                        AreRowDetailsFrozen="True"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="False"
-                        CanUserResizeRows="False"
-                        CanUserSortColumns="False"
-                        RowHeight="32"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="ClassContactsDataGrid_SelectionChanged"
-                        SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Subjects}"
-                                Header="授業科目"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="280"
-                                MinWidth="280"
-                                Binding="{Binding Title}"
-                                Header="タイトル"
-                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GridSplitter
-                        Grid.Column="1"
-                        Width="5"
-                        HorizontalAlignment="Stretch" />
-                    <ScrollViewer
-                        Grid.Column="2"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DockPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label
-                                    Name="ClassContactContactDateTimeLabel"
-                                    Margin="12"
-                                    HorizontalAlignment="Right"
-                                    Content="連絡日時" />
-                                <TextBox
-                                    Name="ClassContactContentTextBox"
-                                    Text="内容"
-                                    Visibility="Collapsed" />
-                                <TextBlock
-                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                    Margin="12"
-                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
-                                    Text="{Binding Text, ElementName=ClassContactContentTextBox}"
-                                    TextWrapping="Wrap" />
-                                <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal">
-                                    <ComboBox
-                                        Name="ClassContactFilesComboBox"
-                                        MaxWidth="360"
-                                        Margin="12" />
-                                    <Button
-                                        Name="OpenClassContactFileButton"
-                                        Margin="6,12"
-                                        Click="OpenClassContactFileButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                    </Button>
-                                    <Button
-                                        Name="OpenClassContactFolderButton"
-                                        Margin="6,12"
-                                        Click="OpenClassContactFolderButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                    </Button>
-                                </StackPanel>
-                            </StackPanel>
-                        </DockPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="ReportsTabItem" Header="レポート">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <ui:AutoSuggestBox
-                        Name="ReportsSearchAutoSuggestBox"
-                        MinWidth="300"
-                        Margin="6"
-                        QueryIcon="Find"
-                        QuerySubmitted="ReportsSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="SearchAutoSuggestBox_TextChanged" />
-                    <Button
-                        Name="LoadReportsButton"
-                        Margin="6"
-                        Click="LoadReportsButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadReportsButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadReportsButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="ReportsDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                    <CheckBox
-                        Name="FilterReportsCheckBox"
-                        Margin="6"
-                        Checked="FilterReportsCheckBox_CheckStateChanged"
-                        Content="未提出のみ"
-                        Unchecked="FilterReportsCheckBox_CheckStateChanged" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" MinHeight="100" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" MinHeight="100" />
-                    </Grid.RowDefinitions>
-                    <DataGrid
-                        Name="ReportsDataGrid"
-                        Grid.Row="0"
-                        Margin="6"
-                        AreRowDetailsFrozen="True"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="False"
-                        CanUserResizeRows="False"
-                        CanUserSortColumns="False"
-                        RowHeight="32"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="ReportsDataGrid_SelectionChanged"
-                        SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Subjects}"
-                                Header="授業科目"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="280"
-                                MinWidth="280"
-                                Binding="{Binding Title}"
-                                Header="タイトル"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Status}"
-                                Header="状態"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding IsSubmit, Converter={StaticResource SubmissionStatusConverter}}"
-                                Header="提出状況"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="提出期間"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="提出期間"
-                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GridSplitter
-                        Grid.Row="1"
-                        Height="5"
-                        HorizontalAlignment="Stretch" />
-                    <ScrollViewer
-                        Grid.Row="2"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DockPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label
-                                    Name="ReportStartEndDateTimeLabel"
-                                    Margin="12"
-                                    HorizontalAlignment="Right"
-                                    Content="提出期間" />
-                                <TextBox
-                                    Name="ReportDescriptionTextBox"
-                                    Text="説明"
-                                    Visibility="Collapsed" />
-                                <TextBlock
-                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                    Margin="12"
-                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportDescriptionTextBox}"
-                                    Text="{Binding Text, ElementName=ReportDescriptionTextBox}"
-                                    TextWrapping="Wrap" />
-                                <Separator Margin="6" />
-                                <TextBox
-                                    Name="ReportMessageTextBox"
-                                    Text="伝達事項"
-                                    Visibility="Collapsed" />
-                                <TextBlock
-                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                    Margin="12,6"
-                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
-                                    Text="{Binding Text, ElementName=ReportMessageTextBox}"
-                                    TextWrapping="Wrap" />
-                                <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal">
-                                    <ComboBox
-                                        Name="ReportFilesComboBox"
-                                        MaxWidth="360"
-                                        Margin="12" />
-                                    <Button
-                                        Name="OpenReportFileButton"
-                                        Margin="6"
-                                        Click="OpenReportFileButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                    </Button>
-                                    <Button
-                                        Name="OpenReportFolderButton"
-                                        Margin="6"
-                                        Click="OpenReportFolderButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                    </Button>
-                                </StackPanel>
-                            </StackPanel>
-                        </DockPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="QuizzesTabItem" Header="小テスト">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <ui:AutoSuggestBox
-                        Name="QuizzesSearchAutoSuggestBox"
-                        MinWidth="300"
-                        Margin="6"
-                        QueryIcon="Find"
-                        QuerySubmitted="QuizzesSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="SearchAutoSuggestBox_TextChanged" />
-                    <Button
-                        Name="LoadQuizzesButton"
-                        Margin="6"
-                        Click="LoadQuizzesButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadQuizzesButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadQuizzesButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="QuizzesDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                    <CheckBox
-                        Name="FilterQuizzesCheckBox"
-                        Margin="6"
-                        Checked="FilterQuizzesCheckBox_CheckStateChanged"
-                        Content="未提出のみ"
-                        Unchecked="FilterQuizzesCheckBox_CheckStateChanged" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <Grid Grid.Row="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*" MinHeight="100" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" MinHeight="100" />
-                    </Grid.RowDefinitions>
-                    <DataGrid
-                        Name="QuizzesDataGrid"
-                        Grid.Row="0"
-                        Margin="6"
-                        AreRowDetailsFrozen="True"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="False"
-                        CanUserResizeRows="False"
-                        CanUserSortColumns="False"
-                        RowHeight="32"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="QuizzesDataGrid_SelectionChanged"
-                        SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Subjects}"
-                                Header="授業科目"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="280"
-                                MinWidth="280"
-                                Binding="{Binding Title}"
-                                Header="タイトル"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Status}"
-                                Header="状態"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding SubmissionStatus}"
-                                Header="提出状況"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="提出期間"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="120"
-                                MinWidth="120"
-                                Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
-                                Header="提出期間"
-                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GridSplitter
-                        Grid.Row="1"
-                        Height="5"
-                        HorizontalAlignment="Stretch" />
-                    <ScrollViewer
-                        Grid.Row="2"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DockPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label
-                                    Name="QuizStartEndDateTimeLabel"
-                                    Margin="12"
-                                    HorizontalAlignment="Right"
-                                    Content="提出期間" />
-                                <TextBox
-                                    Name="QuizDescriptionTextBox"
-                                    Text="説明"
-                                    Visibility="Collapsed" />
-                                <TextBlock
-                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                    Margin="12"
-                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
-                                    Text="{Binding Text, ElementName=QuizDescriptionTextBox}"
-                                    TextWrapping="Wrap" />
-                                <StackPanel Name="QuizFilesStackPanel" Orientation="Horizontal">
-                                    <ComboBox
-                                        Name="QuizFilesComboBox"
-                                        MaxWidth="360"
-                                        Margin="12" />
-                                    <Button
-                                        Name="OpenQuizFileButton"
-                                        Margin="6"
-                                        Click="OpenQuizFileButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                    </Button>
-                                    <Button
-                                        Name="OpenQuizFolderButton"
-                                        Margin="6"
-                                        Click="OpenQuizFolderButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                    </Button>
-                                </StackPanel>
-                            </StackPanel>
-                        </DockPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <ui:AutoSuggestBox
-                        Name="ClassSharedFilesSearchAutoSuggestBox"
-                        MinWidth="300"
-                        Margin="6"
-                        QueryIcon="Find"
-                        QuerySubmitted="ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted"
-                        SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
-                        TextChanged="SearchAutoSuggestBox_TextChanged" />
-                    <Button
-                        Name="LoadClassSharedFilesButton"
-                        Margin="6"
-                        Click="LoadClassSharedFilesButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadClassSharedFilesButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadClassSharedFilesButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="ClassSharedFilesDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" MinWidth="100" />
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="*" MinWidth="100" />
-                    </Grid.ColumnDefinitions>
-                    <DataGrid
-                        Name="ClassSharedFilesDataGrid"
-                        Grid.Column="0"
-                        Margin="6"
-                        AreRowDetailsFrozen="True"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserReorderColumns="False"
-                        CanUserResizeRows="False"
-                        CanUserSortColumns="False"
-                        RowHeight="32"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto"
-                        SelectionChanged="ClassSharedFilesDataGrid_SelectionChanged"
-                        SelectionMode="Single">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn
-                                Width="100"
-                                MinWidth="100"
-                                Binding="{Binding Subjects}"
-                                Header="授業科目"
-                                IsReadOnly="True" />
-                            <DataGridTextColumn
-                                Width="280"
-                                MinWidth="280"
-                                Binding="{Binding Title}"
-                                Header="タイトル"
-                                IsReadOnly="True" />
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <GridSplitter
-                        Grid.Column="1"
-                        Width="5"
-                        HorizontalAlignment="Stretch" />
-                    <ScrollViewer
-                        Grid.Column="2"
-                        ScrollViewer.CanContentScroll="True"
-                        ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <DockPanel>
-                            <StackPanel Orientation="Vertical">
-                                <Label
-                                    Name="ClassSharedFileUpdateDateTimeLabel"
-                                    Margin="12"
-                                    HorizontalAlignment="Right"
-                                    Content="更新日時" />
-                                <TextBox
-                                    Name="ClassSharedFileDescriptionTextBox"
-                                    Text="ファイル説明"
-                                    Visibility="Collapsed" />
-                                <TextBlock
-                                    xmlns:link="clr-namespace:HyperlinkTextBlock"
-                                    Margin="12"
-                                    link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
-                                    Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
-                                    TextWrapping="Wrap" />
-                                <StackPanel Orientation="Horizontal">
-                                    <ComboBox Name="ClassSharedFileFilesComboBox" Margin="12" />
-                                    <Button
-                                        Name="OpenClassSharedFileButton"
-                                        Margin="6,12"
-                                        Click="OpenClassSharedFileButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                    </Button>
-                                    <Button
-                                        Name="OpenClassSharedFolderButton"
-                                        Margin="6,12"
-                                        Click="OpenClassSharedFolderButton_Click">
-                                        <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                    </Button>
-                                </StackPanel>
-                            </StackPanel>
-                        </DockPanel>
-                    </ScrollViewer>
-                </Grid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="LotteryRegistrationsTabItem" Header="抽選履修">
-            <TabControl>
-                <TabItem Header="登録">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal">
-                            <Button
-                                Name="LoadLotteryRegistrationsButton"
-                                Margin="6"
-                                Click="LoadLotteryRegistrationsButton_Click">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon
-                                        Name="LoadLotteryRegistrationsButtonFontIcon"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        Glyph="&#xE72C;"
-                                        Visibility="Visible" />
-                                    <ui:ProgressRing
-                                        Name="LoadLotteryRegistrationsButtonProgressRing"
-                                        IsActive="True"
-                                        Visibility="Collapsed" />
-                                </StackPanel>
-                            </Button>
-                            <Label
-                                Name="LotteryRegistrationsDateTimeLabel"
-                                Margin="6"
-                                VerticalAlignment="Center"
-                                Content="最終更新" />
-                            <CheckBox
-                                Name="FilterLotteryRegistrationsCheckBox"
-                                Margin="6"
-                                Checked="FilterLotteryRegistrationsCheckBox_CheckStateChanged"
-                                Content="履修可能のみ"
-                                Unchecked="FilterLotteryRegistrationsCheckBox_CheckStateChanged" />
-                        </StackPanel>
-                        <GridSplitter
-                            Grid.Row="1"
-                            Width="5"
-                            VerticalAlignment="Stretch" />
-                        <DataGrid
-                            Name="LotteryRegistrationsDataGrid"
-                            Grid.Row="2"
+                    <StackPanel Grid.Column="0" Orientation="Vertical">
+                        <TextBox
+                            Name="UserIdTextBox"
+                            Width="Auto"
                             Margin="6"
-                            AreRowDetailsFrozen="True"
-                            AutoGenerateColumns="False"
-                            CanUserAddRows="False"
-                            CanUserDeleteRows="False"
-                            CanUserReorderColumns="False"
-                            CanUserResizeRows="False"
-                            CanUserSortColumns="False"
-                            RowHeight="32"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            SelectionMode="Single">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding WeekdayPeriod}"
-                                    Header="曜日時限"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="160"
-                                    MinWidth="160"
-                                    Binding="{Binding SubjectsName}"
-                                    Header="科目名"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="100"
-                                    MinWidth="100"
-                                    Binding="{Binding ClassName}"
-                                    Header="クラス名"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding SubjectsSection}"
-                                    Header="科目区分"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding SelectionSection}"
-                                    Header="必修選択区分"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding Credit}"
-                                    Header="単位"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding ChoiceNumberValue}"
-                                    Header="志望"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding AttendingCapacity}"
-                                    Header="受講定員"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding FirstApplicantNumber}"
-                                    Header="第1志望"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding SecondApplicantNumber}"
-                                    Header="第2志望"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding ThirdApplicantNumber}"
-                                    Header="第3志望"
-                                    IsReadOnly="True" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
-                </TabItem>
-                <TabItem Header="登録結果">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <StackPanel Grid.Row="0" Orientation="Horizontal">
-                            <Button
-                                Name="LoadLotteryRegistrationsResultButton"
-                                Margin="6"
-                                Click="LoadLotteryRegistrationsResultButton_Click">
-                                <StackPanel Orientation="Horizontal">
-                                    <ui:FontIcon
-                                        Name="LoadLotteryRegistrationsResultButtonFontIcon"
-                                        FontFamily="Segoe MDL2 Assets"
-                                        Glyph="&#xE72C;"
-                                        Visibility="Visible" />
-                                    <ui:ProgressRing
-                                        Name="LoadLotteryRegistrationsResultButtonProgressRing"
-                                        IsActive="True"
-                                        Visibility="Collapsed" />
-                                </StackPanel>
-                            </Button>
-                            <Label
-                                Name="LotteryRegistrationsResultDateTimeLabel"
-                                Margin="6"
-                                VerticalAlignment="Center"
-                                Content="最終更新" />
-                            <CheckBox
-                                Name="FilterLotteryRegistrationsResultCheckBox"
-                                Margin="6"
-                                Checked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged"
-                                Content="当選のみ"
-                                Unchecked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged" />
-                        </StackPanel>
-                        <GridSplitter
-                            Grid.Row="1"
-                            Width="5"
-                            VerticalAlignment="Stretch" />
-                        <DataGrid
-                            Name="LotteryRegistrationsResultDataGrid"
-                            Grid.Row="2"
+                            ui:ControlHelper.PlaceholderText="静大ID" />
+                        <PasswordBox
+                            Name="PassWordPasswordBox"
+                            Width="Auto"
                             Margin="6"
-                            AreRowDetailsFrozen="True"
-                            AutoGenerateColumns="False"
-                            CanUserAddRows="False"
-                            CanUserDeleteRows="False"
-                            CanUserReorderColumns="False"
-                            CanUserResizeRows="False"
-                            CanUserSortColumns="False"
-                            RowHeight="32"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto"
-                            SelectionMode="Single">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding WeekdayPeriod}"
-                                    Header="曜日時限"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="160"
-                                    MinWidth="160"
-                                    Binding="{Binding SubjectsName}"
-                                    Header="科目名"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="100"
-                                    MinWidth="100"
-                                    Binding="{Binding ClassName}"
-                                    Header="クラス名"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding SubjectsSection}"
-                                    Header="科目区分"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding SelectionSection}"
-                                    Header="必修選択区分"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding Credit}"
-                                    Header="単位"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="60"
-                                    MinWidth="60"
-                                    Binding="{Binding ChoiceNumberValue}"
-                                    Header="志望"
-                                    IsReadOnly="True" />
-                                <DataGridTextColumn
-                                    Width="80"
-                                    MinWidth="80"
-                                    Binding="{Binding IsWinning, Converter={StaticResource WinningConverter}}"
-                                    Header="抽選結果"
-                                    IsReadOnly="True" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Grid>
-                </TabItem>
-            </TabControl>
-        </TabItem>
-        <TabItem Name="GeneralRegistrationsTabItem" Header="一般履修">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button
-                        Name="LoadGeneralRegistrationsButton"
-                        Margin="6"
-                        Click="LoadGeneralRegistrationsButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadGeneralRegistrationsButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadGeneralRegistrationsButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="GeneralRegistrationsDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <DataGrid
-                    Name="GeneralRegistrationsDataGrid"
-                    Grid.Row="2"
-                    Margin="6"
-                    AreRowDetailsFrozen="True"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserResizeRows="False"
-                    CanUserSortColumns="False"
-                    RowHeight="32"
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="80"
-                            MinWidth="80"
-                            Binding="{Binding WeekdayPeriod}"
-                            Header="曜日時限"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="160"
-                            MinWidth="160"
-                            Binding="{Binding SubjectsName}"
-                            Header="科目名"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding Credit}"
-                            Header="単位"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding ClassRoom}"
-                            Header="講義室"
-                            IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="ClassResultsTabItem" Header="成績情報">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button
-                        Name="LoadClassResultsButton"
-                        Margin="6"
-                        Click="LoadClassResultsButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <ui:FontIcon
-                                Name="LoadClassResultsButtonFontIcon"
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE72C;"
-                                Visibility="Visible" />
-                            <ui:ProgressRing
-                                Name="LoadClassResultsButtonProgressRing"
-                                IsActive="True"
-                                Visibility="Collapsed" />
-                        </StackPanel>
-                    </Button>
-                    <Label
-                        Name="ClassResultsDateTimeLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="最終更新" />
-                    <Button
-                        Name="EvaluationCreditsButton"
-                        Margin="6"
-                        Click="EvaluationCreditsButton_Click"
-                        Content="評価別単位">
-                        <ui:FlyoutBase.AttachedFlyout>
-                            <ui:Flyout Placement="Bottom">
-                                <DataGrid
-                                    Name="EvaluationCreditsDataGrid"
-                                    Margin="6"
-                                    AreRowDetailsFrozen="True"
-                                    AutoGenerateColumns="False"
-                                    CanUserAddRows="False"
-                                    CanUserDeleteRows="False"
-                                    CanUserReorderColumns="False"
-                                    CanUserResizeColumns="False"
-                                    CanUserResizeRows="False"
-                                    CanUserSortColumns="False"
-                                    RowHeight="32"
-                                    ScrollViewer.CanContentScroll="True"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    SelectionMode="Single">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn
-                                            Width="100"
-                                            MinWidth="100"
-                                            Binding="{Binding Evaluation}"
-                                            Header="評価"
-                                            IsReadOnly="True" />
-                                        <DataGridTextColumn
-                                            Width="100"
-                                            MinWidth="100"
-                                            Binding="{Binding Credit}"
-                                            Header="単位数"
-                                            IsReadOnly="True" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ui:Flyout>
-                        </ui:FlyoutBase.AttachedFlyout>
-                    </Button>
-                    <Button
-                        Name="DepartmentGPAButton"
-                        Margin="6"
-                        Click="DepartmentGPAButton_Click"
-                        Content="学部学科内GPA">
-                        <ui:FlyoutBase.AttachedFlyout>
-                            <ui:Flyout Placement="Bottom">
-                                <TabControl Margin="6">
-                                    <TabItem Header="学部学科内GPA">
-                                        <Label Name="DepartmentGPALabel" Margin="6" />
-                                    </TabItem>
-                                    <TabItem Header="学部内分布図">
-                                        <Image Name="DepartmentGPAImage" />
-                                    </TabItem>
-                                    <TabItem Header="学科内分布図">
-                                        <Image Name="CourseGPAImage" />
-                                    </TabItem>
-                                </TabControl>
-                            </ui:Flyout>
-                        </ui:FlyoutBase.AttachedFlyout>
-                    </Button>
-                    <Button
-                        Name="YearCreditsButton"
-                        Margin="6"
-                        Click="YearCreditsButton_Click"
-                        Content="年別単位">
-                        <ui:FlyoutBase.AttachedFlyout>
-                            <ui:Flyout Placement="Bottom">
-                                <DataGrid
-                                    Name="YearCreditsDataGrid"
-                                    Margin="6"
-                                    AreRowDetailsFrozen="True"
-                                    AutoGenerateColumns="False"
-                                    CanUserAddRows="False"
-                                    CanUserDeleteRows="False"
-                                    CanUserReorderColumns="False"
-                                    CanUserResizeColumns="False"
-                                    CanUserResizeRows="False"
-                                    CanUserSortColumns="False"
-                                    RowHeight="32"
-                                    ScrollViewer.CanContentScroll="True"
-                                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    SelectionMode="Single">
-                                    <DataGrid.Columns>
-                                        <DataGridTextColumn
-                                            Width="100"
-                                            MinWidth="100"
-                                            Binding="{Binding Year}"
-                                            Header="修得年度"
-                                            IsReadOnly="True" />
-                                        <DataGridTextColumn
-                                            Width="100"
-                                            MinWidth="100"
-                                            Binding="{Binding Credit}"
-                                            Header="単位数"
-                                            IsReadOnly="True" />
-                                    </DataGrid.Columns>
-                                </DataGrid>
-                            </ui:Flyout>
-                        </ui:FlyoutBase.AttachedFlyout>
-                    </Button>
-                    <Label
-                        Name="ClassResultsGPALabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="推定GPA " />
-                    <Label
-                        Width="150"
-                        Margin="6"
-                        FontSize="12">
-                        <Label.Content>
-                            <AccessText Text="概算値であり，実際の数値と異なる場合があります．" TextWrapping="Wrap" />
-                        </Label.Content>
-                    </Label>
-                </StackPanel>
-                <GridSplitter
-                    Grid.Row="1"
-                    Width="5"
-                    VerticalAlignment="Stretch" />
-                <DataGrid
-                    Name="ClassResultsDataGrid"
-                    Grid.Row="2"
-                    Margin="6"
-                    AreRowDetailsFrozen="True"
-                    AutoGenerateColumns="False"
-                    CanUserAddRows="False"
-                    CanUserDeleteRows="False"
-                    CanUserReorderColumns="False"
-                    CanUserResizeRows="False"
-                    CanUserSortColumns="False"
-                    RowHeight="32"
-                    ScrollViewer.CanContentScroll="True"
-                    ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                    ScrollViewer.VerticalScrollBarVisibility="Auto"
-                    SelectionMode="Single">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn
-                            Width="160"
-                            MinWidth="160"
-                            Binding="{Binding Subjects}"
-                            Header="教科名"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding TeacherName}"
-                            Header="担当教員名"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding SubjectsSection}"
-                            Header="科目区分"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding SelectionSection}"
-                            Header="必修選択区分"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding Credit}"
-                            Header="単位"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding Evaluation}"
-                            Header="評価"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding Score}"
-                            Header="得点"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="60"
-                            MinWidth="60"
-                            Binding="{Binding GP, StringFormat={}{0:N2}}"
-                            Header="科目GP"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding AcquisitionYear}"
-                            Header="取得年度"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding ReportDate, StringFormat=yyyy/MM/dd}"
-                            Header="報告日"
-                            IsReadOnly="True" />
-                        <DataGridTextColumn
-                            Width="100"
-                            MinWidth="100"
-                            Binding="{Binding TestType}"
-                            Header="試験種別"
-                            IsReadOnly="True" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </TabItem>
-        <TabItem Name="SyllabusSearchTabItem" Header="シラバス検索">
-            <Grid Margin="6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                    <ColumnDefinition Width="*" MinWidth="100" />
-                </Grid.ColumnDefinitions>
-                <wv2:WebView2
-                    Name="SyllabusSearchWebView2"
-                    Grid.Column="0"
-                    NavigationCompleted="SyllabusSearchWebView2_NavigationCompleted"
-                    Source="https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on"
-                    WebMessageReceived="SyllabusSearchWebView2_WebMessageReceived" />
-                <wv2:WebView2 Name="SyllabusViewWebView2" Grid.Column="2" />
-            </Grid>
-        </TabItem>
-        <TabItem Name="SettingsTabItem" Header="設定">
-            <Grid Margin="6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="220" />
-                    <ColumnDefinition Width="220" />
-                    <ColumnDefinition Width="220" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="6">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Margin="6" Content="外部連携" />
-                        <TextBlock Margin="6">
-                            <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E5%A4%96%E9%83%A8%E9%80%A3%E6%90%BA" RequestNavigate="Hyperlink_RequestNavigate">連携方法</Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                    <Label Margin="6" Content="Todoistトークン" />
-                    <PasswordBox
-                        Name="TodoistTokenPasswordBox"
-                        Width="Auto"
-                        Margin="6,0" />
-                    <Label Margin="6" Content="Discordチャンネル" />
-                    <TextBox
-                        Name="DiscordChannelTextBox"
-                        Width="Auto"
-                        Margin="6,0" />
-                    <Label Margin="6" Content="Discordトークン" />
-                    <PasswordBox
-                        Name="DiscordTokenPasswordBox"
-                        Width="Auto"
-                        Margin="6,0,6,6" />
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="学情設定" />
-                    <StackPanel Orientation="Horizontal">
-                        <StackPanel Orientation="Vertical">
-                            <Label Margin="6" Content="取得年度" />
-                            <ui:NumberBox
-                                Name="SchoolYearNumberBox"
-                                Width="Auto"
-                                Margin="6"
-                                Maximum="2050"
-                                Minimum="2020"
-                                SmallChange="1"
-                                SpinButtonPlacementMode="Compact" />
-                        </StackPanel>
-                        <StackPanel Orientation="Vertical">
-                            <Label Margin="6" Content="取得学期" />
-                            <ComboBox
-                                Name="SchoolSemesterComboBox"
-                                Width="Auto"
-                                Margin="6">
-                                <ComboBoxItem Content="前期前半" />
-                                <ComboBoxItem Content="前期後半" />
-                                <ComboBoxItem Content="後期前半" />
-                                <ComboBoxItem Content="後期後半" />
-                            </ComboBox>
-                        </StackPanel>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label
-                            Margin="6"
-                            VerticalAlignment="Center"
-                            Content="UserAgent" />
-                        <TextBlock Margin="6">
-                            <Hyperlink Name="ResetUserAgentHyperlink" Click="ResetUserAgentHyperlink_Click">リセット</Hyperlink>
-                        </TextBlock>
-                    </StackPanel>
-                    <TextBox
-                        Name="UserAgentTextBox"
-                        MinHeight="72"
-                        MaxHeight="72"
-                        Margin="6"
-                        TextWrapping="Wrap"
-                        VerticalScrollBarVisibility="Auto" />
-                    <StackPanel Orientation="Horizontal">
+                            ui:ControlHelper.PlaceholderText="パスワード" />
                         <Button
-                            Name="SaveTokensButton"
+                            Name="LoginButton"
                             Margin="6"
-                            Click="SaveTokensButton_Click">
+                            Click="LoginButton_Click">
                             <StackPanel Orientation="Horizontal">
                                 <ui:FontIcon
-                                    Name="SaveTokensButtonFontIcon"
+                                    Name="LoginButtonFontIcon"
                                     FontFamily="Segoe MDL2 Assets"
-                                    Glyph="&#xE74E;"
+                                    Glyph="&#xE72A;"
                                     Visibility="Visible" />
                                 <ui:ProgressRing
-                                    Name="SaveTokensButtonProgressRing"
+                                    Name="LoginButtonProgressRing"
                                     IsActive="True"
                                     Visibility="Collapsed" />
                             </StackPanel>
                         </Button>
+                        <Label
+                            Name="LoginDateTimeLabel"
+                            Margin="6"
+                            Content="最終ログイン" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Column="1"
+                        Width="5"
+                        HorizontalAlignment="Stretch" />
+                    <DataGrid
+                        Name="ClassTablesDataGrid"
+                        Grid.Column="2"
+                        Margin="6"
+                        AllowDrop="True"
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        DragOver="ClassTablesDataGrid_DragOver"
+                        LoadingRow="ClassTablesDataGrid_LoadingRow"
+                        MinRowHeight="96"
+                        PreviewDrop="ClassTablesDataGrid_PreviewDrop"
+                        ScrollViewer.CanContentScroll="False"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single"
+                        SelectionUnit="Cell"
+                        Visibility="Visible">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn
+                                Width="*"
+                                MinWidth="130"
+                                Header="月曜日"
+                                IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:ClassTableCellControl
+                                            ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
+                                            DataContext="{Binding Monday}"
+                                            QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                            ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                            SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                            VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn
+                                Width="*"
+                                MinWidth="130"
+                                Header="火曜日"
+                                IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:ClassTableCellControl
+                                            ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
+                                            DataContext="{Binding Tuesday}"
+                                            QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                            ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                            SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                            VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn
+                                Width="*"
+                                MinWidth="130"
+                                Header="水曜日"
+                                IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:ClassTableCellControl
+                                            ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
+                                            DataContext="{Binding Wednesday}"
+                                            QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                            ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                            SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                            VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn
+                                Width="*"
+                                MinWidth="130"
+                                Header="木曜日"
+                                IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:ClassTableCellControl
+                                            ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
+                                            DataContext="{Binding Thursday}"
+                                            QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                            ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                            SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                            VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTemplateColumn
+                                Width="*"
+                                MinWidth="130"
+                                Header="金曜日"
+                                IsReadOnly="True">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <local:ClassTableCellControl
+                                            ClassContactButtonClick="ClassTableCellControl_ClassContactButtonClick"
+                                            DataContext="{Binding Friday}"
+                                            QuizButtonClick="ClassTableCellControl_QuizButtonClick"
+                                            ReportButtonClick="ClassTableCellControl_ReportButtonClick"
+                                            SyllabusMenuItemClick="ClassTableCellControl_SyllabusMenuItemClick"
+                                            VideoMenuItemClick="ClassTableCellControl_VideoMenuItemClick" />
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem
+                Name="SyllabusClassTablesTabItem"
+                Header="シラバス時間割"
+                Visibility="Collapsed">
+                <md:MarkdownViewer Name="SyllabusMarkdownViewer" Margin="6">
+                    <md:MarkdownViewer.Resources>
+                        <ResourceDictionary>
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="Resources/generic.xaml" />
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </md:MarkdownViewer.Resources>
+                </md:MarkdownViewer>
+            </TabItem>
+            <TabItem Name="ClassContactsTabItem" Header="授業連絡">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <ui:AutoSuggestBox
+                            Name="ClassContactsSearchAutoSuggestBox"
+                            MinWidth="300"
+                            Margin="6"
+                            QueryIcon="Find"
+                            QuerySubmitted="ClassContactsSearchAutoSuggestBox_QuerySubmitted"
+                            SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                            TextChanged="SearchAutoSuggestBox_TextChanged" />
+                        <Button
+                            Name="LoadClassContactsButton"
+                            Margin="6"
+                            Click="LoadClassContactsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadClassContactsButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadClassContactsButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="ClassContactsDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" MinWidth="100" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid
+                            Name="ClassContactsDataGrid"
+                            Grid.Column="0"
+                            Margin="6"
+                            AreRowDetailsFrozen="True"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserResizeRows="False"
+                            CanUserSortColumns="False"
+                            RowHeight="32"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionChanged="ClassContactsDataGrid_SelectionChanged"
+                            SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Subjects}"
+                                    Header="授業科目"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="280"
+                                    MinWidth="280"
+                                    Binding="{Binding Title}"
+                                    Header="タイトル"
+                                    IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GridSplitter
+                            Grid.Column="1"
+                            Width="5"
+                            HorizontalAlignment="Stretch" />
+                        <ScrollViewer
+                            Grid.Column="2"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DockPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label
+                                        Name="ClassContactContactDateTimeLabel"
+                                        Margin="12"
+                                        HorizontalAlignment="Right"
+                                        Content="連絡日時" />
+                                    <TextBox
+                                        Name="ClassContactContentTextBox"
+                                        Text="内容"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                        Margin="12"
+                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
+                                        Text="{Binding Text, ElementName=ClassContactContentTextBox}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal">
+                                        <ComboBox
+                                            Name="ClassContactFilesComboBox"
+                                            MaxWidth="360"
+                                            Margin="12" />
+                                        <Button
+                                            Name="OpenClassContactFileButton"
+                                            Margin="6,12"
+                                            Click="OpenClassContactFileButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                        </Button>
+                                        <Button
+                                            Name="OpenClassContactFolderButton"
+                                            Margin="6,12"
+                                            Click="OpenClassContactFolderButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="ReportsTabItem" Header="レポート">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <ui:AutoSuggestBox
+                            Name="ReportsSearchAutoSuggestBox"
+                            MinWidth="300"
+                            Margin="6"
+                            QueryIcon="Find"
+                            QuerySubmitted="ReportsSearchAutoSuggestBox_QuerySubmitted"
+                            SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                            TextChanged="SearchAutoSuggestBox_TextChanged" />
+                        <Button
+                            Name="LoadReportsButton"
+                            Margin="6"
+                            Click="LoadReportsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadReportsButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadReportsButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="ReportsDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                        <CheckBox
+                            Name="FilterReportsCheckBox"
+                            Margin="6"
+                            Checked="FilterReportsCheckBox_CheckStateChanged"
+                            Content="未提出のみ"
+                            Unchecked="FilterReportsCheckBox_CheckStateChanged" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" MinHeight="100" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" MinHeight="100" />
+                        </Grid.RowDefinitions>
+                        <DataGrid
+                            Name="ReportsDataGrid"
+                            Grid.Row="0"
+                            Margin="6"
+                            AreRowDetailsFrozen="True"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserResizeRows="False"
+                            CanUserSortColumns="False"
+                            RowHeight="32"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionChanged="ReportsDataGrid_SelectionChanged"
+                            SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Subjects}"
+                                    Header="授業科目"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="280"
+                                    MinWidth="280"
+                                    Binding="{Binding Title}"
+                                    Header="タイトル"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Status}"
+                                    Header="状態"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding IsSubmit, Converter={StaticResource SubmissionStatusConverter}}"
+                                    Header="提出状況"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="120"
+                                    MinWidth="120"
+                                    Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                    Header="提出期間"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="120"
+                                    MinWidth="120"
+                                    Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                    Header="提出期間"
+                                    IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GridSplitter
+                            Grid.Row="1"
+                            Height="5"
+                            HorizontalAlignment="Stretch" />
+                        <ScrollViewer
+                            Grid.Row="2"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DockPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label
+                                        Name="ReportStartEndDateTimeLabel"
+                                        Margin="12"
+                                        HorizontalAlignment="Right"
+                                        Content="提出期間" />
+                                    <TextBox
+                                        Name="ReportDescriptionTextBox"
+                                        Text="説明"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                        Margin="12"
+                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportDescriptionTextBox}"
+                                        Text="{Binding Text, ElementName=ReportDescriptionTextBox}"
+                                        TextWrapping="Wrap" />
+                                    <Separator Margin="6" />
+                                    <TextBox
+                                        Name="ReportMessageTextBox"
+                                        Text="伝達事項"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                        Margin="12,6"
+                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
+                                        Text="{Binding Text, ElementName=ReportMessageTextBox}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal">
+                                        <ComboBox
+                                            Name="ReportFilesComboBox"
+                                            MaxWidth="360"
+                                            Margin="12" />
+                                        <Button
+                                            Name="OpenReportFileButton"
+                                            Margin="6"
+                                            Click="OpenReportFileButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                        </Button>
+                                        <Button
+                                            Name="OpenReportFolderButton"
+                                            Margin="6"
+                                            Click="OpenReportFolderButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="QuizzesTabItem" Header="小テスト">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <ui:AutoSuggestBox
+                            Name="QuizzesSearchAutoSuggestBox"
+                            MinWidth="300"
+                            Margin="6"
+                            QueryIcon="Find"
+                            QuerySubmitted="QuizzesSearchAutoSuggestBox_QuerySubmitted"
+                            SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                            TextChanged="SearchAutoSuggestBox_TextChanged" />
+                        <Button
+                            Name="LoadQuizzesButton"
+                            Margin="6"
+                            Click="LoadQuizzesButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadQuizzesButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadQuizzesButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="QuizzesDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                        <CheckBox
+                            Name="FilterQuizzesCheckBox"
+                            Margin="6"
+                            Checked="FilterQuizzesCheckBox_CheckStateChanged"
+                            Content="未提出のみ"
+                            Unchecked="FilterQuizzesCheckBox_CheckStateChanged" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" MinHeight="100" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" MinHeight="100" />
+                        </Grid.RowDefinitions>
+                        <DataGrid
+                            Name="QuizzesDataGrid"
+                            Grid.Row="0"
+                            Margin="6"
+                            AreRowDetailsFrozen="True"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserResizeRows="False"
+                            CanUserSortColumns="False"
+                            RowHeight="32"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionChanged="QuizzesDataGrid_SelectionChanged"
+                            SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Subjects}"
+                                    Header="授業科目"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="280"
+                                    MinWidth="280"
+                                    Binding="{Binding Title}"
+                                    Header="タイトル"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Status}"
+                                    Header="状態"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding SubmissionStatus}"
+                                    Header="提出状況"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="120"
+                                    MinWidth="120"
+                                    Binding="{Binding StartDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                    Header="提出期間"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="120"
+                                    MinWidth="120"
+                                    Binding="{Binding EndDateTime, StringFormat=yyyy/MM/dd HH:mm}"
+                                    Header="提出期間"
+                                    IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GridSplitter
+                            Grid.Row="1"
+                            Height="5"
+                            HorizontalAlignment="Stretch" />
+                        <ScrollViewer
+                            Grid.Row="2"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DockPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label
+                                        Name="QuizStartEndDateTimeLabel"
+                                        Margin="12"
+                                        HorizontalAlignment="Right"
+                                        Content="提出期間" />
+                                    <TextBox
+                                        Name="QuizDescriptionTextBox"
+                                        Text="説明"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                        Margin="12"
+                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
+                                        Text="{Binding Text, ElementName=QuizDescriptionTextBox}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel Name="QuizFilesStackPanel" Orientation="Horizontal">
+                                        <ComboBox
+                                            Name="QuizFilesComboBox"
+                                            MaxWidth="360"
+                                            Margin="12" />
+                                        <Button
+                                            Name="OpenQuizFileButton"
+                                            Margin="6"
+                                            Click="OpenQuizFileButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                        </Button>
+                                        <Button
+                                            Name="OpenQuizFolderButton"
+                                            Margin="6"
+                                            Click="OpenQuizFolderButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="ClassSharedFilesTabItem" Header="授業共有ファイル">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <ui:AutoSuggestBox
+                            Name="ClassSharedFilesSearchAutoSuggestBox"
+                            MinWidth="300"
+                            Margin="6"
+                            QueryIcon="Find"
+                            QuerySubmitted="ClassSharedFilesSearchAutoSuggestBox_QuerySubmitted"
+                            SuggestionChosen="SearchAutoSuggestBox_SuggestionChosen"
+                            TextChanged="SearchAutoSuggestBox_TextChanged" />
+                        <Button
+                            Name="LoadClassSharedFilesButton"
+                            Margin="6"
+                            Click="LoadClassSharedFilesButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadClassSharedFilesButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadClassSharedFilesButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="ClassSharedFilesDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" MinWidth="100" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" MinWidth="100" />
+                        </Grid.ColumnDefinitions>
+                        <DataGrid
+                            Name="ClassSharedFilesDataGrid"
+                            Grid.Column="0"
+                            Margin="6"
+                            AreRowDetailsFrozen="True"
+                            AutoGenerateColumns="False"
+                            CanUserAddRows="False"
+                            CanUserDeleteRows="False"
+                            CanUserReorderColumns="False"
+                            CanUserResizeRows="False"
+                            CanUserSortColumns="False"
+                            RowHeight="32"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto"
+                            SelectionChanged="ClassSharedFilesDataGrid_SelectionChanged"
+                            SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn
+                                    Width="100"
+                                    MinWidth="100"
+                                    Binding="{Binding Subjects}"
+                                    Header="授業科目"
+                                    IsReadOnly="True" />
+                                <DataGridTextColumn
+                                    Width="280"
+                                    MinWidth="280"
+                                    Binding="{Binding Title}"
+                                    Header="タイトル"
+                                    IsReadOnly="True" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <GridSplitter
+                            Grid.Column="1"
+                            Width="5"
+                            HorizontalAlignment="Stretch" />
+                        <ScrollViewer
+                            Grid.Column="2"
+                            ScrollViewer.CanContentScroll="True"
+                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <DockPanel>
+                                <StackPanel Orientation="Vertical">
+                                    <Label
+                                        Name="ClassSharedFileUpdateDateTimeLabel"
+                                        Margin="12"
+                                        HorizontalAlignment="Right"
+                                        Content="更新日時" />
+                                    <TextBox
+                                        Name="ClassSharedFileDescriptionTextBox"
+                                        Text="ファイル説明"
+                                        Visibility="Collapsed" />
+                                    <TextBlock
+                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
+                                        Margin="12"
+                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
+                                        Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
+                                        TextWrapping="Wrap" />
+                                    <StackPanel Orientation="Horizontal">
+                                        <ComboBox Name="ClassSharedFileFilesComboBox" Margin="12" />
+                                        <Button
+                                            Name="OpenClassSharedFileButton"
+                                            Margin="6,12"
+                                            Click="OpenClassSharedFileButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
+                                        </Button>
+                                        <Button
+                                            Name="OpenClassSharedFolderButton"
+                                            Margin="6,12"
+                                            Click="OpenClassSharedFolderButton_Click">
+                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="LotteryRegistrationsTabItem" Header="抽選履修">
+                <TabControl>
+                    <TabItem Header="登録">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Button
+                                    Name="LoadLotteryRegistrationsButton"
+                                    Margin="6"
+                                    Click="LoadLotteryRegistrationsButton_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:FontIcon
+                                            Name="LoadLotteryRegistrationsButtonFontIcon"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE72C;"
+                                            Visibility="Visible" />
+                                        <ui:ProgressRing
+                                            Name="LoadLotteryRegistrationsButtonProgressRing"
+                                            IsActive="True"
+                                            Visibility="Collapsed" />
+                                    </StackPanel>
+                                </Button>
+                                <Label
+                                    Name="LotteryRegistrationsDateTimeLabel"
+                                    Margin="6"
+                                    VerticalAlignment="Center"
+                                    Content="最終更新" />
+                                <CheckBox
+                                    Name="FilterLotteryRegistrationsCheckBox"
+                                    Margin="6"
+                                    Checked="FilterLotteryRegistrationsCheckBox_CheckStateChanged"
+                                    Content="履修可能のみ"
+                                    Unchecked="FilterLotteryRegistrationsCheckBox_CheckStateChanged" />
+                            </StackPanel>
+                            <GridSplitter
+                                Grid.Row="1"
+                                Width="5"
+                                VerticalAlignment="Stretch" />
+                            <DataGrid
+                                Name="LotteryRegistrationsDataGrid"
+                                Grid.Row="2"
+                                Margin="6"
+                                AreRowDetailsFrozen="True"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserReorderColumns="False"
+                                CanUserResizeRows="False"
+                                CanUserSortColumns="False"
+                                RowHeight="32"
+                                ScrollViewer.CanContentScroll="True"
+                                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                SelectionMode="Single">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding WeekdayPeriod}"
+                                        Header="曜日時限"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="160"
+                                        MinWidth="160"
+                                        Binding="{Binding SubjectsName}"
+                                        Header="科目名"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        MinWidth="100"
+                                        Binding="{Binding ClassName}"
+                                        Header="クラス名"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding SubjectsSection}"
+                                        Header="科目区分"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding SelectionSection}"
+                                        Header="必修選択区分"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding Credit}"
+                                        Header="単位"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding ChoiceNumberValue}"
+                                        Header="志望"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding AttendingCapacity}"
+                                        Header="受講定員"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding FirstApplicantNumber}"
+                                        Header="第1志望"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding SecondApplicantNumber}"
+                                        Header="第2志望"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding ThirdApplicantNumber}"
+                                        Header="第3志望"
+                                        IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                    <TabItem Header="登録結果">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Button
+                                    Name="LoadLotteryRegistrationsResultButton"
+                                    Margin="6"
+                                    Click="LoadLotteryRegistrationsResultButton_Click">
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:FontIcon
+                                            Name="LoadLotteryRegistrationsResultButtonFontIcon"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            Glyph="&#xE72C;"
+                                            Visibility="Visible" />
+                                        <ui:ProgressRing
+                                            Name="LoadLotteryRegistrationsResultButtonProgressRing"
+                                            IsActive="True"
+                                            Visibility="Collapsed" />
+                                    </StackPanel>
+                                </Button>
+                                <Label
+                                    Name="LotteryRegistrationsResultDateTimeLabel"
+                                    Margin="6"
+                                    VerticalAlignment="Center"
+                                    Content="最終更新" />
+                                <CheckBox
+                                    Name="FilterLotteryRegistrationsResultCheckBox"
+                                    Margin="6"
+                                    Checked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged"
+                                    Content="当選のみ"
+                                    Unchecked="FilterLotteryRegistrationsResultCheckBox_CheckStateChanged" />
+                            </StackPanel>
+                            <GridSplitter
+                                Grid.Row="1"
+                                Width="5"
+                                VerticalAlignment="Stretch" />
+                            <DataGrid
+                                Name="LotteryRegistrationsResultDataGrid"
+                                Grid.Row="2"
+                                Margin="6"
+                                AreRowDetailsFrozen="True"
+                                AutoGenerateColumns="False"
+                                CanUserAddRows="False"
+                                CanUserDeleteRows="False"
+                                CanUserReorderColumns="False"
+                                CanUserResizeRows="False"
+                                CanUserSortColumns="False"
+                                RowHeight="32"
+                                ScrollViewer.CanContentScroll="True"
+                                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                SelectionMode="Single">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding WeekdayPeriod}"
+                                        Header="曜日時限"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="160"
+                                        MinWidth="160"
+                                        Binding="{Binding SubjectsName}"
+                                        Header="科目名"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="100"
+                                        MinWidth="100"
+                                        Binding="{Binding ClassName}"
+                                        Header="クラス名"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding SubjectsSection}"
+                                        Header="科目区分"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding SelectionSection}"
+                                        Header="必修選択区分"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding Credit}"
+                                        Header="単位"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="60"
+                                        MinWidth="60"
+                                        Binding="{Binding ChoiceNumberValue}"
+                                        Header="志望"
+                                        IsReadOnly="True" />
+                                    <DataGridTextColumn
+                                        Width="80"
+                                        MinWidth="80"
+                                        Binding="{Binding IsWinning, Converter={StaticResource WinningConverter}}"
+                                        Header="抽選結果"
+                                        IsReadOnly="True" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>
+                    </TabItem>
+                </TabControl>
+            </TabItem>
+            <TabItem Name="GeneralRegistrationsTabItem" Header="一般履修">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Button
+                            Name="LoadGeneralRegistrationsButton"
+                            Margin="6"
+                            Click="LoadGeneralRegistrationsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadGeneralRegistrationsButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadGeneralRegistrationsButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="GeneralRegistrationsDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <DataGrid
+                        Name="GeneralRegistrationsDataGrid"
+                        Grid.Row="2"
+                        Margin="6"
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        RowHeight="32"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="80"
+                                MinWidth="80"
+                                Binding="{Binding WeekdayPeriod}"
+                                Header="曜日時限"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="160"
+                                MinWidth="160"
+                                Binding="{Binding SubjectsName}"
+                                Header="科目名"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding Credit}"
+                                Header="単位"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding ClassRoom}"
+                                Header="講義室"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="ClassResultsTabItem" Header="成績情報">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Button
+                            Name="LoadClassResultsButton"
+                            Margin="6"
+                            Click="LoadClassResultsButton_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:FontIcon
+                                    Name="LoadClassResultsButtonFontIcon"
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE72C;"
+                                    Visibility="Visible" />
+                                <ui:ProgressRing
+                                    Name="LoadClassResultsButtonProgressRing"
+                                    IsActive="True"
+                                    Visibility="Collapsed" />
+                            </StackPanel>
+                        </Button>
+                        <Label
+                            Name="ClassResultsDateTimeLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="最終更新" />
+                        <Button
+                            Name="EvaluationCreditsButton"
+                            Margin="6"
+                            Click="EvaluationCreditsButton_Click"
+                            Content="評価別単位">
+                            <ui:FlyoutBase.AttachedFlyout>
+                                <ui:Flyout Placement="Bottom">
+                                    <DataGrid
+                                        Name="EvaluationCreditsDataGrid"
+                                        Margin="6"
+                                        AreRowDetailsFrozen="True"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        CanUserDeleteRows="False"
+                                        CanUserReorderColumns="False"
+                                        CanUserResizeColumns="False"
+                                        CanUserResizeRows="False"
+                                        CanUserSortColumns="False"
+                                        RowHeight="32"
+                                        ScrollViewer.CanContentScroll="True"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                        SelectionMode="Single">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                MinWidth="100"
+                                                Binding="{Binding Evaluation}"
+                                                Header="評価"
+                                                IsReadOnly="True" />
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                MinWidth="100"
+                                                Binding="{Binding Credit}"
+                                                Header="単位数"
+                                                IsReadOnly="True" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ui:Flyout>
+                            </ui:FlyoutBase.AttachedFlyout>
+                        </Button>
+                        <Button
+                            Name="DepartmentGPAButton"
+                            Margin="6"
+                            Click="DepartmentGPAButton_Click"
+                            Content="学部学科内GPA">
+                            <ui:FlyoutBase.AttachedFlyout>
+                                <ui:Flyout Placement="Bottom">
+                                    <TabControl Margin="6">
+                                        <TabItem Header="学部学科内GPA">
+                                            <Label Name="DepartmentGPALabel" Margin="6" />
+                                        </TabItem>
+                                        <TabItem Header="学部内分布図">
+                                            <Image Name="DepartmentGPAImage" />
+                                        </TabItem>
+                                        <TabItem Header="学科内分布図">
+                                            <Image Name="CourseGPAImage" />
+                                        </TabItem>
+                                    </TabControl>
+                                </ui:Flyout>
+                            </ui:FlyoutBase.AttachedFlyout>
+                        </Button>
+                        <Button
+                            Name="YearCreditsButton"
+                            Margin="6"
+                            Click="YearCreditsButton_Click"
+                            Content="年別単位">
+                            <ui:FlyoutBase.AttachedFlyout>
+                                <ui:Flyout Placement="Bottom">
+                                    <DataGrid
+                                        Name="YearCreditsDataGrid"
+                                        Margin="6"
+                                        AreRowDetailsFrozen="True"
+                                        AutoGenerateColumns="False"
+                                        CanUserAddRows="False"
+                                        CanUserDeleteRows="False"
+                                        CanUserReorderColumns="False"
+                                        CanUserResizeColumns="False"
+                                        CanUserResizeRows="False"
+                                        CanUserSortColumns="False"
+                                        RowHeight="32"
+                                        ScrollViewer.CanContentScroll="True"
+                                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                        SelectionMode="Single">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                MinWidth="100"
+                                                Binding="{Binding Year}"
+                                                Header="修得年度"
+                                                IsReadOnly="True" />
+                                            <DataGridTextColumn
+                                                Width="100"
+                                                MinWidth="100"
+                                                Binding="{Binding Credit}"
+                                                Header="単位数"
+                                                IsReadOnly="True" />
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                </ui:Flyout>
+                            </ui:FlyoutBase.AttachedFlyout>
+                        </Button>
+                        <Label
+                            Name="ClassResultsGPALabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="推定GPA " />
+                        <Label
+                            Width="150"
+                            Margin="6"
+                            FontSize="12">
+                            <Label.Content>
+                                <AccessText Text="概算値であり，実際の数値と異なる場合があります．" TextWrapping="Wrap" />
+                            </Label.Content>
+                        </Label>
+                    </StackPanel>
+                    <GridSplitter
+                        Grid.Row="1"
+                        Width="5"
+                        VerticalAlignment="Stretch" />
+                    <DataGrid
+                        Name="ClassResultsDataGrid"
+                        Grid.Row="2"
+                        Margin="6"
+                        AreRowDetailsFrozen="True"
+                        AutoGenerateColumns="False"
+                        CanUserAddRows="False"
+                        CanUserDeleteRows="False"
+                        CanUserReorderColumns="False"
+                        CanUserResizeRows="False"
+                        CanUserSortColumns="False"
+                        RowHeight="32"
+                        ScrollViewer.CanContentScroll="True"
+                        ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Auto"
+                        SelectionMode="Single">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn
+                                Width="160"
+                                MinWidth="160"
+                                Binding="{Binding Subjects}"
+                                Header="教科名"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding TeacherName}"
+                                Header="担当教員名"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding SubjectsSection}"
+                                Header="科目区分"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding SelectionSection}"
+                                Header="必修選択区分"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding Credit}"
+                                Header="単位"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding Evaluation}"
+                                Header="評価"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding Score}"
+                                Header="得点"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="60"
+                                MinWidth="60"
+                                Binding="{Binding GP, StringFormat={}{0:N2}}"
+                                Header="科目GP"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding AcquisitionYear}"
+                                Header="取得年度"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding ReportDate, StringFormat=yyyy/MM/dd}"
+                                Header="報告日"
+                                IsReadOnly="True" />
+                            <DataGridTextColumn
+                                Width="100"
+                                MinWidth="100"
+                                Binding="{Binding TestType}"
+                                Header="試験種別"
+                                IsReadOnly="True" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="SyllabusSearchTabItem" Header="シラバス検索">
+                <Grid Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                        <ColumnDefinition Width="*" MinWidth="100" />
+                    </Grid.ColumnDefinitions>
+                    <wv2:WebView2
+                        Name="SyllabusSearchWebView2"
+                        Grid.Column="0"
+                        NavigationCompleted="SyllabusSearchWebView2_NavigationCompleted"
+                        Source="https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on"
+                        WebMessageReceived="SyllabusSearchWebView2_WebMessageReceived" />
+                    <wv2:WebView2 Name="SyllabusViewWebView2" Grid.Column="2" />
+                </Grid>
+            </TabItem>
+            <TabItem Name="SettingsTabItem" Header="設定">
+                <Grid Margin="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="220" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="6">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Margin="6" Content="外部連携" />
+                            <TextBlock Margin="6">
+                                <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E5%A4%96%E9%83%A8%E9%80%A3%E6%90%BA" RequestNavigate="Hyperlink_RequestNavigate">連携方法</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <Label Margin="6" Content="Todoistトークン" />
+                        <PasswordBox
+                            Name="TodoistTokenPasswordBox"
+                            Width="Auto"
+                            Margin="6,0" />
+                        <Label Margin="6" Content="Discordチャンネル" />
+                        <TextBox
+                            Name="DiscordChannelTextBox"
+                            Width="Auto"
+                            Margin="6,0" />
+                        <Label Margin="6" Content="Discordトークン" />
+                        <PasswordBox
+                            Name="DiscordTokenPasswordBox"
+                            Width="Auto"
+                            Margin="6,0,6,6" />
+                        <Separator Margin="6" />
+                        <Label Margin="6" Content="学情設定" />
+                        <StackPanel Orientation="Horizontal">
+                            <StackPanel Orientation="Vertical">
+                                <Label Margin="6" Content="取得年度" />
+                                <ui:NumberBox
+                                    Name="SchoolYearNumberBox"
+                                    Width="Auto"
+                                    Margin="6"
+                                    Maximum="2050"
+                                    Minimum="2020"
+                                    SmallChange="1"
+                                    SpinButtonPlacementMode="Compact" />
+                            </StackPanel>
+                            <StackPanel Orientation="Vertical">
+                                <Label Margin="6" Content="取得学期" />
+                                <ComboBox
+                                    Name="SchoolSemesterComboBox"
+                                    Width="Auto"
+                                    Margin="6">
+                                    <ComboBoxItem Content="前期前半" />
+                                    <ComboBoxItem Content="前期後半" />
+                                    <ComboBoxItem Content="後期前半" />
+                                    <ComboBoxItem Content="後期後半" />
+                                </ComboBox>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label
+                                Margin="6"
+                                VerticalAlignment="Center"
+                                Content="UserAgent" />
+                            <TextBlock Margin="6">
+                                <Hyperlink Name="ResetUserAgentHyperlink" Click="ResetUserAgentHyperlink_Click">リセット</Hyperlink>
+                            </TextBlock>
+                        </StackPanel>
+                        <TextBox
+                            Name="UserAgentTextBox"
+                            MinHeight="72"
+                            MaxHeight="72"
+                            Margin="6"
+                            TextWrapping="Wrap"
+                            VerticalScrollBarVisibility="Auto" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Name="SaveTokensButton"
+                                Margin="6"
+                                Click="SaveTokensButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:FontIcon
+                                        Name="SaveTokensButtonFontIcon"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        Glyph="&#xE74E;"
+                                        Visibility="Visible" />
+                                    <ui:ProgressRing
+                                        Name="SaveTokensButtonProgressRing"
+                                        IsActive="True"
+                                        Visibility="Collapsed" />
+                                </StackPanel>
+                            </Button>
+                            <Label
+                                Width="150"
+                                Margin="6"
+                                FontSize="12">
+                                <Label.Content>
+                                    <AccessText
+                                        Foreground="#f03e3e"
+                                        Text="適用するにはGakujoGUIを再起動する必要があります．"
+                                        TextWrapping="Wrap" />
+                                </Label.Content>
+                            </Label>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="6">
+                        <Label Margin="6" Content="自動更新" />
+                        <CheckBox
+                            Name="AutoLoadEnableCheckBox"
+                            Margin="6"
+                            Checked="AutoLoadEnableCheckBox_CheckStateChanged"
+                            Content="自動的に更新する"
+                            Unchecked="AutoLoadEnableCheckBox_CheckStateChanged" />
+                        <ui:NumberBox
+                            Name="AutoLoadSpanNumberBox"
+                            Margin="6"
+                            Header="更新間隔 (分)"
+                            Maximum="60"
+                            Minimum="5"
+                            SmallChange="5"
+                            SpinButtonPlacementMode="Inline"
+                            ValueChanged="AutoLoadSpanNumberBox_ValueChanged" />
+                        <Separator Margin="6" />
+                        <Label Margin="6" Content="詳細を一括取得する" />
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <Button
+                                Name="LoadAllClassContactsButton"
+                                Margin="6"
+                                Click="LoadAllClassContactsButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label
+                                        Name="LoadAllClassContactsButtonLabel"
+                                        Content="授業連絡"
+                                        Visibility="Visible" />
+                                    <ui:ProgressRing
+                                        Name="LoadAllClassContactsButtonProgressRing"
+                                        IsActive="True"
+                                        Visibility="Collapsed" />
+                                </StackPanel>
+                            </Button>
+                            <Button
+                                Name="LoadAllClassSharedFilesButton"
+                                Margin="6"
+                                Click="LoadAllClassSharedFilesButton_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label
+                                        Name="LoadAllClassSharedFilesButtonLabel"
+                                        Content="授業共有ファイル"
+                                        Visibility="Visible" />
+                                    <ui:ProgressRing
+                                        Name="LoadAllClassSharedFilesButtonProgressRing"
+                                        IsActive="True"
+                                        Visibility="Collapsed" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                         <Label
                             Width="150"
                             Margin="6"
@@ -1489,252 +1554,189 @@
                             <Label.Content>
                                 <AccessText
                                     Foreground="#f03e3e"
-                                    Text="適用するにはGakujoGUIを再起動する必要があります．"
+                                    Text="操作には10分以上かかる場合があります．"
+                                    TextWrapping="Wrap" />
+                            </Label.Content>
+                        </Label>
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
+                        </TextBlock>
+                        <Separator Margin="6" />
+                        <Label Margin="6" Content="Windows設定" />
+                        <CheckBox
+                            Name="StartUpEnableCheckBox"
+                            Margin="6,6,6,0"
+                            Checked="StartUpEnableCheckBox_CheckStateChanged"
+                            Content="スタートアップに追加する"
+                            Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="StartUpMinimizeCheckBox"
+                            Margin="6,0"
+                            Checked="StartUpMinimizeCheckBox_CheckStateChanged"
+                            Content="最小化した状態で起動する"
+                            Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="AlwaysVisibleTrayIconCheckBox"
+                            Margin="6,0"
+                            Checked="AlwaysVisibleTrayIconCheckBox_CheckStateChanged"
+                            Content="常にタスクトレイに表示する"
+                            Unchecked="AlwaysVisibleTrayIconCheckBox_CheckStateChanged" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Margin="6">
+                        <Label Margin="6" Content="背景画像" />
+                        <Label
+                            Name="BackgroundImagePathLabel"
+                            Margin="6"
+                            VerticalAlignment="Center"
+                            Content="" />
+                        <StackPanel Orientation="Horizontal">
+                            <Button
+                                Name="ClearBackgroundImageButton"
+                                Margin="6"
+                                Click="ClearBackgroundImageButton_Click">
+                                <ui:FontIcon
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xEDAE;"
+                                    Visibility="Visible" />
+                            </Button>
+                            <Button
+                                Name="OpenBackgroundImageButton"
+                                Margin="6"
+                                Click="OpenBackgroundImageButton_Click">
+                                <ui:FontIcon
+                                    FontFamily="Segoe MDL2 Assets"
+                                    Glyph="&#xE8DA;"
+                                    Visibility="Visible" />
+                            </Button>
+                        </StackPanel>
+                        <Label Margin="6" Content="不透明度" />
+                        <Slider
+                            Name="BackgroundImageOpacitySlider"
+                            Margin="6,0"
+                            Maximum="100"
+                            Minimum="0"
+                            ValueChanged="BackgroundImageOpacitySlider_ValueChanged" />
+                        <Separator Margin="6" />
+                        <Label Margin="6" Content="表示タブ" />
+                        <CheckBox
+                            Name="ClassContactsTabVisibilityCheckBox"
+                            Margin="6,6,0,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="授業連絡"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="ReportsTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="レポート"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="QuizzesTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="小テスト"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="ClassSharedFilesTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="授業共有ファイル"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="LotteryRegistrationsTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="抽選履修"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="GeneralRegistrationsTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="一般履修"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="ClassResultsTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="成績情報"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                        <CheckBox
+                            Name="SyllabusSearchTabVisibilityCheckBox"
+                            Margin="6,0"
+                            Checked="TabVisibilityCheckBox_CheckStateChanged"
+                            Content="シラバス検索"
+                            Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="GakujoGUI について">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Image
+                        Width="100"
+                        Margin="6"
+                        Source="Resources/GakujoGUI.ico" />
+                    <Label
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Content="GakujoGUI"
+                        FontSize="28" />
+                    <Label
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Content="WPF Version" />
+                    <Label
+                        Name="VersionLabel"
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Content="Version" />
+                    <Button
+                        Name="GetLatestVersionButton"
+                        Margin="6"
+                        HorizontalAlignment="Center"
+                        Click="GetLatestVersionButton_Click"
+                        Content="更新を確認する " />
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <CheckBox
+                            Name="UpdateBetaEnableCheckBox"
+                            Margin="6"
+                            HorizontalAlignment="Center"
+                            Checked="UpdateBetaEnableCheckBox_CheckStateChanged"
+                            Content="事前リリースを有効にする"
+                            Unchecked="UpdateBetaEnableCheckBox_CheckStateChanged" />
+                        <Label
+                            Width="150"
+                            Margin="6"
+                            FontSize="12">
+                            <Label.Content>
+                                <AccessText
+                                    Foreground="#f03e3e"
+                                    Text="機能が正常に動作しない可能性があります．"
                                     TextWrapping="Wrap" />
                             </Label.Content>
                         </Label>
                     </StackPanel>
-                </StackPanel>
-                <StackPanel Grid.Column="1" Margin="6">
-                    <Label Margin="6" Content="自動更新" />
-                    <CheckBox
-                        Name="AutoLoadEnableCheckBox"
-                        Margin="6"
-                        Checked="AutoLoadEnableCheckBox_CheckStateChanged"
-                        Content="自動的に更新する"
-                        Unchecked="AutoLoadEnableCheckBox_CheckStateChanged" />
-                    <ui:NumberBox
-                        Name="AutoLoadSpanNumberBox"
-                        Margin="6"
-                        Header="更新間隔 (分)"
-                        Maximum="60"
-                        Minimum="5"
-                        SmallChange="5"
-                        SpinButtonPlacementMode="Inline"
-                        ValueChanged="AutoLoadSpanNumberBox_ValueChanged" />
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="詳細を一括取得する" />
                     <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                         <Button
-                            Name="LoadAllClassContactsButton"
+                            Name="OpenSettingsFolderButton"
                             Margin="6"
-                            Click="LoadAllClassContactsButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Label
-                                    Name="LoadAllClassContactsButtonLabel"
-                                    Content="授業連絡"
-                                    Visibility="Visible" />
-                                <ui:ProgressRing
-                                    Name="LoadAllClassContactsButtonProgressRing"
-                                    IsActive="True"
-                                    Visibility="Collapsed" />
-                            </StackPanel>
-                        </Button>
+                            Click="OpenSettingsFolderButton_Click"
+                            Content="設定フォルダを開く" />
                         <Button
-                            Name="LoadAllClassSharedFilesButton"
+                            Name="OpenAssemblyFolderButton"
                             Margin="6"
-                            Click="LoadAllClassSharedFilesButton_Click">
-                            <StackPanel Orientation="Horizontal">
-                                <Label
-                                    Name="LoadAllClassSharedFilesButtonLabel"
-                                    Content="授業共有ファイル"
-                                    Visibility="Visible" />
-                                <ui:ProgressRing
-                                    Name="LoadAllClassSharedFilesButtonProgressRing"
-                                    IsActive="True"
-                                    Visibility="Collapsed" />
-                            </StackPanel>
-                        </Button>
+                            Click="OpenAssemblyFolderButton_Click"
+                            Content="実行フォルダを開く" />
                     </StackPanel>
-                    <Label
-                        Width="150"
-                        Margin="6"
-                        FontSize="12">
-                        <Label.Content>
-                            <AccessText
-                                Foreground="#f03e3e"
-                                Text="操作には10分以上かかる場合があります．"
-                                TextWrapping="Wrap" />
-                        </Label.Content>
-                    </Label>
-                    <TextBlock Margin="6" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF#%E3%83%AD%E3%82%B0%E3%82%A4%E3%83%B3%E3%83%A1%E3%83%BC%E3%83%AB" RequestNavigate="Hyperlink_RequestNavigate">ログインメールが不要な場合</Hyperlink>
-                    </TextBlock>
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="Windows設定" />
-                    <CheckBox
-                        Name="StartUpEnableCheckBox"
-                        Margin="6,6,6,0"
-                        Checked="StartUpEnableCheckBox_CheckStateChanged"
-                        Content="スタートアップに追加する"
-                        Unchecked="StartUpEnableCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="StartUpMinimizeCheckBox"
-                        Margin="6,0"
-                        Checked="StartUpMinimizeCheckBox_CheckStateChanged"
-                        Content="最小化した状態で起動する"
-                        Unchecked="StartUpMinimizeCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="AlwaysVisibleTrayIconCheckBox"
-                        Margin="6,0"
-                        Checked="AlwaysVisibleTrayIconCheckBox_CheckStateChanged"
-                        Content="常にタスクトレイに表示する"
-                        Unchecked="AlwaysVisibleTrayIconCheckBox_CheckStateChanged" />
-                </StackPanel>
-                <StackPanel Grid.Column="2" Margin="6">
-                    <Label Margin="6" Content="背景画像" />
-                    <Label
-                        Name="BackgroundImagePathLabel"
-                        Margin="6"
-                        VerticalAlignment="Center"
-                        Content="" />
-                    <StackPanel Orientation="Horizontal">
-                        <Button
-                            Name="ClearBackgroundImageButton"
-                            Margin="6"
-                            Click="ClearBackgroundImageButton_Click">
-                            <ui:FontIcon
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xEDAE;"
-                                Visibility="Visible" />
-                        </Button>
-                        <Button
-                            Name="OpenBackgroundImageButton"
-                            Margin="6"
-                            Click="OpenBackgroundImageButton_Click">
-                            <ui:FontIcon
-                                FontFamily="Segoe MDL2 Assets"
-                                Glyph="&#xE8DA;"
-                                Visibility="Visible" />
-                        </Button>
+                    <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>
+                        </TextBlock>
+                        <TextBlock Margin="6" HorizontalAlignment="Center">
+                            <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
+                        </TextBlock>
                     </StackPanel>
-                    <Label Margin="6" Content="不透明度" />
-                    <Slider
-                        Name="BackgroundImageOpacitySlider"
-                        Margin="6,0"
-                        Maximum="100"
-                        Minimum="0"
-                        ValueChanged="BackgroundImageOpacitySlider_ValueChanged" />
-                    <Separator Margin="6" />
-                    <Label Margin="6" Content="表示タブ" />
-                    <CheckBox
-                        Name="ClassContactsTabVisibilityCheckBox"
-                        Margin="6,6,0,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="授業連絡"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="ReportsTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="レポート"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="QuizzesTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="小テスト"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="ClassSharedFilesTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="授業共有ファイル"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="LotteryRegistrationsTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="抽選履修"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="GeneralRegistrationsTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="一般履修"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="ClassResultsTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="成績情報"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
-                    <CheckBox
-                        Name="SyllabusSearchTabVisibilityCheckBox"
-                        Margin="6,0"
-                        Checked="TabVisibilityCheckBox_CheckStateChanged"
-                        Content="シラバス検索"
-                        Unchecked="TabVisibilityCheckBox_CheckStateChanged" />
                 </StackPanel>
-            </Grid>
-        </TabItem>
-        <TabItem Header="GakujoGUI について">
-            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Image
-                    Width="100"
-                    Margin="6"
-                    Source="Resources/GakujoGUI.ico" />
-                <Label
-                    Margin="6"
-                    HorizontalAlignment="Center"
-                    Content="GakujoGUI"
-                    FontSize="28" />
-                <Label
-                    Margin="6"
-                    HorizontalAlignment="Center"
-                    Content="WPF Version" />
-                <Label
-                    Name="VersionLabel"
-                    Margin="6"
-                    HorizontalAlignment="Center"
-                    Content="Version" />
-                <Button
-                    Name="GetLatestVersionButton"
-                    Margin="6"
-                    HorizontalAlignment="Center"
-                    Click="GetLatestVersionButton_Click"
-                    Content="更新を確認する " />
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <CheckBox
-                        Name="UpdateBetaEnableCheckBox"
-                        Margin="6"
-                        HorizontalAlignment="Center"
-                        Checked="UpdateBetaEnableCheckBox_CheckStateChanged"
-                        Content="事前リリースを有効にする"
-                        Unchecked="UpdateBetaEnableCheckBox_CheckStateChanged" />
-                    <Label
-                        Width="150"
-                        Margin="6"
-                        FontSize="12">
-                        <Label.Content>
-                            <AccessText
-                                Foreground="#f03e3e"
-                                Text="機能が正常に動作しない可能性があります．"
-                                TextWrapping="Wrap" />
-                        </Label.Content>
-                    </Label>
-                </StackPanel>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <Button
-                        Name="OpenSettingsFolderButton"
-                        Margin="6"
-                        Click="OpenSettingsFolderButton_Click"
-                        Content="設定フォルダを開く" />
-                    <Button
-                        Name="OpenAssemblyFolderButton"
-                        Margin="6"
-                        Click="OpenAssemblyFolderButton_Click"
-                        Content="実行フォルダを開く" />
-                </StackPanel>
-                <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                    <TextBlock Margin="6" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://github.com/xyzyxJP/GakujoGUI-WPF" RequestNavigate="Hyperlink_RequestNavigate">xyzyxJP/GakujoGUI-WPF</Hyperlink>
-                    </TextBlock>
-                    <TextBlock Margin="6" HorizontalAlignment="Center">
-                        <Hyperlink NavigateUri="https://twitter.com/xyzyxJP" RequestNavigate="Hyperlink_RequestNavigate">@xyzyxJP</Hyperlink>
-                    </TextBlock>
-                </StackPanel>
-            </StackPanel>
-        </TabItem>
-    </TabControl>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>
