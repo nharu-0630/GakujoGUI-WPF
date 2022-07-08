@@ -60,7 +60,17 @@ namespace GakujoGUI
         private readonly int semesterCode;
         private readonly string userAgent = "";
         private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{ReplaceSemesterCode(semesterCode)}";
-        private string ReportDateStart => $"{schoolYear}/0{(semesterCode < 2 ? 3 : 8)}/01";
+        private DateTime ReportDateStart => new(int.Parse(schoolYear), semesterCode < 2 ? 4 : 10, 1);
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
+        private DateTime ReportDateEnd
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
+        {
+            get
+            {
+                DateTime dateTime = ReportDateStart.AddMonths(5);
+                return new(dateTime.Year, dateTime.Month, DateTime.DaysInMonth(dateTime.Year, dateTime.Month));
+            }
+        }
 
         private string lastCallerMemberName = "";
 
@@ -335,25 +345,46 @@ namespace GakujoGUI
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/initialize");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Account.ApacheToken = GetApacheToken(htmlDocument);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/confirm");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&contactKind=&contactTitle=&contactDateFrom={ReportDateStart:yyyy/MM/dd}&contactDateTo={ReportDateEnd:yyyy/MM/dd}&contactUserName=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_Z07_2&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/confirm");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Account.ApacheToken = GetApacheToken(htmlDocument);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/changeNews");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Origin", "https://gakujo.shizuoka.ac.jp");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/home/changeNewsCondition/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&_screenIdentifier=home&_screenInfoDisp=&_scrollTop=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/home/changeNews");
+            logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Account.ApacheToken = GetApacheToken(htmlDocument);
             int limitCount = htmlDocument.GetElementbyId("tbl_news").SelectSingleNode("tbody").SelectNodes("tr").Count;
             logger.Info($"Found {limitCount} news.");
+            List<News> news = new();
             for (int i = 0; i < limitCount; i++)
             {
                 HtmlNodeCollection htmlNodes = htmlDocument.GetElementbyId("tbl_news").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
-                string type = htmlNodes[0].InnerText;
-                DateTime dateTime = DateTime.Parse(htmlNodes[1].InnerText);
-                string title = type == "学内連絡" ? htmlNodes[2].InnerText : Regex.Replace(htmlNodes[2].InnerText, @"\[.*] ", "");
-                switch (htmlNodes[0].InnerText)
-                {
-                    case "レポート":
-                        break;
-                    case "授業連絡":
-                        break;
-                    case "小テスト":
-                        break;
-                    case "授業共有ファイル":
-                        break;
-                }
+                news.Add(new News { Index = i, Type = htmlNodes[0].InnerText, DateTime = DateTime.Parse(htmlNodes[1].InnerText), Title = htmlNodes[0].InnerText == "学内連絡" ? htmlNodes[2].InnerText : Regex.Replace(htmlNodes[2].InnerText, @"\[.*] ", "") });
             }
             logger.Info("End Get News.");
             SaveJsons();
@@ -694,7 +725,7 @@ namespace GakujoGUI
             Account.ApacheToken = GetApacheToken(htmlDocument);
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart:yyyy/MM/dd}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
@@ -754,7 +785,7 @@ namespace GakujoGUI
             Account.ApacheToken = GetApacheToken(htmlDocument);
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart}");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&teacherCode=&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&checkSearchKeywordTeacherUserName=on&checkSearchKeywordSubjectName=on&checkSearchKeywordTitle=on&contactKindCode=&targetDateStart=&targetDateEnd=&reportDateStart={ReportDateStart:yyyy/MM/dd}");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/classcontact/classContactList/selectClassContactList");
@@ -1666,6 +1697,20 @@ namespace GakujoGUI
         public DateTime GeneralRegistrationDateTime { get; set; }
         public DateTime ClassResultDateTime { get; set; }
     }
+
+
+    public class News
+    {
+        public int Index { get; set; }
+        public string Type { get; set; } = "";
+        public DateTime DateTime { get; set; }
+        public string Title { get; set; } = "";
+
+        public override string ToString() => $"[{Type}] {DateTime:yyyy/MM/dd} {Title}";
+
+    }
+
+
 
     public class Report
     {
