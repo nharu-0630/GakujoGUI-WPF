@@ -986,11 +986,8 @@ namespace GakujoGUI
         #region サジェスト
 
 #pragma warning disable CA1822 // メンバーを static に設定します
-        private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+        private void SearchAutoSuggestBox_SuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args) => sender.Text = args.SelectedItem.ToString();
 #pragma warning restore CA1822 // メンバーを static に設定します
-        {
-            sender.Text = args.SelectedItem.ToString();
-        }
 
         private void SearchAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
@@ -1116,7 +1113,9 @@ namespace GakujoGUI
 
         #region タスクバー
 
+#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
         private void ApplyAssignmentsTaskBarIcon()
+#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
             bool badgeVisible = gakujoAPI.Reports.Any(x => x.IsSubmittable) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable);
             bool importantEnable = gakujoAPI.Reports.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));

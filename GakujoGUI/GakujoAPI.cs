@@ -46,7 +46,7 @@ namespace GakujoGUI
         public List<GeneralRegistrationEntry> GeneralRegistrationEntries { get => generalRegistrationEntries; set => generalRegistrationEntries = value; }
         public SchoolGrade SchoolGrade { get => schoolGrade; set => schoolGrade = value; }
         public List<ClassTableRow> ClassTables { get => classTables; set => classTables = value; }
-        public bool LoginStatus => loginStatus;
+        public bool LoginStatus { get => loginStatus; }
 
         private CookieContainer cookieContainer = new();
         private HttpClientHandler httpClientHandler = new();
@@ -61,9 +61,8 @@ namespace GakujoGUI
         private readonly string userAgent = "";
         private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{ReplaceSemesterCode(semesterCode)}";
         private DateTime ReportDateStart => new(int.Parse(schoolYear), semesterCode < 2 ? 4 : 10, 1);
-#pragma warning disable IDE0051 // 使用されていないプライベート メンバーを削除する
+
         private DateTime ReportDateEnd
-#pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
             get
             {
