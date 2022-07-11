@@ -368,6 +368,7 @@ namespace GakujoGUI
                             Tag = item,
                             Margin = new Thickness(6)
                         };
+                        //if (!File.Exists(item)) { button.Background = (Brush)new BrushConverter().ConvertFrom("#e03131")!; }
                         button.Click += OpenFileButton_Click;
                         button.MouseDown += OpenFileButton_MouseDown;
                         ClassContactFilesStackPanel.Children.Add(button);
@@ -459,6 +460,7 @@ namespace GakujoGUI
                             Tag = item,
                             Margin = new Thickness(6)
                         };
+                        //if (!File.Exists(item)) { button.Background = (Brush)new BrushConverter().ConvertFrom("#e03131")!; }
                         button.Click += OpenFileButton_Click;
                         button.MouseDown += OpenFileButton_MouseDown;
                         ReportFilesStackPanel.Children.Add(button);
@@ -550,6 +552,7 @@ namespace GakujoGUI
                             Tag = item,
                             Margin = new Thickness(6)
                         };
+                        //if (!File.Exists(item)) { button.Background = (Brush)new BrushConverter().ConvertFrom("#e03131")!; }
                         button.Click += OpenFileButton_Click;
                         button.MouseDown += OpenFileButton_MouseDown;
                         QuizFilesStackPanel.Children.Add(button);
@@ -634,6 +637,7 @@ namespace GakujoGUI
                             Tag = item,
                             Margin = new Thickness(6)
                         };
+                        //if (!File.Exists(item)) { button.Background = (Brush)new BrushConverter().ConvertFrom("#e03131")!; }
                         button.Click += OpenFileButton_Click;
                         button.MouseDown += OpenFileButton_MouseDown;
                         ClassSharedFilesStackPanel.Children.Add(button);
