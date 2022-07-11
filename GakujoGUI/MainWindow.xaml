@@ -343,24 +343,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         Text="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal">
-                                        <ComboBox
-                                            Name="ClassContactFilesComboBox"
-                                            MaxWidth="360"
-                                            Margin="12" />
-                                        <Button
-                                            Name="OpenClassContactFileButton"
-                                            Margin="6,12"
-                                            Click="OpenClassContactFileButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                        </Button>
-                                        <Button
-                                            Name="OpenClassContactFolderButton"
-                                            Margin="6,12"
-                                            Click="OpenClassContactFolderButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                        </Button>
-                                    </StackPanel>
+                                    <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -513,24 +496,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
                                         Text="{Binding Text, ElementName=ReportMessageTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal">
-                                        <ComboBox
-                                            Name="ReportFilesComboBox"
-                                            MaxWidth="360"
-                                            Margin="12" />
-                                        <Button
-                                            Name="OpenReportFileButton"
-                                            Margin="6"
-                                            Click="OpenReportFileButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                        </Button>
-                                        <Button
-                                            Name="OpenReportFolderButton"
-                                            Margin="6"
-                                            Click="OpenReportFolderButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                        </Button>
-                                    </StackPanel>
+                                    <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -672,24 +638,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="QuizFilesStackPanel" Orientation="Horizontal">
-                                        <ComboBox
-                                            Name="QuizFilesComboBox"
-                                            MaxWidth="360"
-                                            Margin="12" />
-                                        <Button
-                                            Name="OpenQuizFileButton"
-                                            Margin="6"
-                                            Click="OpenQuizFileButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                        </Button>
-                                        <Button
-                                            Name="OpenQuizFolderButton"
-                                            Margin="6"
-                                            Click="OpenQuizFolderButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                        </Button>
-                                    </StackPanel>
+                                    <StackPanel Name="QuizFilesStackPanel" Orientation="Horizontal" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -801,21 +750,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Orientation="Horizontal">
-                                        <ComboBox Name="ClassSharedFileFilesComboBox" Margin="12" />
-                                        <Button
-                                            Name="OpenClassSharedFileButton"
-                                            Margin="6,12"
-                                            Click="OpenClassSharedFileButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8E5;" />
-                                        </Button>
-                                        <Button
-                                            Name="OpenClassSharedFolderButton"
-                                            Margin="6,12"
-                                            Click="OpenClassSharedFolderButton_Click">
-                                            <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE838;" />
-                                        </Button>
-                                    </StackPanel>
+                                    <StackPanel Name="ClassSharedFilesStackPanel" Orientation="Horizontal" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>

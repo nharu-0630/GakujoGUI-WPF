@@ -276,6 +276,29 @@ namespace GakujoGUI
             logger.Info($"Start Process explorer.exe /e,/select,\"{path}\"");
         }
 
+        private void OpenFileButton_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Pressed)
+            {
+                OpenFolderButton_Click(sender, e);
+            }
+            else
+            {
+                DataObject dataObject = new(DataFormats.FileDrop, new[] { (string)((Button)sender).Tag });
+                DragDrop.DoDragDrop((Button)sender, dataObject, DragDropEffects.Copy);
+            }
+        }
+
+        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartProcessFile((string)((Button)sender).Tag);
+        }
+
+        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartProcessExplorer((string)((Button)sender).Tag);
+        }
+
         #endregion
 
         #region 授業連絡
@@ -330,13 +353,25 @@ namespace GakujoGUI
                 ClassContactContentTextBox.Text = ((ClassContact)ClassContactsDataGrid.SelectedItem).Content;
                 if (((ClassContact)ClassContactsDataGrid.SelectedItem).Files.Length == 0)
                 {
-                    ClassContactFilesComboBox.ItemsSource = null;
+                    ClassContactFilesStackPanel.Children.Clear();
                     ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
                 }
                 else
                 {
-                    ClassContactFilesComboBox.ItemsSource = ((ClassContact)ClassContactsDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
-                    ClassContactFilesComboBox.SelectedIndex = 0;
+                    ClassContactFilesStackPanel.Children.Clear();
+                    foreach (string item in ((ClassContact)ClassContactsDataGrid.SelectedItem).Files)
+                    {
+                        Button button = new()
+                        {
+                            AllowDrop = true,
+                            Content = Path.GetFileName(item),
+                            Tag = item,
+                            Margin = new Thickness(6)
+                        };
+                        button.Click += OpenFileButton_Click;
+                        button.MouseDown += OpenFileButton_MouseDown;
+                        ClassContactFilesStackPanel.Children.Add(button);
+                    }
                     ClassContactFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
@@ -344,21 +379,9 @@ namespace GakujoGUI
             {
                 ClassContactContactDateTimeLabel.Content = "連絡日時";
                 ClassContactContentTextBox.Text = "内容";
-                ClassContactFilesComboBox.ItemsSource = null;
+                ClassContactFilesStackPanel.Children.Clear();
                 ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void OpenClassContactFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClassContactFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessFile(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]);
-        }
-
-        private void OpenClassContactFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClassContactFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessExplorer(((ClassContact)ClassContactsDataGrid.SelectedItem).Files![ClassContactFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -421,13 +444,25 @@ namespace GakujoGUI
                 ReportMessageTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Message;
                 if (((Report)ReportsDataGrid.SelectedItem).Files.Length == 0)
                 {
-                    ReportFilesComboBox.ItemsSource = null;
+                    ReportFilesStackPanel.Children.Clear();
                     ReportFilesStackPanel.Visibility = Visibility.Hidden;
                 }
                 else
                 {
-                    ReportFilesComboBox.ItemsSource = ((Report)ReportsDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
-                    ReportFilesComboBox.SelectedIndex = 0;
+                    ReportFilesStackPanel.Children.Clear();
+                    foreach (string item in ((Report)ReportsDataGrid.SelectedItem).Files)
+                    {
+                        Button button = new()
+                        {
+                            AllowDrop = true,
+                            Content = Path.GetFileName(item),
+                            Tag = item,
+                            Margin = new Thickness(6)
+                        };
+                        button.Click += OpenFileButton_Click;
+                        button.MouseDown += OpenFileButton_MouseDown;
+                        ReportFilesStackPanel.Children.Add(button);
+                    }
                     ReportFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
@@ -436,21 +471,9 @@ namespace GakujoGUI
                 ReportStartEndDateTimeLabel.Content = "提出期間";
                 ReportDescriptionTextBox.Text = "説明";
                 ReportMessageTextBox.Text = "伝達事項";
-                ReportFilesComboBox.ItemsSource = null;
+                ReportFilesStackPanel.Children.Clear();
                 ReportFilesStackPanel.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void OpenReportFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ReportFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessFile(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]);
-        }
-
-        private void OpenReportFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ReportFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessExplorer(((Report)ReportsDataGrid.SelectedItem).Files![ReportFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -512,13 +535,25 @@ namespace GakujoGUI
                 QuizDescriptionTextBox.Text = ((Quiz)QuizzesDataGrid.SelectedItem).Description;
                 if (((Quiz)QuizzesDataGrid.SelectedItem).Files.Length == 0)
                 {
-                    QuizFilesComboBox.ItemsSource = null;
+                    QuizFilesStackPanel.Children.Clear();
                     QuizFilesStackPanel.Visibility = Visibility.Hidden;
                 }
                 else
                 {
-                    QuizFilesComboBox.ItemsSource = ((Quiz)QuizzesDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
-                    QuizFilesComboBox.SelectedIndex = 0;
+                    QuizFilesStackPanel.Children.Clear();
+                    foreach (string item in ((Quiz)QuizzesDataGrid.SelectedItem).Files)
+                    {
+                        Button button = new()
+                        {
+                            AllowDrop = true,
+                            Content = Path.GetFileName(item),
+                            Tag = item,
+                            Margin = new Thickness(6)
+                        };
+                        button.Click += OpenFileButton_Click;
+                        button.MouseDown += OpenFileButton_MouseDown;
+                        QuizFilesStackPanel.Children.Add(button);
+                    }
                     QuizFilesStackPanel.Visibility = Visibility.Visible;
                 }
             }
@@ -526,21 +561,9 @@ namespace GakujoGUI
             {
                 QuizStartEndDateTimeLabel.Content = "提出期間";
                 QuizDescriptionTextBox.Text = "説明";
-                QuizFilesComboBox.ItemsSource = null;
+                QuizFilesStackPanel.Children.Clear();
                 QuizFilesStackPanel.Visibility = Visibility.Hidden;
             }
-        }
-
-        private void OpenQuizFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (QuizFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessFile(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]);
-        }
-
-        private void OpenQuizFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (QuizFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessExplorer(((Quiz)QuizzesDataGrid.SelectedItem).Files![QuizFilesComboBox.SelectedIndex]);
         }
 
         #endregion
@@ -597,32 +620,32 @@ namespace GakujoGUI
                 ClassSharedFileDescriptionTextBox.Text = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description;
                 if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files.Length == 0)
                 {
-                    ClassSharedFileFilesComboBox.ItemsSource = null;
+                    ClassSharedFilesStackPanel.Children.Clear();
                 }
                 else
                 {
-                    ClassSharedFileFilesComboBox.ItemsSource = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files!.Select(x => Path.GetFileName(x));
-                    ClassSharedFileFilesComboBox.SelectedIndex = 0;
+                    ClassSharedFilesStackPanel.Children.Clear();
+                    foreach (string item in ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files)
+                    {
+                        Button button = new()
+                        {
+                            AllowDrop = true,
+                            Content = Path.GetFileName(item),
+                            Tag = item,
+                            Margin = new Thickness(6)
+                        };
+                        button.Click += OpenFileButton_Click;
+                        button.MouseDown += OpenFileButton_MouseDown;
+                        ClassSharedFilesStackPanel.Children.Add(button);
+                    }
                 }
             }
             else
             {
                 ClassSharedFileUpdateDateTimeLabel.Content = "更新日時";
                 ClassSharedFileDescriptionTextBox.Text = "ファイル説明";
-                ClassSharedFileFilesComboBox.ItemsSource = null;
+                ClassSharedFilesStackPanel.Children.Clear();
             }
-        }
-
-        private void OpenClassSharedFileButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClassSharedFileFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessFile(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]);
-        }
-
-        private void OpenClassSharedFolderButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClassSharedFileFilesComboBox.SelectedIndex == -1) { return; }
-            StartProcessExplorer(((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files![ClassSharedFileFilesComboBox.SelectedIndex]);
         }
 
         #endregion
