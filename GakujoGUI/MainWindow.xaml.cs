@@ -336,6 +336,36 @@ namespace GakujoGUI
             logger.Info("Refresh ClassContactsDataGrid.");
         }
 
+        private void RefreshFilesStackPanel(StackPanel stackPanel, string[] files)
+        {
+            if (files.Length == 0)
+            {
+                stackPanel.Children.Clear();
+                stackPanel.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                stackPanel.Children.Clear();
+                foreach (string item in files)
+                {
+                    StackPanel childStackPanel = new() { Orientation = Orientation.Horizontal };
+                    if (!File.Exists(item)) { childStackPanel.Children.Add(new FontIcon() { FontFamily = new FontFamily("Segoe MDL2 Assets"), Glyph = "\uE7BA", Margin = new Thickness(6, 0, 6, 0) }); }
+                    childStackPanel.Children.Add(new Label() { Content = Path.GetFileName(item) });
+                    Button button = new()
+                    {
+                        AllowDrop = true,
+                        Content = childStackPanel,
+                        Tag = item,
+                        Margin = new Thickness(6)
+                    };
+                    button.Click += OpenFileButton_Click;
+                    button.MouseDown += OpenFileButton_MouseDown;
+                    stackPanel.Children.Add(button);
+                }
+                stackPanel.Visibility = Visibility.Visible;
+            }
+        }
+
         private void ClassContactsDataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ClassContactsDataGrid.SelectedIndex != -1)
@@ -351,29 +381,7 @@ namespace GakujoGUI
                 }
                 ClassContactContactDateTimeLabel.Content = ((ClassContact)ClassContactsDataGrid.SelectedItem).ContactDateTime.ToString("yyyy/MM/dd HH:mm");
                 ClassContactContentTextBox.Text = ((ClassContact)ClassContactsDataGrid.SelectedItem).Content;
-                if (((ClassContact)ClassContactsDataGrid.SelectedItem).Files.Length == 0)
-                {
-                    ClassContactFilesStackPanel.Children.Clear();
-                    ClassContactFilesStackPanel.Visibility = Visibility.Hidden;
-                }
-                else
-                {
-                    ClassContactFilesStackPanel.Children.Clear();
-                    foreach (string item in ((ClassContact)ClassContactsDataGrid.SelectedItem).Files)
-                    {
-                        Button button = new()
-                        {
-                            AllowDrop = true,
-                            Content = Path.GetFileName(item),
-                            Tag = item,
-                            Margin = new Thickness(6)
-                        };
-                        button.Click += OpenFileButton_Click;
-                        button.MouseDown += OpenFileButton_MouseDown;
-                        ClassContactFilesStackPanel.Children.Add(button);
-                    }
-                    ClassContactFilesStackPanel.Visibility = Visibility.Visible;
-                }
+                RefreshFilesStackPanel(ClassContactFilesStackPanel, ((ClassContact)ClassContactsDataGrid.SelectedItem).Files);
             }
             else
             {
@@ -442,29 +450,7 @@ namespace GakujoGUI
                 ReportStartEndDateTimeLabel.Content = $"{((Report)ReportsDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Report)ReportsDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Report)ReportsDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Report)ReportsDataGrid.SelectedItem).EndDateTime - DateTime.Now:d'日'h'時間'm'分'})" : " (締切)");
                 ReportDescriptionTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Description;
                 ReportMessageTextBox.Text = ((Report)ReportsDataGrid.SelectedItem).Message;
-                if (((Report)ReportsDataGrid.SelectedItem).Files.Length == 0)
-                {
-                    ReportFilesStackPanel.Children.Clear();
-                    ReportFilesStackPanel.Visibility = Visibility.Hidden;
-                }
-                else
-                {
-                    ReportFilesStackPanel.Children.Clear();
-                    foreach (string item in ((Report)ReportsDataGrid.SelectedItem).Files)
-                    {
-                        Button button = new()
-                        {
-                            AllowDrop = true,
-                            Content = Path.GetFileName(item),
-                            Tag = item,
-                            Margin = new Thickness(6)
-                        };
-                        button.Click += OpenFileButton_Click;
-                        button.MouseDown += OpenFileButton_MouseDown;
-                        ReportFilesStackPanel.Children.Add(button);
-                    }
-                    ReportFilesStackPanel.Visibility = Visibility.Visible;
-                }
+                RefreshFilesStackPanel(ReportFilesStackPanel, ((Report)ReportsDataGrid.SelectedItem).Files);
             }
             else
             {
@@ -533,29 +519,7 @@ namespace GakujoGUI
                 }
                 QuizStartEndDateTimeLabel.Content = $"{((Quiz)QuizzesDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime - DateTime.Now:d'日'h'時間'm'分'})" : " (締切)");
                 QuizDescriptionTextBox.Text = ((Quiz)QuizzesDataGrid.SelectedItem).Description;
-                if (((Quiz)QuizzesDataGrid.SelectedItem).Files.Length == 0)
-                {
-                    QuizFilesStackPanel.Children.Clear();
-                    QuizFilesStackPanel.Visibility = Visibility.Hidden;
-                }
-                else
-                {
-                    QuizFilesStackPanel.Children.Clear();
-                    foreach (string item in ((Quiz)QuizzesDataGrid.SelectedItem).Files)
-                    {
-                        Button button = new()
-                        {
-                            AllowDrop = true,
-                            Content = Path.GetFileName(item),
-                            Tag = item,
-                            Margin = new Thickness(6)
-                        };
-                        button.Click += OpenFileButton_Click;
-                        button.MouseDown += OpenFileButton_MouseDown;
-                        QuizFilesStackPanel.Children.Add(button);
-                    }
-                    QuizFilesStackPanel.Visibility = Visibility.Visible;
-                }
+                RefreshFilesStackPanel(QuizFilesStackPanel, ((Quiz)QuizzesDataGrid.SelectedItem).Files);
             }
             else
             {
@@ -618,27 +582,7 @@ namespace GakujoGUI
                 }
                 ClassSharedFileUpdateDateTimeLabel.Content = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).UpdateDateTime.ToString("yyyy/MM/dd HH:mm");
                 ClassSharedFileDescriptionTextBox.Text = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Description;
-                if (((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files.Length == 0)
-                {
-                    ClassSharedFilesStackPanel.Children.Clear();
-                }
-                else
-                {
-                    ClassSharedFilesStackPanel.Children.Clear();
-                    foreach (string item in ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files)
-                    {
-                        Button button = new()
-                        {
-                            AllowDrop = true,
-                            Content = Path.GetFileName(item),
-                            Tag = item,
-                            Margin = new Thickness(6)
-                        };
-                        button.Click += OpenFileButton_Click;
-                        button.MouseDown += OpenFileButton_MouseDown;
-                        ClassSharedFilesStackPanel.Children.Add(button);
-                    }
-                }
+                RefreshFilesStackPanel(ClassSharedFilesStackPanel, ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).Files);
             }
             else
             {

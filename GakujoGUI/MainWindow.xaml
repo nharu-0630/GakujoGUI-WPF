@@ -343,7 +343,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         Text="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="ClassContactFilesStackPanel" Orientation="Horizontal" />
+                                    <StackPanel Name="ClassContactFilesStackPanel" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -496,7 +496,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
                                         Text="{Binding Text, ElementName=ReportMessageTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="ReportFilesStackPanel" Orientation="Horizontal" />
+                                    <StackPanel Name="ReportFilesStackPanel" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -638,7 +638,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="QuizFilesStackPanel" Orientation="Horizontal" />
+                                    <StackPanel Name="QuizFilesStackPanel" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
@@ -750,7 +750,7 @@
                                         link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         TextWrapping="Wrap" />
-                                    <StackPanel Name="ClassSharedFilesStackPanel" Orientation="Horizontal" />
+                                    <StackPanel Name="ClassSharedFilesStackPanel" />
                                 </StackPanel>
                             </DockPanel>
                         </ScrollViewer>
