@@ -311,7 +311,7 @@
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
-                                    Width="280"
+                                    Width="*"
                                     MinWidth="280"
                                     Binding="{Binding Title}"
                                     Header="タイトル"
@@ -429,7 +429,7 @@
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
-                                    Width="280"
+                                    Width="*"
                                     MinWidth="280"
                                     Binding="{Binding Title}"
                                     Header="タイトル"
@@ -582,7 +582,7 @@
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
-                                    Width="280"
+                                    Width="*"
                                     MinWidth="280"
                                     Binding="{Binding Title}"
                                     Header="タイトル"
@@ -718,7 +718,7 @@
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
-                                    Width="280"
+                                    Width="*"
                                     MinWidth="280"
                                     Binding="{Binding Title}"
                                     Header="タイトル"
@@ -823,7 +823,7 @@
                                         Header="曜日時限"
                                         IsReadOnly="True" />
                                     <DataGridTextColumn
-                                        Width="160"
+                                        Width="*"
                                         MinWidth="160"
                                         Binding="{Binding SubjectsName}"
                                         Header="科目名"
@@ -950,7 +950,7 @@
                                         Header="曜日時限"
                                         IsReadOnly="True" />
                                     <DataGridTextColumn
-                                        Width="160"
+                                        Width="*"
                                         MinWidth="160"
                                         Binding="{Binding SubjectsName}"
                                         Header="科目名"
@@ -962,8 +962,8 @@
                                         Header="クラス名"
                                         IsReadOnly="True" />
                                     <DataGridTextColumn
-                                        Width="60"
-                                        MinWidth="60"
+                                        Width="100"
+                                        MinWidth="100"
                                         Binding="{Binding SubjectsSection}"
                                         Header="科目区分"
                                         IsReadOnly="True" />
@@ -1055,7 +1055,7 @@
                                 Header="曜日時限"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
-                                Width="160"
+                                Width="*"
                                 MinWidth="160"
                                 Binding="{Binding SubjectsName}"
                                 Header="科目名"
@@ -1067,8 +1067,8 @@
                                 Header="単位"
                                 IsReadOnly="True" />
                             <DataGridTextColumn
-                                Width="60"
-                                MinWidth="60"
+                                Width="240"
+                                MinWidth="240"
                                 Binding="{Binding ClassRoom}"
                                 Header="講義室"
                                 IsReadOnly="True" />
@@ -1244,7 +1244,7 @@
                         SelectionMode="Single">
                         <DataGrid.Columns>
                             <DataGridTextColumn
-                                Width="160"
+                                Width="*"
                                 MinWidth="160"
                                 Binding="{Binding Subjects}"
                                 Header="教科名"
