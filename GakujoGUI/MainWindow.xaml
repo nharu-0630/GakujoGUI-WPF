@@ -2,6 +2,7 @@
     x:Class="GakujoGUI.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cv="clr-namespace:GakujoGUI.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:GakujoGUI"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,14 +19,15 @@
     Closing="Window_Closing"
     mc:Ignorable="d">
     <Window.Resources>
-        <local:BoolToContentConverter
+        <cv:BoolToContentConverter
             x:Key="SubmissionStatusConverter"
             FalseContent="未提出"
             TrueContent="提出済" />
-        <local:BoolToContentConverter
+        <cv:BoolToContentConverter
             x:Key="WinningConverter"
             FalseContent="落選"
             TrueContent="当選" />
+        <cv:StringToSubjectsConverter x:Key="SubjectsConverter" />
     </Window.Resources>
     <Window.DataContext>
         <tb:TaskbarIcon
@@ -307,7 +309,7 @@
                                 <DataGridTextColumn
                                     Width="100"
                                     MinWidth="100"
-                                    Binding="{Binding Subjects}"
+                                    Binding="{Binding Subjects, Converter={StaticResource SubjectsConverter}}"
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
@@ -425,7 +427,7 @@
                                 <DataGridTextColumn
                                     Width="100"
                                     MinWidth="100"
-                                    Binding="{Binding Subjects}"
+                                    Binding="{Binding Subjects, Converter={StaticResource SubjectsConverter}}"
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
@@ -578,7 +580,7 @@
                                 <DataGridTextColumn
                                     Width="100"
                                     MinWidth="100"
-                                    Binding="{Binding Subjects}"
+                                    Binding="{Binding Subjects, Converter={StaticResource SubjectsConverter}}"
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn
@@ -714,7 +716,7 @@
                                 <DataGridTextColumn
                                     Width="100"
                                     MinWidth="100"
-                                    Binding="{Binding Subjects}"
+                                    Binding="{Binding Subjects, Converter={StaticResource SubjectsConverter}}"
                                     Header="授業科目"
                                     IsReadOnly="True" />
                                 <DataGridTextColumn

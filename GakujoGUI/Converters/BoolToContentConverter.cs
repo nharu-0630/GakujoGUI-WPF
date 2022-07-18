@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace GakujoGUI
+namespace GakujoGUI.Converters
 {
     public class BoolToContentConverter : IValueConverter
     {
