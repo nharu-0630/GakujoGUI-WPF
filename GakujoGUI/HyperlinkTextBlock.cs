@@ -23,50 +23,50 @@ namespace HyperlinkTextBlock
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public static string? GetInline(TextBlock textBlock)
+        public static string? GetInline(TextBlock? textBlock)
         {
-            return (textBlock != null) ? textBlock.GetValue(ArticleContentProperty) as string : string.Empty;
+            return textBlock != null ? textBlock.GetValue(ArticleContentProperty) as string : string.Empty;
         }
 
-        public static void SetInline(TextBlock textBlock, string value)
+        public static void SetInline(TextBlock? textBlock, string value)
         {
-            if (textBlock != null) { textBlock.SetValue(ArticleContentProperty, value); }
+            textBlock?.SetValue(ArticleContentProperty, value);
         }
 
         private static void OnInlinePropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            TextBlock textBlock = (dependencyObject as TextBlock)!;
-            if (textBlock == null || e.NewValue is not string message) { return; }
+            var textBlock = (dependencyObject as TextBlock)!;
+            if (e.NewValue is not string message) { return; }
             message = message.TrimEnd('\n').TrimEnd('\r');
             List<int> newLine = new();
-            int i = 0;
-            while ((i = message.IndexOf("\r\n", i)) >= 0)
+            var i = 0;
+            while ((i = message.IndexOf("\r\n", i, StringComparison.Ordinal)) >= 0)
             {
                 newLine.Add(i - (newLine.Count * 2));
                 i += 2;
             }
             newLine.Sort();
             Regex regex = new(@"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            string text = message.Replace("\r\n", "");
-            MatchCollection matchCollection = regex.Matches(text);
+            var text = message.Replace("\r\n", "");
+            var matchCollection = regex.Matches(text);
             if (matchCollection.Count > 0)
             {
                 textBlock.Text = null;
                 textBlock.Inlines.Clear();
-                int position = 0;
-                int l = 0;
+                var position = 0;
+                var l = 0;
                 foreach (Match match in matchCollection)
                 {
-                    int index = match.Groups[0].Index;
-                    int length = match.Groups[0].Length;
-                    string tag = match.Groups[0].Value;
+                    var index = match.Groups[0].Index;
+                    var length = match.Groups[0].Length;
+                    var tag = match.Groups[0].Value;
                     if (position < index)
                     {
                         while (position < text.Length)
                         {
                             if (newLine.Count - l > 0 && newLine[l] < index)
                             {
-                                string? buffer = text[position..newLine[l]];
+                                var buffer = text[position..newLine[l]];
                                 textBlock.Inlines.Add(new Run(buffer));
                                 textBlock.Inlines.Add(new LineBreak());
                                 position = newLine[l];
@@ -74,7 +74,7 @@ namespace HyperlinkTextBlock
                             }
                             else
                             {
-                                string? buffer = text[position..index];
+                                var buffer = text[position..index];
                                 textBlock.Inlines.Add(new Run(buffer));
                                 position = index;
                                 break;
@@ -87,14 +87,14 @@ namespace HyperlinkTextBlock
                         Foreground = textBlock.Foreground,
                         NavigateUri = new Uri(tag)
                     };
-                    hyperlink.RequestNavigate += new RequestNavigateEventHandler(RequestNavigate);
-                    hyperlink.MouseEnter += new MouseEventHandler(MouseEnter);
-                    hyperlink.MouseLeave += new MouseEventHandler(MouseLeave);
+                    hyperlink.RequestNavigate += RequestNavigate;
+                    hyperlink.MouseEnter += MouseEnter;
+                    hyperlink.MouseLeave += MouseLeave;
                     while (position < text.Length)
                     {
                         if (newLine.Count - l > 0 && newLine[l] < index + length)
                         {
-                            string? buffer = text[position..newLine[l]];
+                            var buffer = text[position..newLine[l]];
                             hyperlink.Inlines.Add(new Run(buffer));
                             hyperlink.Inlines.Add(new LineBreak());
                             position = newLine[l];
@@ -102,7 +102,7 @@ namespace HyperlinkTextBlock
                         }
                         else
                         {
-                            string? buffer = text[position..(index + length)];
+                            var buffer = text[position..(index + length)];
                             hyperlink.Inlines.Add(new Run(buffer));
                             position = index + length;
                             break;
@@ -114,7 +114,7 @@ namespace HyperlinkTextBlock
                 {
                     if (newLine.Count - l > 0)
                     {
-                        string? buff = text[position..newLine[l]];
+                        var buff = text[position..newLine[l]];
                         textBlock.Inlines.Add(new Run(buff));
                         textBlock.Inlines.Add(new LineBreak());
                         position = newLine[l];
@@ -122,7 +122,7 @@ namespace HyperlinkTextBlock
                     }
                     else
                     {
-                        string? buff = text[position..];
+                        var buff = text[position..];
                         textBlock.Inlines.Add(new Run(buff));
                         position = text.Length;
                         break;
@@ -143,13 +143,13 @@ namespace HyperlinkTextBlock
             catch { }
         }
 
-        private static new void MouseEnter(object sender, MouseEventArgs e)
+        private new static void MouseEnter(object sender, MouseEventArgs e)
         {
             if (sender is not Hyperlink hyperlink) { return; }
             hyperlink.Foreground = new SolidColorBrush((Color)Application.Current.Resources["SystemAccentColor"]);
         }
 
-        private static new void MouseLeave(object sender, MouseEventArgs e)
+        private new static void MouseLeave(object sender, MouseEventArgs e)
         {
             if (sender is not Hyperlink hyperlink || hyperlink!.Parent is not TextBlock textBlock) { return; }
             hyperlink.Foreground = textBlock.Foreground;

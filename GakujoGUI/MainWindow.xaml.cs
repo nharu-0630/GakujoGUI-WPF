@@ -37,23 +37,23 @@ namespace GakujoGUI
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly GakujoAPI gakujoAPI;
-        private readonly NotifyAPI notifyAPI;
+        private readonly GakujoAPI gakujoApi;
+        private readonly NotifyAPI notifyApi;
         private readonly Settings settings = new();
         private readonly DispatcherTimer autoLoadTimer = new();
         private readonly bool settingsFlag = false;
         private bool shutdownFlag = false;
 
-        private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
+        private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
         private static string GetJsonPath(string value)
         {
-            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName));
             }
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{AssemblyName}\{value}.json");
         }
-        private static readonly string setupFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, $"{assemblyName}_Setup.exe");
+        private static readonly string SetupFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, $"{AssemblyName}_Setup.exe");
 
         public MainWindow()
         {
@@ -62,8 +62,7 @@ namespace GakujoGUI
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
             if (File.Exists(GetJsonPath("Settings")))
             {
-                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
-                if (settings == null) { settings = new(); }
+                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))! ?? new();
                 logger.Info("Load Settings.");
             }
             if (settings.StartUpMinimize)
@@ -71,13 +70,13 @@ namespace GakujoGUI
                 SetVisibility(Visibility.Hidden);
                 logger.Info("Startup minimized.");
             }
-            notifyAPI = new();
-            gakujoAPI = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-            UserIdTextBox.Text = GakujoAPI.Unprotect(gakujoAPI.Account.UserId, null!, DataProtectionScope.CurrentUser);
-            PassWordPasswordBox.Password = GakujoAPI.Unprotect(gakujoAPI.Account.PassWord, null!, DataProtectionScope.CurrentUser);
-            TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
-            DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
+            notifyApi = new();
+            gakujoApi = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
+            UserIdTextBox.Text = GakujoAPI.Unprotect(gakujoApi.Account.UserId, null!, DataProtectionScope.CurrentUser);
+            PassWordPasswordBox.Password = GakujoAPI.Unprotect(gakujoApi.Account.PassWord, null!, DataProtectionScope.CurrentUser);
+            TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
+            DiscordChannelTextBox.Text = notifyApi.Tokens.DiscordChannel.ToString();
+            DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -105,7 +104,7 @@ namespace GakujoGUI
             SyllabusSearchTabItem.Visibility = settings.SyllabusSearchTabVisibility ? Visibility.Visible : Visibility.Collapsed;
             VersionLabel.Content = $"{Assembly.GetExecutingAssembly().GetName().Version}";
             autoLoadTimer.Interval = TimeSpan.FromMinutes(AutoLoadSpanNumberBox.Value);
-            autoLoadTimer.Tick += new EventHandler(LoadEvent);
+            autoLoadTimer.Tick += LoadEvent;
             RefreshClassTablesDataGrid();
             RefreshClassContactsDataGrid();
             RefreshReportsDataGrid();
@@ -142,21 +141,21 @@ namespace GakujoGUI
 
         private void Login()
         {
-            Dispatcher.Invoke(() => { gakujoAPI.SetAccount(UserIdTextBox.Text, PassWordPasswordBox.Password); });
-            if (string.IsNullOrEmpty(gakujoAPI.Account.UserId) || string.IsNullOrEmpty(gakujoAPI.Account.PassWord)) { return; }
+            Dispatcher.Invoke(() => { gakujoApi.SetAccount(UserIdTextBox.Text, PassWordPasswordBox.Password); });
+            if (string.IsNullOrEmpty(gakujoApi.Account.UserId) || string.IsNullOrEmpty(gakujoApi.Account.PassWord)) { return; }
             Dispatcher.Invoke(() =>
             {
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
-            if (!gakujoAPI.Login(out bool networkAvailable))
+            if (!gakujoApi.Login(out var networkAvailable))
             {
-                Dispatcher.Invoke(() => MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
+                Dispatcher.Invoke(() => MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
             }
             else
             {
-                gakujoAPI.GetClassTables();
-                notifyAPI.Login();
+                gakujoApi.GetClassTables();
+                notifyApi.Login();
             }
             Dispatcher.Invoke(() =>
             {
@@ -168,12 +167,12 @@ namespace GakujoGUI
 
         private void LoadEvent(object? sender, EventArgs? e)
         {
-            Task.Run(() => Load());
+            Task.Run(Load);
         }
 
         private void Load()
         {
-            if (!gakujoAPI.LoginStatus) { return; }
+            if (!gakujoApi.LoginStatus) { return; }
             Dispatcher.Invoke(() =>
             {
                 LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
@@ -193,18 +192,18 @@ namespace GakujoGUI
                 LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             });
-            gakujoAPI.GetClassContacts(out int classContactsDiffCount);
-            gakujoAPI.GetReports(out List<Report> diffReports);
-            gakujoAPI.GetQuizzes(out List<Quiz> diffQuizzes);
-            gakujoAPI.GetClassSharedFiles(out int classSharedFilesDiffCount);
-            gakujoAPI.GetLotteryRegistrations(out _);
-            gakujoAPI.GetLotteryRegistrationsResult();
-            gakujoAPI.GetGeneralRegistrations();
+            gakujoApi.GetClassContacts(out var classContactsDiffCount);
+            gakujoApi.GetReports(out var diffReports);
+            gakujoApi.GetQuizzes(out var diffQuizzes);
+            gakujoApi.GetClassSharedFiles(out var classSharedFilesDiffCount);
+            gakujoApi.GetLotteryRegistrations(out _);
+            gakujoApi.GetLotteryRegistrationsResult();
+            gakujoApi.GetGeneralRegistrations();
             //抽選履修登録
             //gakujoAPI.SetLotteryRegistrations(new List<LotteryRegistrationEntry>() { new LotteryRegistrationEntry() { SubjectsName = "心理と行動Ａ", ClassName = "情工１", AspirationOrder = 1 } });
             //一般履修登録
             //gakujoAPI.SetGeneralRegistrations(new List<GeneralRegistrationEntry>() { new GeneralRegistrationEntry() { WeekdayPeriod = "水3･4", SubjectsName = "科学と技術", ClassName = "" } }, true);
-            gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
+            gakujoApi.GetClassResults(out var diffClassResults);
             Dispatcher.Invoke(() =>
             {
                 RefreshClassContactsDataGrid();
@@ -215,28 +214,28 @@ namespace GakujoGUI
                 RefreshLotteryRegistrationsResultDataGrid();
                 RefreshGeneralRegistrationsDataGrid();
                 RefreshClassResultsDataGrid();
-                if (classContactsDiffCount != gakujoAPI.ClassContacts.Count)
+                if (classContactsDiffCount != gakujoApi.ClassContacts.Count)
                 {
-                    gakujoAPI.ClassContacts.GetRange(0, classContactsDiffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    gakujoApi.ClassContacts.GetRange(0, classContactsDiffCount).ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                 }
-                if (diffReports.Count != gakujoAPI.Reports.Count)
+                if (diffReports.Count != gakujoApi.Reports.Count)
                 {
-                    diffReports.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    diffReports.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                 }
-                if (diffQuizzes.Count != gakujoAPI.Quizzes.Count)
+                if (diffQuizzes.Count != gakujoApi.Quizzes.Count)
                 {
-                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                 }
-                if (classSharedFilesDiffCount != gakujoAPI.ClassSharedFiles.Count)
+                if (classSharedFilesDiffCount != gakujoApi.ClassSharedFiles.Count)
                 {
-                    gakujoAPI.ClassSharedFiles.GetRange(0, classSharedFilesDiffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    gakujoApi.ClassSharedFiles.GetRange(0, classSharedFilesDiffCount).ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                 }
-                if (diffClassResults.Count != gakujoAPI.SchoolGrade.ClassResults.Count)
+                if (diffClassResults.Count != gakujoApi.SchoolGrade.ClassResults.Count)
                 {
-                    diffClassResults.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x, true); });
+                    diffClassResults.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x, true); });
                 }
-                notifyAPI.SetTodoistTask(gakujoAPI.Reports);
-                notifyAPI.SetTodoistTask(gakujoAPI.Quizzes);
+                notifyApi.SetTodoistTask(gakujoApi.Reports);
+                notifyApi.SetTodoistTask(gakujoApi.Quizzes);
                 LoadClassContactsButtonFontIcon.Visibility = Visibility.Visible;
                 LoadClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
                 LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
@@ -258,7 +257,7 @@ namespace GakujoGUI
 
         private bool LoginStatusCheck()
         {
-            if (!gakujoAPI.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false; }
+            if (!gakujoApi.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false; }
             return true;
         }
 
@@ -315,11 +314,11 @@ namespace GakujoGUI
             LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassContacts(out int diffCount);
+                gakujoApi.GetClassContacts(out var diffCount);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassContactsDataGrid();
-                    gakujoAPI.ClassContacts.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    gakujoApi.ClassContacts.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                     LoadClassContactsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassContactsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -328,9 +327,9 @@ namespace GakujoGUI
 
         private void RefreshClassContactsDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.ClassContacts }.View;
-            collectionView.Filter = new Predicate<object>(item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text));
-            ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.ClassContacts }.View;
+            collectionView.Filter = item => ((ClassContact)item).Subjects.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Title.Contains(ClassContactsSearchAutoSuggestBox.Text) || ((ClassContact)item).Content.Contains(ClassContactsSearchAutoSuggestBox.Text);
+            ClassContactsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.ClassContactDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassContactsDataGrid.ItemsSource = collectionView;
             ClassContactsDataGrid.Items.Refresh();
             logger.Info("Refresh ClassContactsDataGrid.");
@@ -346,7 +345,7 @@ namespace GakujoGUI
             else
             {
                 stackPanel.Children.Clear();
-                foreach (string item in files)
+                foreach (var item in files)
                 {
                     StackPanel childStackPanel = new() { Orientation = Orientation.Horizontal };
                     if (!File.Exists(item)) { childStackPanel.Children.Add(new FontIcon() { FontFamily = new FontFamily("Segoe MDL2 Assets"), Glyph = "\uE7BA", Margin = new Thickness(6, 0, 6, 0) }); }
@@ -372,11 +371,11 @@ namespace GakujoGUI
             {
                 if (!((ClassContact)ClassContactsDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("授業連絡の詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("授業連絡の詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
-                        int index = ClassContactsDataGrid.SelectedIndex;
-                        Task.Run(() => gakujoAPI.GetClassContact(index));
+                        var index = ClassContactsDataGrid.SelectedIndex;
+                        Task.Run(() => gakujoApi.GetClassContact(index));
                     }
                 }
                 ClassContactContactDateTimeLabel.Content = ((ClassContact)ClassContactsDataGrid.SelectedItem).ContactDateTime.ToString("yyyy/MM/dd HH:mm");
@@ -408,12 +407,12 @@ namespace GakujoGUI
             LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetReports(out List<Report> diffReports);
-                notifyAPI.SetTodoistTask(gakujoAPI.Reports);
+                gakujoApi.GetReports(out var diffReports);
+                notifyApi.SetTodoistTask(gakujoApi.Reports);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshReportsDataGrid();
-                    diffReports.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    diffReports.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                     LoadReportsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadReportsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -427,9 +426,9 @@ namespace GakujoGUI
 
         private void RefreshReportsDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.Reports }.View;
-            collectionView.Filter = new Predicate<object>(item => (((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text)) && (!(bool)FilterReportsCheckBox.IsChecked! || ((Report)item).IsSubmittable));
-            ReportsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.Reports }.View;
+            collectionView.Filter = item => (((Report)item).Subjects.Contains(ReportsSearchAutoSuggestBox.Text) || ((Report)item).Title.Contains(ReportsSearchAutoSuggestBox.Text)) && (!(bool)FilterReportsCheckBox.IsChecked! || ((Report)item).IsSubmittable);
+            ReportsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.ReportDateTime:yyyy/MM/dd HH:mm:ss}";
             ReportsDataGrid.ItemsSource = collectionView;
             ReportsDataGrid.Items.Refresh();
             logger.Info("Refresh ReportsDataGrid.");
@@ -441,10 +440,10 @@ namespace GakujoGUI
             {
                 if (!((Report)ReportsDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("レポートの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("レポートの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
-                        Task.Run(() => gakujoAPI.GetReport((Report)ReportsDataGrid.SelectedItem));
+                        Task.Run(() => gakujoApi.GetReport((Report)ReportsDataGrid.SelectedItem));
                     }
                 }
                 ReportStartEndDateTimeLabel.Content = $"{((Report)ReportsDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Report)ReportsDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Report)ReportsDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Report)ReportsDataGrid.SelectedItem).EndDateTime - DateTime.Now:d'日'h'時間'm'分'})" : " (締切)");
@@ -478,12 +477,12 @@ namespace GakujoGUI
             LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetQuizzes(out List<Quiz> diffQuizzes);
-                notifyAPI.SetTodoistTask(gakujoAPI.Quizzes);
+                gakujoApi.GetQuizzes(out var diffQuizzes);
+                notifyApi.SetTodoistTask(gakujoApi.Quizzes);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshQuizzesDataGrid();
-                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    diffQuizzes.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                     LoadQuizzesButtonFontIcon.Visibility = Visibility.Visible;
                     LoadQuizzesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -497,9 +496,9 @@ namespace GakujoGUI
 
         private void RefreshQuizzesDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.Quizzes }.View;
-            collectionView.Filter = new Predicate<object>(item => (((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text)) && (!(bool)FilterQuizzesCheckBox.IsChecked! || ((Quiz)item).IsSubmittable));
-            QuizzesDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.Quizzes }.View;
+            collectionView.Filter = item => (((Quiz)item).Subjects.Contains(QuizzesSearchAutoSuggestBox.Text) || ((Quiz)item).Title.Contains(QuizzesSearchAutoSuggestBox.Text)) && (!(bool)FilterQuizzesCheckBox.IsChecked! || ((Quiz)item).IsSubmittable);
+            QuizzesDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.QuizDateTime:yyyy/MM/dd HH:mm:ss}";
             QuizzesDataGrid.ItemsSource = collectionView;
             QuizzesDataGrid.Items.Refresh();
             logger.Info("Refresh QuizzesDataGrid.");
@@ -511,10 +510,10 @@ namespace GakujoGUI
             {
                 if (!((Quiz)QuizzesDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("小テストの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("小テストの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
-                        Task.Run(() => gakujoAPI.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
+                        Task.Run(() => gakujoApi.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
                     }
                 }
                 QuizStartEndDateTimeLabel.Content = $"{((Quiz)QuizzesDataGrid.SelectedItem).StartDateTime:yyyy/MM/dd HH:mm} -> {((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime:yyyy/MM/dd HH:mm}" + ((DateTime.Now < ((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime) ? $" (残り{((Quiz)QuizzesDataGrid.SelectedItem).EndDateTime - DateTime.Now:d'日'h'時間'm'分'})" : " (締切)");
@@ -546,11 +545,11 @@ namespace GakujoGUI
             LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassSharedFiles(out int diffCount);
+                gakujoApi.GetClassSharedFiles(out var diffCount);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassSharedFilesDataGrid();
-                    gakujoAPI.ClassSharedFiles.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x); });
+                    gakujoApi.ClassSharedFiles.GetRange(0, diffCount).ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x); });
                     LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -559,9 +558,9 @@ namespace GakujoGUI
 
         private void RefreshClassSharedFilesDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.ClassSharedFiles }.View;
-            collectionView.Filter = new Predicate<object>(item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchAutoSuggestBox.Text));
-            ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.ClassSharedFiles }.View;
+            collectionView.Filter = item => ((ClassSharedFile)item).Subjects.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Title.Contains(ClassSharedFilesSearchAutoSuggestBox.Text) || ((ClassSharedFile)item).Description.Contains(ClassSharedFilesSearchAutoSuggestBox.Text);
+            ClassSharedFilesDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.ClassSharedFileDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassSharedFilesDataGrid.ItemsSource = collectionView;
             ClassSharedFilesDataGrid.Items.Refresh();
             logger.Info("Refresh ClassSharedFilesDataGrid.");
@@ -573,11 +572,11 @@ namespace GakujoGUI
             {
                 if (!((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).IsAcquired)
                 {
-                    if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+                    if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
                         if (!LoginStatusCheck()) { return; }
-                        int index = ClassSharedFilesDataGrid.SelectedIndex;
-                        Task.Run(() => gakujoAPI.GetClassSharedFile(index));
+                        var index = ClassSharedFilesDataGrid.SelectedIndex;
+                        Task.Run(() => gakujoApi.GetClassSharedFile(index));
                     }
                 }
                 ClassSharedFileUpdateDateTimeLabel.Content = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).UpdateDateTime.ToString("yyyy/MM/dd HH:mm");
@@ -603,7 +602,7 @@ namespace GakujoGUI
             LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetLotteryRegistrations(out _);
+                gakujoApi.GetLotteryRegistrations(out _);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshLotteryRegistrationsDataGrid();
@@ -620,9 +619,9 @@ namespace GakujoGUI
 
         private void RefreshLotteryRegistrationsDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.LotteryRegistrations.SelectMany(_ => _) }.View;
-            collectionView.Filter = new Predicate<object>(item => (!(bool)FilterLotteryRegistrationsCheckBox.IsChecked! || ((LotteryRegistration)item).IsRegisterable));
-            LotteryRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.LotteryRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.LotteryRegistrations.SelectMany(_ => _) }.View;
+            collectionView.Filter = item => (!(bool)FilterLotteryRegistrationsCheckBox.IsChecked! || ((LotteryRegistration)item).IsRegisterable);
+            LotteryRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.LotteryRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
             LotteryRegistrationsDataGrid.ItemsSource = collectionView;
             LotteryRegistrationsDataGrid.Items.Refresh();
             logger.Info("Refresh LotteryRegistrationsDataGrid.");
@@ -639,7 +638,7 @@ namespace GakujoGUI
             LoadLotteryRegistrationsResultButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetLotteryRegistrationsResult();
+                gakujoApi.GetLotteryRegistrationsResult();
                 Dispatcher.Invoke(() =>
                 {
                     RefreshLotteryRegistrationsResultDataGrid();
@@ -656,9 +655,9 @@ namespace GakujoGUI
 
         private void RefreshLotteryRegistrationsResultDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.LotteryRegistrationsResult.SelectMany(_ => _) }.View;
-            collectionView.Filter = new Predicate<object>(item => (!(bool)FilterLotteryRegistrationsResultCheckBox.IsChecked! || ((LotteryRegistrationResult)item).IsWinning));
-            LotteryRegistrationsResultDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.LotteryRegistrationResultDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.LotteryRegistrationsResult.SelectMany(_ => _) }.View;
+            collectionView.Filter = item => (!(bool)FilterLotteryRegistrationsResultCheckBox.IsChecked! || ((LotteryRegistrationResult)item).IsWinning);
+            LotteryRegistrationsResultDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.LotteryRegistrationResultDateTime:yyyy/MM/dd HH:mm:ss}";
             LotteryRegistrationsResultDataGrid.ItemsSource = collectionView;
             LotteryRegistrationsResultDataGrid.Items.Refresh();
             logger.Info("Refresh LotteryRegistrationsResultDataGrid.");
@@ -675,7 +674,7 @@ namespace GakujoGUI
             LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetGeneralRegistrations();
+                gakujoApi.GetGeneralRegistrations();
                 Dispatcher.Invoke(() =>
                 {
                     RefreshGeneralRegistrationsDataGrid();
@@ -687,8 +686,8 @@ namespace GakujoGUI
 
         private void RefreshGeneralRegistrationsDataGrid()
         {
-            ICollectionView collectionView = new CollectionViewSource() { Source = gakujoAPI.RegisterableGeneralRegistrations.SelectMany(_ => _) }.View;
-            GeneralRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.GeneralRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
+            var collectionView = new CollectionViewSource() { Source = gakujoApi.RegisterableGeneralRegistrations.SelectMany(_ => _) }.View;
+            GeneralRegistrationsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.GeneralRegistrationDateTime:yyyy/MM/dd HH:mm:ss}";
             GeneralRegistrationsDataGrid.ItemsSource = collectionView;
             GeneralRegistrationsDataGrid.Items.Refresh();
             logger.Info("Refresh GeneralRegistrationsDataGrid.");
@@ -700,10 +699,10 @@ namespace GakujoGUI
 
         private void RefreshClassResultsDataGrid()
         {
-            ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoAPI.Account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
-            ClassResultsDataGrid.ItemsSource = gakujoAPI.SchoolGrade.ClassResults;
+            ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
+            ClassResultsDataGrid.ItemsSource = gakujoApi.SchoolGrade.ClassResults;
             ClassResultsDataGrid.Items.Refresh();
-            ClassResultsGPALabel.Content = $"推定GPA {gakujoAPI.SchoolGrade.PreliminaryGPA:N3}";
+            ClassResultsGPALabel.Content = $"推定GPA {gakujoApi.SchoolGrade.PreliminaryGPA:N3}";
             logger.Info("Refresh ClassResultsDataGrid.");
         }
 
@@ -714,11 +713,11 @@ namespace GakujoGUI
             LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassResults(out List<ClassResult> diffClassResults);
+                gakujoApi.GetClassResults(out var diffClassResults);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassResultsDataGrid();
-                    diffClassResults.ForEach(x => { NotifyToast(x); notifyAPI.NotifyDiscord(x, true); });
+                    diffClassResults.ForEach(x => { NotifyToast(x); notifyApi.NotifyDiscord(x, true); });
                     LoadClassResultsButtonFontIcon.Visibility = Visibility.Visible;
                     LoadClassResultsButtonProgressRing.Visibility = Visibility.Collapsed;
                 });
@@ -727,22 +726,22 @@ namespace GakujoGUI
 
         private void EvaluationCreditsButton_Click(object sender, RoutedEventArgs e)
         {
-            EvaluationCreditsDataGrid.ItemsSource = gakujoAPI.SchoolGrade.EvaluationCredits;
+            EvaluationCreditsDataGrid.ItemsSource = gakujoApi.SchoolGrade.EvaluationCredits;
             EvaluationCreditsDataGrid.Items.Refresh();
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
         private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
         {
-            DepartmentGPALabel.Content = gakujoAPI.SchoolGrade.DepartmentGPA;
-            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoAPI.SchoolGrade.DepartmentGPA.DepartmentImage);
-            CourseGPAImage.Source = Base64ToBitmapImage(gakujoAPI.SchoolGrade.DepartmentGPA.CourseImage);
+            DepartmentGPALabel.Content = gakujoApi.SchoolGrade.DepartmentGPA;
+            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGPA.DepartmentImage);
+            CourseGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGPA.CourseImage);
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
         private void YearCreditsButton_Click(object sender, RoutedEventArgs e)
         {
-            YearCreditsDataGrid.ItemsSource = gakujoAPI.SchoolGrade.YearCredits;
+            YearCreditsDataGrid.ItemsSource = gakujoApi.SchoolGrade.YearCredits;
             YearCreditsDataGrid.Items.Refresh();
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
@@ -764,12 +763,12 @@ namespace GakujoGUI
         {
             if (ClassTablesDataGrid.SelectedCells.Count != 1) { return null; }
             if (ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem) == -1) { return null; }
-            return gakujoAPI.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)][ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex];
+            return gakujoApi.ClassTables[ClassTablesDataGrid.Items.IndexOf(ClassTablesDataGrid.CurrentItem)][ClassTablesDataGrid.SelectedCells[0].Column.DisplayIndex];
         }
 
         private void ClassTableCellControl_ClassContactButtonClick(object sender, RoutedEventArgs e)
         {
-            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            var classTableCell = GetSelectedClassTableCell();
             if (classTableCell == null) { return; }
             ClassContactsSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshClassContactsDataGrid();
@@ -779,7 +778,7 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_ReportButtonClick(object sender, RoutedEventArgs e)
         {
-            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            var classTableCell = GetSelectedClassTableCell();
             if (classTableCell == null) { return; }
             ReportsSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshReportsDataGrid();
@@ -789,7 +788,7 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_QuizButtonClick(object sender, RoutedEventArgs e)
         {
-            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            var classTableCell = GetSelectedClassTableCell();
             if (classTableCell == null) { return; }
             QuizzesSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
             RefreshQuizzesDataGrid();
@@ -805,7 +804,7 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
-            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            var classTableCell = GetSelectedClassTableCell();
             if (classTableCell == null) { return; }
             SyllabusMarkdownViewer.Markdown = classTableCell.Syllabus.ToString();
             SyllabusClassTablesTabItem.Visibility = Visibility.Visible;
@@ -815,7 +814,7 @@ namespace GakujoGUI
 
         private void ClassTableCellControl_VideoMenuItemClick(object sender, RoutedEventArgs e)
         {
-            ClassTableCell? classTableCell = GetSelectedClassTableCell();
+            var classTableCell = GetSelectedClassTableCell();
             if (classTableCell == null) { return; }
             Process.Start(new ProcessStartInfo($"https://gakujo.shizuoka.ac.jp/portal/educationalvideo/search/params/locale=ja&year={settings.SchoolYear}&faculty=&department=&course={classTableCell.SubjectsName}&instructor=?year={settings.SchoolYear}&facultyCode=&courseName={classTableCell.SubjectsName}&instructorName=&locale=ja") { UseShellExecute = true });
             logger.Info($"Start Process https://gakujo.shizuoka.ac.jp/portal/educationalvideo/search/params/locale=ja&year={settings.SchoolYear}&faculty=&department=&course={classTableCell.SubjectsName}&instructor=?year={settings.SchoolYear}&facultyCode=&courseName={classTableCell.SubjectsName}&instructorName=&locale=ja");
@@ -826,26 +825,26 @@ namespace GakujoGUI
             if ((GetDataGridCell<ClassTableCellControl>(ClassTablesDataGrid, e.GetPosition(ClassTablesDataGrid))!).DataContext is not ClassTableCell classTableCell) { return; }
             logger.Info($"Start Add Favorites to {classTableCell.SubjectsName}.");
             List<string> favorites = new();
-            if (e.Data.GetDataPresent(DataFormats.FileDrop, false)) { favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false)); }
+            if (e.Data.GetDataPresent(DataFormats.FileDrop, false)) { favorites.AddRange((string[])e.Data.GetData(DataFormats.FileDrop, false)!); }
             if (e.Data.GetDataPresent(DataFormats.Text, false))
             {
-                if (Regex.IsMatch((string)e.Data.GetData(DataFormats.Text, false), @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
+                if (Regex.IsMatch((string)e.Data.GetData(DataFormats.Text, false)!, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
                 {
-                    favorites.Add((string)e.Data.GetData(DataFormats.Text, false));
+                    favorites.Add((string)e.Data.GetData(DataFormats.Text, false)!);
                 }
             }
             favorites = favorites.Except(classTableCell.Favorites).ToList();
             if (favorites.Count == 0)
             {
                 logger.Warn("Return Add Favorites by already exists.");
-                MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りにすでに追加されています．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
-            if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            if (MessageBox.Show($"{classTableCell.SubjectsName}のお気に入りに追加しますか．\n{string.Join('\n', favorites)}", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 classTableCell.Favorites.AddRange(favorites);
                 logger.Info($"Add {favorites.Count} Favorites to {classTableCell.SubjectsName}");
-                gakujoAPI.SaveJsons();
+                gakujoApi.SaveJsons();
             }
             else { logger.Warn("Return Add Favorites by user rejection."); return; }
             logger.Info($"End Add Favorites to {classTableCell.SubjectsName}.");
@@ -854,9 +853,9 @@ namespace GakujoGUI
 
         public void RefreshClassTablesDataGrid(bool saveJsons = false)
         {
-            if (saveJsons) { gakujoAPI.SaveJsons(); }
-            LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoAPI.Account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
-            ClassTablesDataGrid.ItemsSource = gakujoAPI.ClassTables.GetRange(0, Math.Min(5, gakujoAPI.ClassTables.Count));
+            if (saveJsons) { gakujoApi.SaveJsons(); }
+            LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoApi.Account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
+            ClassTablesDataGrid.ItemsSource = gakujoApi.ClassTables.GetRange(0, Math.Min(5, gakujoApi.ClassTables.Count));
             ClassTablesDataGrid.Items.Refresh();
             logger.Info("Refresh ClassTablesDataGrid.");
         }
@@ -870,40 +869,26 @@ namespace GakujoGUI
         private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
 #pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
-            if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
-            DataGridRow dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
-            if (dataGridRow == null) { return null; }
-            DataGridCellsPresenter dataGridCellPresenter = GetVisualChild<DataGridCellsPresenter>(dataGridRow)!;
-            if (dataGridCellPresenter == null) { return null; }
-            DataGridCell dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
-            if (dataGridCell == null)
-            {
-                dataGrid.UpdateLayout();
-                dataGrid.ScrollIntoView(dataGridRow, dataGrid.Columns[columnIndex]);
-                dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
-            }
+            if (dataGrid.Items.IsEmpty) { return null; }
+            var dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
+            var dataGridCellPresenter = GetVisualChild<DataGridCellsPresenter>(dataGridRow)!;
+            var dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
             return dataGridCell;
         }
 
         private static DataGridRow? GetDataGridRow(DataGrid dataGrid, int index)
         {
-            if (dataGrid.Items == null || dataGrid.Items.IsEmpty) { return null; }
-            DataGridRow dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
-            if (dataGridRow == null)
-            {
-                dataGrid.UpdateLayout();
-                dataGrid.ScrollIntoView(dataGrid.Items[index]);
-                dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
-            }
+            if (dataGrid.Items.IsEmpty) { return null; }
+            var dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
             return dataGridRow;
         }
 
-        private T? GetVisualChild<T>(Visual parent) where T : Visual
+        private static T? GetVisualChild<T>(Visual parent) where T : Visual
         {
             T? result = default;
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
-                Visual visual = (VisualTreeHelper.GetChild(parent, i) as Visual)!;
+                var visual = (VisualTreeHelper.GetChild(parent, i) as Visual)!;
                 if ((visual as T) != null) { break; }
                 result = GetVisualChild<T>((visual as T)!);
             }
@@ -913,10 +898,10 @@ namespace GakujoGUI
         private static T? GetDataGridCell<T>(DataGrid dataGrid, Point point)
         {
             T? result = default;
-            HitTestResult hitTestResult = VisualTreeHelper.HitTest(dataGrid, point);
+            var hitTestResult = VisualTreeHelper.HitTest(dataGrid, point);
             if (hitTestResult != null)
             {
-                DependencyObject visualHit = hitTestResult.VisualHit;
+                var visualHit = hitTestResult.VisualHit;
                 while (visualHit != null)
                 {
                     if (visualHit is T)
@@ -961,15 +946,12 @@ namespace GakujoGUI
             if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
             {
                 List<string> suitableItems = new();
-                string[] splitText = sender.Text.Split(" ");
-                if (gakujoAPI.ClassTables != null)
+                var splitText = sender.Text.Split(" ");
+                foreach (var classTableRow in gakujoApi.ClassTables)
                 {
-                    foreach (ClassTableRow classTableRow in gakujoAPI.ClassTables)
+                    foreach (var classTableCell in classTableRow)
                     {
-                        foreach (ClassTableCell classTableCell in classTableRow)
-                        {
-                            if (splitText.All((key) => { return classTableCell.SubjectsName.Contains(key); }) && classTableCell.SubjectsName != "") { suitableItems.Add(classTableCell.SubjectsName); }
-                        }
+                        if (splitText.All((key) => { return classTableCell.SubjectsName.Contains(key); }) && classTableCell.SubjectsName != "") { suitableItems.Add(classTableCell.SubjectsName); }
                     }
                 }
                 sender.ItemsSource = suitableItems.Distinct();
@@ -1005,7 +987,7 @@ namespace GakujoGUI
 
         private void ToastNotificationManagerCompat_OnActivated(ToastNotificationActivatedEventArgsCompat e)
         {
-            ToastArguments toastArguments = ToastArguments.Parse(e.Argument);
+            var toastArguments = ToastArguments.Parse(e.Argument);
             Dispatcher.Invoke(() =>
             {
                 SetVisibility(Visibility.Visible);
@@ -1048,31 +1030,31 @@ namespace GakujoGUI
 
         private void NotifyToast(ClassContact classContact)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassContact").AddArgument("Index", gakujoAPI.ClassContacts.IndexOf(classContact)).AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassContact").AddArgument("Index", gakujoApi.ClassContacts.IndexOf(classContact)).AddText(classContact.Title).AddText(classContact.Content).AddCustomTimeStamp(classContact.ContactDateTime).AddAttributionText(classContact.Subjects).Show();
             logger.Info("Notiy Toast ClassContact.");
         }
 
         private void NotifyToast(Report report)
         {
-            new ToastContentBuilder().AddArgument("Type", "Report").AddArgument("Index", gakujoAPI.Reports.IndexOf(report)).AddText(report.Title).AddText($"{report.StartDateTime} -> {report.EndDateTime}").AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "Report").AddArgument("Index", gakujoApi.Reports.IndexOf(report)).AddText(report.Title).AddText($"{report.StartDateTime} -> {report.EndDateTime}").AddCustomTimeStamp(report.StartDateTime).AddAttributionText(report.Subjects).Show();
             logger.Info("Notiy Toast Report.");
         }
 
         private void NotifyToast(Quiz quiz)
         {
-            new ToastContentBuilder().AddArgument("Type", "Quiz").AddArgument("Index", gakujoAPI.Quizzes.IndexOf(quiz)).AddText(quiz.Title).AddText($"{quiz.StartDateTime} -> {quiz.EndDateTime}").AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "Quiz").AddArgument("Index", gakujoApi.Quizzes.IndexOf(quiz)).AddText(quiz.Title).AddText($"{quiz.StartDateTime} -> {quiz.EndDateTime}").AddCustomTimeStamp(quiz.StartDateTime).AddAttributionText(quiz.Subjects).Show();
             logger.Info("Notify Toast Quiz.");
         }
 
         private void NotifyToast(ClassSharedFile classSharedFile)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddArgument("Index", gakujoAPI.ClassSharedFiles.IndexOf(classSharedFile)).AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassSharedFile").AddArgument("Index", gakujoApi.ClassSharedFiles.IndexOf(classSharedFile)).AddText(classSharedFile.Title).AddText(classSharedFile.Description).AddCustomTimeStamp(classSharedFile.UpdateDateTime).AddAttributionText(classSharedFile.Subjects).Show();
             logger.Info("Notify Toast ClassSharedFile.");
         }
 
         private void NotifyToast(ClassResult classResult)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoAPI.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoApi.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
             logger.Info("Notify Toast ClassResult.");
         }
 
@@ -1084,8 +1066,8 @@ namespace GakujoGUI
         private void ApplyAssignmentsTaskBarIcon()
 #pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
-            bool badgeVisible = gakujoAPI.Reports.Any(x => x.IsSubmittable) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable);
-            bool importantEnable = gakujoAPI.Reports.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoAPI.Quizzes.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
+            var badgeVisible = gakujoApi.Reports.Any(x => x.IsSubmittable) || gakujoApi.Quizzes.Any(x => x.IsSubmittable);
+            var importantEnable = gakujoApi.Reports.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoApi.Quizzes.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
             if (badgeVisible)
             {
                 if (importantEnable)
@@ -1111,7 +1093,7 @@ namespace GakujoGUI
 
         private void LoadMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => Load());
+            Task.Run(Load);
         }
 
         private void CloseMenuItem_Click(object sender, RoutedEventArgs e)
@@ -1129,10 +1111,10 @@ namespace GakujoGUI
 
         private void ContextMenu_Opened(object sender, RoutedEventArgs e)
         {
-            ReportMenuItem.Header = $"レポート ({gakujoAPI.Reports.Count(x => x.IsSubmittable)})";
-            ReportMenuItem.Visibility = gakujoAPI.Reports.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
-            QuizMenuItem.Header = $"小テスト ({gakujoAPI.Quizzes.Count(x => x.IsSubmittable)})";
-            QuizMenuItem.Visibility = gakujoAPI.Quizzes.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
+            ReportMenuItem.Header = $"レポート ({gakujoApi.Reports.Count(x => x.IsSubmittable)})";
+            ReportMenuItem.Visibility = gakujoApi.Reports.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
+            QuizMenuItem.Header = $"小テスト ({gakujoApi.Quizzes.Count(x => x.IsSubmittable)})";
+            QuizMenuItem.Visibility = gakujoApi.Quizzes.Any(x => x.IsSubmittable) ? Visibility.Visible : Visibility.Collapsed;
             logger.Info("Opened ContextMenu.");
         }
 
@@ -1182,10 +1164,10 @@ namespace GakujoGUI
 
         private void SaveTokensButton_Click(object sender, RoutedEventArgs e)
         {
-            switch (MessageBox.Show($"適用するには{assemblyName}を再起動する必要があります．\n再起動しますか．", assemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
+            switch (MessageBox.Show($"適用するには{AssemblyName}を再起動する必要があります．\n再起動しますか．", AssemblyName, MessageBoxButton.YesNoCancel, MessageBoxImage.Information))
             {
                 case MessageBoxResult.Yes:
-                    notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    notifyApi.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
                     settings.SchoolYear = (int)SchoolYearNumberBox.Value;
                     settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
                     settings.UserAgent = UserAgentTextBox.Text;
@@ -1197,16 +1179,16 @@ namespace GakujoGUI
                     Application.Current.Shutdown();
                     break;
                 case MessageBoxResult.No:
-                    notifyAPI.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
+                    notifyApi.SetTokens(TodoistTokenPasswordBox.Password, DiscordChannelTextBox.Text, DiscordTokenPasswordBox.Password);
                     settings.SchoolYear = (int)SchoolYearNumberBox.Value;
                     settings.SemesterCode = SchoolSemesterComboBox.SelectedIndex;
                     settings.UserAgent = UserAgentTextBox.Text;
                     SaveJson();
                     break;
                 case MessageBoxResult.Cancel:
-                    TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
-                    DiscordChannelTextBox.Text = notifyAPI.Tokens.DiscordChannel.ToString();
-                    DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyAPI.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
+                    TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
+                    DiscordChannelTextBox.Text = notifyApi.Tokens.DiscordChannel.ToString();
+                    DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
                     SchoolYearNumberBox.Value = settings.SchoolYear;
                     SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
                     UserAgentTextBox.Text = settings.UserAgent;
@@ -1246,9 +1228,9 @@ namespace GakujoGUI
             settings.StartUpEnable = (bool)StartUpEnableCheckBox.IsChecked!;
             logger.Info($"Set StartUpEnable {(settings.StartUpEnable ? "enable" : "disable")}.");
             SaveJson();
-            using RegistryKey registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
-            if (settings.StartUpEnable) { registryKey.SetValue(assemblyName, Environment.ProcessPath!); }
-            else { registryKey.DeleteValue(assemblyName, false); }
+            using var registryKey = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true)!;
+            if (settings.StartUpEnable) { registryKey.SetValue(AssemblyName, Environment.ProcessPath!); }
+            else { registryKey.DeleteValue(AssemblyName, false); }
             registryKey.Close();
         }
 
@@ -1282,7 +1264,7 @@ namespace GakujoGUI
             LoadAllClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassContacts(out _, -1);
+                gakujoApi.GetClassContacts(out _, -1);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassContactsDataGrid();
@@ -1299,7 +1281,7 @@ namespace GakujoGUI
             LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoAPI.GetClassSharedFiles(out _, -1);
+                gakujoApi.GetClassSharedFiles(out _, -1);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassSharedFilesDataGrid();
@@ -1351,10 +1333,10 @@ namespace GakujoGUI
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
             {
-                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)}\"",
+                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)}\"",
                 UseShellExecute = true
             });
-            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)}\"");
+            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)}\"");
         }
 
         private void OpenAssemblyFolderButton_Click(object sender, RoutedEventArgs e)
@@ -1371,23 +1353,23 @@ namespace GakujoGUI
         {
             Task.Run(() =>
             {
-                if (!GetLatestVersions(out Version latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", assemblyName, MessageBoxButton.OK, MessageBoxImage.Information)); }
+                if (!GetLatestVersions(out var latestVersion)) { Dispatcher.Invoke(() => MessageBox.Show("最新の状態です．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Information)); }
                 else
                 {
                     MessageBoxResult? messageBoxResult = MessageBoxResult.No;
-                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", assemblyName, MessageBoxButton.YesNo, MessageBoxImage.Information); });
-                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(setupFilePath))
+                    Dispatcher.Invoke(() => { messageBoxResult = MessageBox.Show($"更新があります．\nv{Assembly.GetExecutingAssembly().GetName().Version} -> v{latestVersion}", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Information); });
+                    if (messageBoxResult == MessageBoxResult.Yes && File.Exists(SetupFilePath))
                     {
-                        Process.Start(setupFilePath, "/SILENT");
+                        Process.Start(SetupFilePath, "/SILENT");
                         logger.Info("Start Process setup file.");
                         shutdownFlag = true;
                         Dispatcher.Invoke(() => Application.Current.Shutdown());
                     }
                     else
                     {
-                        if (File.Exists(setupFilePath))
+                        if (File.Exists(SetupFilePath))
                         {
-                            File.Delete(setupFilePath);
+                            File.Delete(SetupFilePath);
                             logger.Info("Delete Download latest version.");
                         }
                     }
@@ -1398,11 +1380,11 @@ namespace GakujoGUI
         private static void GetLatestVersion(Release[] releases, ref Version version, ref string url)
         {
             if (!releases.Any()) { return; }
-            if (!releases.First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").Any()) { return; }
+            if (!releases.First().assets.Any(x => x.name == "GakujoGUI_Setup.exe")) { return; }
             if (version < Version.Parse(releases.First().tag_name.TrimStart('v')))
             {
                 version = Version.Parse(releases.First().tag_name.TrimStart('v'));
-                url = releases.First().assets.Where(x => x.name == "GakujoGUI_Setup.exe").First().browser_download_url;
+                url = releases.First().assets.First(x => x.name == "GakujoGUI_Setup.exe").browser_download_url;
             }
         }
 
@@ -1412,12 +1394,12 @@ namespace GakujoGUI
             HttpClient httpClient = new();
             HttpRequestMessage httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
-            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            var httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
+            var releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
             latestVersion = Assembly.GetExecutingAssembly().GetName().Version!;
-            string downloadUrl = "";
+            var downloadUrl = "";
             GetLatestVersion(releases.Where(x => x.name.Contains("force")).ToArray(), ref latestVersion, ref downloadUrl);
             if (settings.UpdateBetaEnable) { GetLatestVersion(releases.Where(x => x.prerelease).ToArray(), ref latestVersion, ref downloadUrl); }
             GetLatestVersion(releases.Where(x => !x.prerelease).ToArray(), ref latestVersion, ref downloadUrl);
@@ -1432,12 +1414,12 @@ namespace GakujoGUI
             httpRequestMessage = new(new("GET"), downloadUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
             logger.Info($"GET {downloadUrl}");
-            using (FileStream fileStream = new(setupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream fileStream = new(SetupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download latest version.");
-            if (!File.Exists(setupFilePath))
+            if (!File.Exists(SetupFilePath))
             {
                 logger.Warn("Return Get latest versions by the file is missing.");
                 return false;
@@ -1463,12 +1445,12 @@ namespace GakujoGUI
             }
             httpRequestMessage = new(new("GET"), "https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", settings.UserAgent);
-            HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            var httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             logger.Info("GET https://api.github.com/repos/xyzyxJP/GakujoGUI-WPF/releases");
             logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            Release[] releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
-            Version forceVersion = Assembly.GetExecutingAssembly().GetName().Version!;
-            string downloadUrl = "";
+            var releases = JsonConvert.DeserializeObject<Release[]>(httpResponseMessage.Content.ReadAsStringAsync().Result)!;
+            var forceVersion = Assembly.GetExecutingAssembly().GetName().Version!;
+            var downloadUrl = "";
             GetLatestVersion(releases.Where(x => x.name.Contains("force")).ToArray(), ref forceVersion, ref downloadUrl);
             logger.Info($"forceVersion={forceVersion}");
             logger.Info($"downloadUrl={downloadUrl}");
@@ -1481,17 +1463,17 @@ namespace GakujoGUI
             httpRequestMessage = new(new("GET"), downloadUrl);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage, HttpCompletionOption.ResponseHeadersRead).Result;
             logger.Info($"GET {downloadUrl}");
-            using (FileStream fileStream = new(setupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
+            using (FileStream fileStream = new(SetupFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
             {
                 httpResponseMessage.Content.ReadAsStreamAsync().Result.CopyTo(fileStream);
             }
             logger.Info("End Download force version.");
-            if (!File.Exists(setupFilePath))
+            if (!File.Exists(SetupFilePath))
             {
                 logger.Warn("Return Get force version by the file is missing.");
                 return false;
             }
-            Process.Start(setupFilePath, "/SILENT");
+            Process.Start(SetupFilePath, "/SILENT");
             logger.Info("Start Process setup file.");
             shutdownFlag = true;
             Application.Current.Shutdown();
@@ -1542,7 +1524,7 @@ namespace GakujoGUI
             }
             else
             {
-                ClearValue(BackgroundProperty);
+                Grid.ClearValue(BackgroundProperty);
                 logger.Info("Set Background Default.");
             }
         }

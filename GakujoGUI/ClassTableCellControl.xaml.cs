@@ -25,36 +25,36 @@ namespace GakujoGUI
         public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent VideoMenuItemClickEvent = EventManager.RegisterRoutedEvent("VideoMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public event RoutedEventHandler ClassContactButtonClick
         {
-            add { AddHandler(ClassContactButtonClickEvent, value); }
-            remove { RemoveHandler(ClassContactButtonClickEvent, value); }
+            add => AddHandler(ClassContactButtonClickEvent, value);
+            remove => RemoveHandler(ClassContactButtonClickEvent, value);
         }
 
         public event RoutedEventHandler ReportButtonClick
         {
-            add { AddHandler(ReportButtonClickEvent, value); }
-            remove { RemoveHandler(ReportButtonClickEvent, value); }
+            add => AddHandler(ReportButtonClickEvent, value);
+            remove => RemoveHandler(ReportButtonClickEvent, value);
         }
 
         public event RoutedEventHandler QuizButtonClick
         {
-            add { AddHandler(QuizButtonClickEvent, value); }
-            remove { RemoveHandler(QuizButtonClickEvent, value); }
+            add => AddHandler(QuizButtonClickEvent, value);
+            remove => RemoveHandler(QuizButtonClickEvent, value);
         }
 
         public event RoutedEventHandler SyllabusMenuItemClick
         {
-            add { AddHandler(SyllabusMenuItemClickEvent, value); }
-            remove { RemoveHandler(SyllabusMenuItemClickEvent, value); }
+            add => AddHandler(SyllabusMenuItemClickEvent, value);
+            remove => RemoveHandler(SyllabusMenuItemClickEvent, value);
         }
 
         public event RoutedEventHandler VideoMenuItemClick
         {
-            add { AddHandler(VideoMenuItemClickEvent, value); }
-            remove { RemoveHandler(VideoMenuItemClickEvent, value); }
+            add => AddHandler(VideoMenuItemClickEvent, value);
+            remove => RemoveHandler(VideoMenuItemClickEvent, value);
         }
 
         private void ClassContactButton_Click(object sender, RoutedEventArgs e)
@@ -89,11 +89,11 @@ namespace GakujoGUI
 
         private void FavoritesMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            string header = (string)(e.OriginalSource as MenuItem)!.Header;
+            var header = (string)(e.OriginalSource as MenuItem)!.Header;
             if (Regex.IsMatch(header, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)") || File.Exists(header) || Directory.Exists(header))
             {
                 Process.Start(new ProcessStartInfo((string)(e.OriginalSource as MenuItem)!.Header) { UseShellExecute = true });
-                logger.Info($"Start Process {(string)(e.OriginalSource as MenuItem)!.Header}");
+                Logger.Info($"Start Process {(string)(e.OriginalSource as MenuItem)!.Header}");
             }
         }
 
@@ -104,7 +104,7 @@ namespace GakujoGUI
                 if (MessageBox.Show($"{(DataContext as ClassTableCell)!.SubjectsName}のお気に入りから削除しますか．\n{(string)(e.OriginalSource as MenuItem)!.Header}", "GakujoGUI", MessageBoxButton.YesNo, MessageBoxImage.Information) == MessageBoxResult.Yes)
                 {
                     (DataContext as ClassTableCell)!.Favorites.Remove((string)(e.OriginalSource as MenuItem)!.Header);
-                    logger.Info($"Delete {(string)(e.OriginalSource as MenuItem)!.Header} favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
+                    Logger.Info($"Delete {(string)(e.OriginalSource as MenuItem)!.Header} favorite from {(DataContext as ClassTableCell)!.SubjectsName}.");
                     (Window.GetWindow(this) as MainWindow)!.RefreshClassTablesDataGrid(true);
                 }
             }

@@ -34,17 +34,17 @@ namespace GakujoGUI
             loggingConfiguration.LoggingRules.Add(loggingRule);
             LogManager.Configuration = loggingConfiguration;
             logger.Info("Start Logging.");
-            Process[] processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Where(x => x.Id != Environment.ProcessId).ToArray();
+            var processes = Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Where(x => x.Id != Environment.ProcessId).ToArray();
             if (processes.Length != 0 && !Environment.GetCommandLineArgs().Contains("-force"))
             {
-                foreach (Process process in processes)
+                foreach (var process in processes)
                 {
                     MessageBox.Show("GakujoGUIはすでに起動しています．", "GakujoGUI", MessageBoxButton.OK, MessageBoxImage.Information);
                     Current.Shutdown();
                     return;
                 }
             }
-            foreach (Process process in processes)
+            foreach (var process in processes)
             {
                 process.Kill();
                 logger.Warn($"Kill other GakujoGUI process processId={process.Id}.");

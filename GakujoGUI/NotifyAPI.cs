@@ -19,7 +19,7 @@ namespace GakujoGUI
 {
     internal class NotifyAPI
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private Tokens tokens = new();
         private TodoistClient? todoistClient;
@@ -58,7 +58,7 @@ namespace GakujoGUI
             if (File.Exists(GetJsonPath("Tokens")))
             {
                 Tokens = JsonConvert.DeserializeObject<Tokens>(File.ReadAllText(GetJsonPath("Tokens")))!;
-                logger.Info("Load Tokens.");
+                Logger.Info("Load Tokens.");
             }
             Login();
         }
@@ -69,7 +69,7 @@ namespace GakujoGUI
             Tokens.DiscordChannel = ulong.Parse(discordChannel);
             Tokens.DiscordToken = GakujoAPI.Protect(discordToken, null!, DataProtectionScope.CurrentUser);
             try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented)); }
-            catch (Exception exception) { logger.Error(exception, "Error Save Tokens."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Save Tokens."); }
         }
 
         public void Login()
@@ -78,26 +78,22 @@ namespace GakujoGUI
             {
                 todoistClient = new(GakujoAPI.Unprotect(Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser));
                 TodoistResources = todoistClient!.GetResourcesAsync().Result;
-                logger.Info("Login Todoist.");
+                Logger.Info("Login Todoist.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Login Todoist."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Login Todoist."); }
             try
             {
                 discordSocketClient = new();
                 discordSocketClient.LoginAsync(TokenType.Bot, GakujoAPI.Unprotect(Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser)).Wait();
                 discordSocketClient.StartAsync().Wait();
-                logger.Info("Login Discord.");
+                Logger.Info("Login Discord.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Login Discord."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Login Discord."); }
         }
 
         #region Todoist
 
-        private bool ExistsTodoistTask(string content, DateTime dateTime)
-        {
-            if (dateTime < DateTime.Now) { return true; }
-            return TodoistResources.Items.Where(x => x.DueDate != null && x.Content == content && x.DueDate.Date == dateTime).Any();
-        }
+        private bool ExistsTodoistTask(string content, DateTime dateTime) => dateTime < DateTime.Now || TodoistResources.Items.Any(x => x.DueDate != null && x.Content == content && x.DueDate.Date == dateTime);
 
         private void AddTodoistTask(string content, DateTime dateTime)
         {
@@ -105,10 +101,10 @@ namespace GakujoGUI
             {
                 if (!ExistsTodoistTask(content, dateTime))
                 {
-                    logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime.ToLocalTime()) }).Result}.");
+                    Logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime.ToLocalTime()) }).Result}.");
                 }
             }
-            catch (Exception exception) { logger.Error(exception, "Error Add Todoist task."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Add Todoist task."); }
         }
 
         private void ArchiveTodoistTask(string content, DateTime dateTime)
@@ -118,28 +114,26 @@ namespace GakujoGUI
                 TodoistResources.Items.Where(x => x.DueDate != null && x.Content == content && x.DueDate.Date == dateTime && x.IsChecked != true).ToList().ForEach(x =>
                 {
                     todoistClient!.Items.CloseAsync(x.Id).Wait();
-                    logger.Info($"Archive Todoist task {x.Id}.");
+                    Logger.Info($"Archive Todoist task {x.Id}.");
                 });
             }
-            catch (Exception exception) { logger.Error(exception, "Error Archive Todoist task."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Archive Todoist task."); }
         }
 
         public void SetTodoistTask(List<Report> reports)
         {
-            logger.Info("Start Set Todoist task reports.");
-            if (TodoistResources == null) { logger.Warn("Return Set Todoist task reports by resource is null."); return; }
+            Logger.Info("Start Set Todoist task reports.");
             reports.Where(x => x.IsSubmittable).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
             reports.Where(x => !x.IsSubmittable).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
-            logger.Info("End Set Todoist task reports.");
+            Logger.Info("End Set Todoist task reports.");
         }
 
         public void SetTodoistTask(List<Quiz> quizzes)
         {
-            logger.Info("Start Set Todoist task quizzes.");
-            if (TodoistResources == null) { logger.Warn("Return Set Todoist task quizzes by resource is null."); return; }
+            Logger.Info("Start Set Todoist task quizzes.");
             quizzes.Where(x => x.IsSubmittable).ToList().ForEach(x => AddTodoistTask(x.ToShortString(), x.EndDateTime));
             quizzes.Where(x => !x.IsSubmittable).ToList().ForEach(x => ArchiveTodoistTask(x.ToShortString(), x.EndDateTime));
-            logger.Info("End Set Todoist task quizzes.");
+            Logger.Info("End Set Todoist task quizzes.");
         }
 
         #endregion
@@ -156,9 +150,9 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classContact.Subjects);
                 embedBuilder.WithTimestamp(classContact.ContactDateTime);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
-                logger.Info("Notify Discord ClassContact.");
+                Logger.Info("Notify Discord ClassContact.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassContact."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassContact."); }
         }
 
         public void NotifyDiscord(Report report)
@@ -171,9 +165,9 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(report.Subjects);
                 embedBuilder.WithTimestamp(report.StartDateTime);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
-                logger.Info("Notify Discord Report.");
+                Logger.Info("Notify Discord Report.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify Discord Report."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord Report."); }
         }
 
         public void NotifyDiscord(Quiz quiz)
@@ -186,9 +180,9 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(quiz.Subjects);
                 embedBuilder.WithTimestamp(quiz.StartDateTime);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
-                logger.Info("Notify Discord Quiz.");
+                Logger.Info("Notify Discord Quiz.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify Discord Quiz."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord Quiz."); }
         }
 
         public void NotifyDiscord(ClassSharedFile classSharedFile)
@@ -201,9 +195,9 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classSharedFile.Subjects);
                 embedBuilder.WithTimestamp(classSharedFile.UpdateDateTime);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
-                logger.Info("Notify Discord ClassSharedFile.");
+                Logger.Info("Notify Discord ClassSharedFile.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassSharedFile."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassSharedFile."); }
         }
 
         public void NotifyDiscord(ClassResult classResult, bool hideDetail)
@@ -216,9 +210,9 @@ namespace GakujoGUI
                 embedBuilder.WithAuthor(classResult.TeacherName);
                 embedBuilder.WithTimestamp(classResult.ReportDate);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
-                logger.Info("Notify Discord ClassResult.");
+                Logger.Info("Notify Discord ClassResult.");
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify Discord ClassResult."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassResult."); }
         }
 
         #endregion
@@ -229,18 +223,18 @@ namespace GakujoGUI
         {
             try
             {
-                logger.Info("Notify LINE.");
+                Logger.Info("Notify LINE.");
                 using HttpClient httpClient = new();
                 HttpRequestMessage httpRequestMessage = new(new("POST"), "https://notify-api.line.me/api/notify");
                 httpRequestMessage.Headers.TryAddWithoutValidation("Authorization", $"Bearer {Tokens.LineToken}");
                 httpRequestMessage.Content = new StringContent($"message={HttpUtility.UrlEncode(content, Encoding.UTF8)}");
                 httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                HttpResponseMessage httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-                logger.Info("POST https://notify-api.line.me/api/notify");
-                logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                var httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                Logger.Info("POST https://notify-api.line.me/api/notify");
+                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
                 httpClient.Dispose();
             }
-            catch (Exception exception) { logger.Error(exception, "Error Notify LINE."); }
+            catch (Exception exception) { Logger.Error(exception, "Error Notify LINE."); }
         }
 
         #endregion

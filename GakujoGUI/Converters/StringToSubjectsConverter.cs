@@ -14,11 +14,11 @@ namespace GakujoGUI.Converters
 
         public object NullContent { get; set; }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) { return NullContent; }
-            string stringValue = "";
-            bool isString = true;
+            var stringValue = "";
+            var isString = true;
             try { stringValue = (string)value; }
             catch { isString = false; }
             if (!isString) { return NullContent; }

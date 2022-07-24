@@ -17,11 +17,11 @@ namespace GakujoGUI.Converters
         public object FalseContent { get; set; }
         public object NullContent { get; set; }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value == null) { return NullContent; }
-            bool boolValue = true;
-            bool isBool = true;
+            var boolValue = true;
+            var isBool = true;
             try { boolValue = (bool)value; }
             catch { isBool = false; }
             if (!isBool) { return NullContent; }
