@@ -53,7 +53,7 @@ namespace GakujoGUI
             {
                 Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName));
             }
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{AssemblyName}\{value}.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @$"{AssemblyName}\{value}.json");
         }
         private static readonly string SetupFilePath = Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)!, $"{AssemblyName}_Setup.exe");
 
@@ -64,7 +64,7 @@ namespace GakujoGUI
             ToastNotificationManagerCompat.OnActivated += ToastNotificationManagerCompat_OnActivated;
             if (File.Exists(GetJsonPath("Settings")))
             {
-                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))! ?? new();
+                settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(GetJsonPath("Settings")))!;
                 logger.Info("Load Settings.");
             }
             if (settings.StartUpMinimize)
@@ -279,7 +279,7 @@ namespace GakujoGUI
         {
             if (e.ChangedButton == MouseButton.Middle && e.ButtonState == MouseButtonState.Pressed)
             {
-                OpenFolderButton_Click(sender, e);
+                OpenFolderButton_Click(sender);
             }
             else
             {
@@ -293,7 +293,7 @@ namespace GakujoGUI
             StartProcessFile((string)((Button)sender).Tag);
         }
 
-        private void OpenFolderButton_Click(object sender, RoutedEventArgs e)
+        private void OpenFolderButton_Click(object sender)
         {
             StartProcessExplorer((string)((Button)sender).Tag);
         }
@@ -1527,13 +1527,13 @@ namespace GakujoGUI
     {
         public bool AutoLoadEnable { get; set; } = true;
         public int AutoLoadSpan { get; set; } = 30;
-        public bool StartUpEnable { get; set; } = false;
-        public bool StartUpMinimize { get; set; } = false;
+        public bool StartUpEnable { get; set; }
+        public bool StartUpMinimize { get; set; }
         public bool AlwaysVisibleTrayIcon { get; set; } = true;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 1;
         public string UserAgent { get; set; } = $"Chrome/103.0.5060.66 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
-        public bool UpdateBetaEnable { get; set; } = false;
+        public bool UpdateBetaEnable { get; set; }
         public string BackgroundImagePath { get; set; } = "";
         public int BackgroundImageOpacity { get; set; } = 30;
         public bool ClassContactsTabVisibility { get; set; } = true;
