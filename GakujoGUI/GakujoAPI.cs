@@ -280,38 +280,35 @@ namespace GakujoGUI
                 Logger.Warn("Return Login by wrong username or password.");
                 return false;
             }
-            else
-            {
-                HtmlDocument htmlDocument = new();
-                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                var relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
-                var samlResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
-                relayState = Uri.EscapeDataString(relayState);
-                samlResponse = Uri.EscapeDataString(samlResponse);
-                httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
-                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={samlResponse}");
-                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-                Logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
-                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/portal/shibbolethlogin/shibbolethLogin/initLogin/sso");
-                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-                Logger.Info("GET https://gakujo.shizuoka.ac.jp/portal/shibbolethlogin/shibbolethLogin/initLogin/sso");
-                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
-                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpRequestMessage.Content = new StringContent("EXCLUDE_SET=");
-                httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-                Logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
-                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-                Account.ApacheToken = GetApacheToken(htmlDocument);
-                Account.StudentName = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/div/div/div/ul[2]/li/a/span/span").InnerText;
-                Account.StudentName = Account.StudentName[0..^2];
-            }
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            var relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
+            var samlResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
+            relayState = Uri.EscapeDataString(relayState);
+            samlResponse = Uri.EscapeDataString(samlResponse);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={samlResponse}");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            Logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
+            Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/portal/shibbolethlogin/shibbolethLogin/initLogin/sso");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            Logger.Info("GET https://gakujo.shizuoka.ac.jp/portal/shibbolethlogin/shibbolethLogin/initLogin/sso");
+            Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+            httpRequestMessage.Content = new StringContent("EXCLUDE_SET=");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+            Logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
+            Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            Account.ApacheToken = GetApacheToken(htmlDocument);
+            Account.StudentName = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/div/div/div/ul[2]/li/a/span/span").InnerText;
+            Account.StudentName = Account.StudentName[..^2];
             Account.LoginDateTime = DateTime.Now;
             Logger.Info("End Login.");
             SaveJsons();
@@ -371,7 +368,7 @@ namespace GakujoGUI
             for (var i = 0; i < limitCount; i++)
             {
                 var htmlNodes = htmlDocument.GetElementbyId("tbl_news").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
-                news.Add(new News { Index = i, Type = htmlNodes[0].InnerText, DateTime = DateTime.Parse(htmlNodes[1].InnerText), Title = htmlNodes[0].InnerText == "学内連絡" ? htmlNodes[2].InnerText : Regex.Replace(htmlNodes[2].InnerText, @"\[.*] ", "") });
+                news.Add(new() { Index = i, Type = htmlNodes[0].InnerText, DateTime = DateTime.Parse(htmlNodes[1].InnerText), Title = htmlNodes[0].InnerText == "学内連絡" ? htmlNodes[2].InnerText : Regex.Replace(htmlNodes[2].InnerText, @"\[.*] ", "") });
             }
             Logger.Info("End Get News.");
             SaveJsons();
@@ -446,7 +443,7 @@ namespace GakujoGUI
             }
             Reports.AddRange(diffReports);
             Logger.Info($"Found {diffReports.Count} new Reports.");
-            Reports.Where(x => !x.IsAcquired).ToList().ForEach(x => GetReport(x));
+            Reports.Where(x => !x.IsAcquired).ToList().ForEach(GetReport);
             Account.ReportDateTime = DateTime.Now;
             Logger.Info("End Get Reports.");
             ApplyReportsClassTables();
@@ -603,7 +600,7 @@ namespace GakujoGUI
             }
             Quizzes.AddRange(diffQuizzes);
             Logger.Info($"Found {diffQuizzes.Count} new Quizzes.");
-            Quizzes.Where(x => !x.IsAcquired).ToList().ForEach(x => GetQuiz(x));
+            Quizzes.Where(x => !x.IsAcquired).ToList().ForEach(GetQuiz);
             Account.QuizDateTime = DateTime.Now;
             Logger.Info("End Get Quizzes.");
             ApplyQuizzesClassTables();
@@ -1385,14 +1382,12 @@ namespace GakujoGUI
             foreach (var generalRegistrationEntry in generalRegistrationEntries)
             {
                 SetGeneralRegistration(generalRegistrationEntry, false, out var result);
-                if (result == 2 && overwrite)
-                {
-                    var youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
-                    var jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
-                    SetGeneralRegistrationClear(youbi, jigen);
-                    SetGeneralRegistration(generalRegistrationEntry, false, out result);
-                    if (result != 0) { SetGeneralRegistration(generalRegistrationEntry, true, out _); }
-                }
+                if (result != 2 || !overwrite) continue;
+                var youbi = (ReplaceWeekday(generalRegistrationEntry.WeekdayPeriod) + 1).ToString();
+                var jigen = ReplacePeriod(generalRegistrationEntry.WeekdayPeriod).ToString();
+                SetGeneralRegistrationClear(youbi, jigen);
+                SetGeneralRegistration(generalRegistrationEntry, false, out result);
+                if (result != 0) { SetGeneralRegistration(generalRegistrationEntry, true, out _); }
             }
             Logger.Info("End Set GeneralRegistrations.");
             SaveJsons();
@@ -1688,9 +1683,7 @@ namespace GakujoGUI
         public string Type { get; set; } = "";
         public DateTime DateTime { get; set; }
         public string Title { get; set; } = "";
-
         public override string ToString() => $"[{Type}] {DateTime:yyyy/MM/dd} {Title}";
-
     }
 
 
