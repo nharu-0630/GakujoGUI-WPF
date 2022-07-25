@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -41,15 +42,16 @@ namespace GakujoGUI
         private readonly NotifyAPI notifyApi;
         private readonly Settings settings = new();
         private readonly DispatcherTimer autoLoadTimer = new();
-        private readonly bool settingsFlag = false;
-        private bool shutdownFlag = false;
+        private readonly bool settingsFlag;
+        private bool shutdownFlag;
 
         private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
+
         private static string GetJsonPath(string value)
         {
-            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName)))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName));
             }
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{AssemblyName}\{value}.json");
         }
@@ -122,11 +124,9 @@ namespace GakujoGUI
                 Load();
                 Dispatcher.Invoke(() =>
                 {
-                    if (settings.AutoLoadEnable)
-                    {
-                        autoLoadTimer.Start();
-                        logger.Info("Start AutoLoadTimer.");
-                    }
+                    if (!settings.AutoLoadEnable) return;
+                    autoLoadTimer.Start();
+                    logger.Info("Start AutoLoadTimer.");
                 });
             });
         }
@@ -172,7 +172,7 @@ namespace GakujoGUI
 
         private void Load()
         {
-            if (!gakujoApi.LoginStatus) { return; }
+            if (!gakujoApi.LoginStatus) return;
             Dispatcher.Invoke(() =>
             {
                 LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
@@ -257,20 +257,20 @@ namespace GakujoGUI
 
         private bool LoginStatusCheck()
         {
-            if (!gakujoApi.LoginStatus) { MessageBox.Show("ログイン状態ではありません．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false; }
-            return true;
+            if (gakujoApi.LoginStatus) return true;
+            MessageBox.Show("ログイン状態ではありません．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false;
         }
 
         private void StartProcessFile(string path)
         {
-            if (!File.Exists(path)) { return; }
+            if (!File.Exists(path)) return;
             Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             logger.Info($"Start Process {path}");
         }
 
         private void StartProcessExplorer(string path)
         {
-            if (!File.Exists(path)) { return; }
+            if (!File.Exists(path)) return;
             Process.Start(new ProcessStartInfo("explorer.exe") { Arguments = $"/e,/select,\"{path}\"", UseShellExecute = true });
             logger.Info($"Start Process explorer.exe /e,/select,\"{path}\"");
         }
@@ -309,7 +309,7 @@ namespace GakujoGUI
 
         private void LoadClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck()) { return; }
+            if (!LoginStatusCheck()) return;
             LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -348,14 +348,14 @@ namespace GakujoGUI
                 foreach (var item in files)
                 {
                     StackPanel childStackPanel = new() { Orientation = Orientation.Horizontal };
-                    if (!File.Exists(item)) { childStackPanel.Children.Add(new FontIcon() { FontFamily = new FontFamily("Segoe MDL2 Assets"), Glyph = "\uE7BA", Margin = new Thickness(6, 0, 6, 0) }); }
-                    childStackPanel.Children.Add(new Label() { Content = Path.GetFileName(item) });
+                    if (!File.Exists(item)) { childStackPanel.Children.Add(new FontIcon() { FontFamily = new("Segoe MDL2 Assets"), Glyph = "\uE7BA", Margin = new(6, 0, 6, 0) }); }
+                    childStackPanel.Children.Add(new Label { Content = Path.GetFileName(item) });
                     Button button = new()
                     {
                         AllowDrop = true,
                         Content = childStackPanel,
                         Tag = item,
-                        Margin = new Thickness(6)
+                        Margin = new(6)
                     };
                     button.Click += OpenFileButton_Click;
                     button.MouseDown += OpenFileButton_MouseDown;
@@ -869,7 +869,7 @@ namespace GakujoGUI
         private DataGridCell? GetDataGridCell(DataGrid dataGrid, int rowIndex, int columnIndex)
 #pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
-            if (dataGrid.Items.IsEmpty) { return null; }
+            if (dataGrid.Items.IsEmpty) return null;
             var dataGridRow = GetDataGridRow(dataGrid, rowIndex)!;
             var dataGridCellPresenter = GetVisualChild<DataGridCellsPresenter>(dataGridRow)!;
             var dataGridCell = (dataGridCellPresenter.ItemContainerGenerator.ContainerFromIndex(columnIndex) as DataGridCell)!;
@@ -878,13 +878,14 @@ namespace GakujoGUI
 
         private static DataGridRow? GetDataGridRow(DataGrid dataGrid, int index)
         {
-            if (dataGrid.Items.IsEmpty) { return null; }
+            if (dataGrid.Items.IsEmpty) return null;
             var dataGridRow = (dataGrid.ItemContainerGenerator.ContainerFromIndex(index) as DataGridRow)!;
             return dataGridRow;
         }
 
         private static T? GetVisualChild<T>(Visual parent) where T : Visual
         {
+            if (parent == null) throw new ArgumentNullException(nameof(parent));
             T? result = default;
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
             {
@@ -895,22 +896,20 @@ namespace GakujoGUI
             return result;
         }
 
-        private static T? GetDataGridCell<T>(DataGrid dataGrid, Point point)
+        private static T? GetDataGridCell<T>(Visual dataGrid, Point point)
         {
             T? result = default;
             var hitTestResult = VisualTreeHelper.HitTest(dataGrid, point);
-            if (hitTestResult != null)
+            if (hitTestResult == null) return result;
+            var visualHit = hitTestResult.VisualHit;
+            while (visualHit != null)
             {
-                var visualHit = hitTestResult.VisualHit;
-                while (visualHit != null)
+                if (visualHit is T)
                 {
-                    if (visualHit is T)
-                    {
-                        result = (T)(object)visualHit;
-                        break;
-                    }
-                    visualHit = VisualTreeHelper.GetParent(visualHit);
+                    result = (T)(object)visualHit;
+                    break;
                 }
+                visualHit = VisualTreeHelper.GetParent(visualHit);
             }
             return result;
         }
@@ -943,19 +942,17 @@ namespace GakujoGUI
 
         private void SearchAutoSuggestBox_TextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+            if (args.Reason != AutoSuggestionBoxTextChangeReason.UserInput) return;
+            List<string> suitableItems = new();
+            var splitText = sender.Text.Split(" ");
+            foreach (var classTableRow in gakujoApi.ClassTables)
             {
-                List<string> suitableItems = new();
-                var splitText = sender.Text.Split(" ");
-                foreach (var classTableRow in gakujoApi.ClassTables)
+                foreach (var classTableCell in classTableRow)
                 {
-                    foreach (var classTableCell in classTableRow)
-                    {
-                        if (splitText.All((key) => { return classTableCell.SubjectsName.Contains(key); }) && classTableCell.SubjectsName != "") { suitableItems.Add(classTableCell.SubjectsName); }
-                    }
+                    if (splitText.All((key) => classTableCell.SubjectsName.Contains(key)) && classTableCell.SubjectsName != "") { suitableItems.Add(classTableCell.SubjectsName); }
                 }
-                sender.ItemsSource = suitableItems.Distinct();
             }
+            sender.ItemsSource = suitableItems.Distinct();
         }
 
         #endregion
@@ -972,7 +969,7 @@ namespace GakujoGUI
                     ShowInTaskbar = true;
                     if (!settings.AlwaysVisibleTrayIcon) { TaskBarIcon.Visibility = Visibility.Collapsed; }
                     logger.Info("Set visibility to Visible.");
-                    SyllabusSearchWebView2.Source = new Uri("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
+                    SyllabusSearchWebView2.Source = new("https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
                     logger.Info($"Navigate SyllabusSearch https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on");
                     break;
                 case Visibility.Hidden:
@@ -982,6 +979,10 @@ namespace GakujoGUI
                     TaskBarIcon.Visibility = Visibility.Visible;
                     logger.Info("Set visibility to Hidden.");
                     break;
+                case Visibility.Collapsed:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(visibility), visibility, null);
             }
         }
 
@@ -1054,7 +1055,7 @@ namespace GakujoGUI
 
         private void NotifyToast(ClassResult classResult)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoApi.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString()).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoApi.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString(CultureInfo.CurrentCulture)).Show();
             logger.Info("Notify Toast ClassResult.");
         }
 
@@ -1067,21 +1068,17 @@ namespace GakujoGUI
 #pragma warning restore IDE0051 // 使用されていないプライベート メンバーを削除する
         {
             var badgeVisible = gakujoApi.Reports.Any(x => x.IsSubmittable) || gakujoApi.Quizzes.Any(x => x.IsSubmittable);
-            var importantEnable = gakujoApi.Reports.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1)) || gakujoApi.Quizzes.Any(x => x.IsSubmittable && (x.EndDateTime - DateTime.Now) < TimeSpan.FromDays(1));
+            var importantEnable = gakujoApi.Reports.Any(x => x.IsSubmittable && x.EndDateTime - DateTime.Now < TimeSpan.FromDays(1)) || gakujoApi.Quizzes.Any(x => x.IsSubmittable && x.EndDateTime - DateTime.Now < TimeSpan.FromDays(1));
             if (badgeVisible)
             {
                 if (importantEnable)
                 {
 
                 }
-                else
-                {
-
-                }
             }
             else
             {
-                TaskBarIcon.IconSource = new BitmapImage(new Uri("Resources/GakujoGUI.ico", UriKind.Relative));
+                TaskBarIcon.IconSource = new BitmapImage(new("Resources/GakujoGUI.ico", UriKind.Relative));
             }
         }
 
@@ -1333,10 +1330,10 @@ namespace GakujoGUI
         {
             Process.Start(new ProcessStartInfo("explorer.exe")
             {
-                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)}\"",
+                Arguments = $"\"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName)}\"",
                 UseShellExecute = true
             });
-            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)}\"");
+            logger.Info($"Start Process explorer.exe \"{Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName)}\"");
         }
 
         private void OpenAssemblyFolderButton_Click(object sender, RoutedEventArgs e)
@@ -1367,11 +1364,9 @@ namespace GakujoGUI
                     }
                     else
                     {
-                        if (File.Exists(SetupFilePath))
-                        {
-                            File.Delete(SetupFilePath);
-                            logger.Info("Delete Download latest version.");
-                        }
+                        if (!File.Exists(SetupFilePath)) return;
+                        File.Delete(SetupFilePath);
+                        logger.Info("Delete Download latest version.");
                     }
                 }
             });
@@ -1379,13 +1374,11 @@ namespace GakujoGUI
 
         private static void GetLatestVersion(Release[] releases, ref Version version, ref string url)
         {
-            if (!releases.Any()) { return; }
-            if (!releases.First().assets.Any(x => x.name == "GakujoGUI_Setup.exe")) { return; }
-            if (version < Version.Parse(releases.First().tag_name.TrimStart('v')))
-            {
-                version = Version.Parse(releases.First().tag_name.TrimStart('v'));
-                url = releases.First().assets.First(x => x.name == "GakujoGUI_Setup.exe").browser_download_url;
-            }
+            if (!releases.Any()) return;
+            if (releases.First().assets.All(x => x.name != "GakujoGUI_Setup.exe")) return;
+            if (version >= Version.Parse(releases.First().tag_name.TrimStart('v'))) return;
+            version = Version.Parse(releases.First().tag_name.TrimStart('v'));
+            url = releases.First().assets.First(x => x.name == "GakujoGUI_Setup.exe").browser_download_url;
         }
 
         private bool GetLatestVersions(out Version latestVersion)
@@ -1496,11 +1489,9 @@ namespace GakujoGUI
         private void OpenBackgroundImageButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new() { Filter = "画像 (*.jpg;*.jpeg;*.png;*.gif)|*.jpg;*.jpeg;*.png;*.gif" };
-            if (openFileDialog.ShowDialog() == true)
-            {
-                settings.BackgroundImagePath = openFileDialog.FileName;
-                RefreshBackgroundImage();
-            }
+            if (openFileDialog.ShowDialog() != true) return;
+            settings.BackgroundImagePath = openFileDialog.FileName;
+            RefreshBackgroundImage();
         }
 
         private void RefreshBackgroundImage()

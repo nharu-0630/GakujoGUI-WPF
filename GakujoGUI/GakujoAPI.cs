@@ -26,13 +26,13 @@ namespace GakujoGUI
         private Account account = new();
         private List<Report> reports = new();
         private List<Quiz> quizzes = new();
-        private List<ClassContact> classContacts = new() { };
-        private List<ClassSharedFile> classSharedFiles = new() { };
+        private List<ClassContact> classContacts = new();
+        private List<ClassSharedFile> classSharedFiles = new();
         private List<LotteryRegistrationEntry> lotteryRegistrationEntries = new();
         private List<GeneralRegistrationEntry> generalRegistrationEntries = new();
         private SchoolGrade schoolGrade = new();
         private List<ClassTableRow> classTables = new();
-        private bool loginStatus = false;
+        private bool loginStatus;
 
         public Account Account { get => account; set => account = value; }
         public List<Report> Reports { get => reports; set => reports = value; }
@@ -54,7 +54,7 @@ namespace GakujoGUI
         private HttpRequestMessage httpRequestMessage = new();
         private HttpResponseMessage httpResponseMessage = new();
 
-        private readonly string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{AssemblyName}\Download\");
+        private readonly string downloadPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @$"{AssemblyName}\Download\");
 
         private readonly string schoolYear;
         private readonly int semesterCode;
@@ -75,11 +75,11 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName)))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName)))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), AssemblyName));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName));
             }
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{AssemblyName}\{value}.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @$"{AssemblyName}\{value}.json");
         }
 
         private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
@@ -126,9 +126,9 @@ namespace GakujoGUI
 
         private static int ReplacePeriod(string value) => (int.Parse(value.Substring(1, 1)) + 1) / 2;
 
-        private static string ReplaceWeekday(int index) => (new string[] { "月", "火", "水", "木", "金" })[index];
+        private static string ReplaceWeekday(int index) => (new[] { "月", "火", "水", "木", "金" })[index];
 
-        private static string ReplacePeriod(int index) => (new string[] { "1･2", "3･4", "5･6", "7･8", "9･10", "11･12", "13･14" })[index];
+        private static string ReplacePeriod(int index) => (new[] { "1･2", "3･4", "5･6", "7･8", "9･10", "11･12", "13･14" })[index];
 
         private static string GetApacheToken(HtmlDocument htmlDocument) => htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
 
@@ -183,7 +183,7 @@ namespace GakujoGUI
             }
             if (File.Exists(GetJsonPath("SchoolGrade")))
             {
-                SchoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))! ?? new();
+                SchoolGrade = JsonConvert.DeserializeObject<SchoolGrade>(File.ReadAllText(GetJsonPath("SchoolGrade")))!;
                 Logger.Info("Load SchoolGrade.");
             }
             if (File.Exists(GetJsonPath("ClassTables")))
@@ -193,13 +193,10 @@ namespace GakujoGUI
             }
             ApplyReportsClassTables();
             ApplyQuizzesClassTables();
-            if (File.Exists(GetJsonPath("Account")))
-            {
-                Account = JsonConvert.DeserializeObject<Account>(File.ReadAllText(GetJsonPath("Account")))! ?? new();
-                Logger.Info("Load Account.");
-                return true;
-            }
-            return false;
+            if (!File.Exists(GetJsonPath("Account"))) return false;
+            Account = JsonConvert.DeserializeObject<Account>(File.ReadAllText(GetJsonPath("Account")))!;
+            Logger.Info("Load Account.");
+            return true;
         }
 
         public void SaveJsons()
@@ -237,7 +234,7 @@ namespace GakujoGUI
         {
             Logger.Info("Start Login.");
             networkAvailable = true;
-            if (3 <= DateTime.Now.Hour && DateTime.Now.Hour < 5) { Logger.Warn("Return Login by overtime."); return false; }
+            if (DateTime.Now.Hour is >= 3 and < 5) { Logger.Warn("Return Login by overtime."); return false; }
             try
             {
                 httpRequestMessage = new(new("GET"), "http://clients3.google.com/generate_204");
@@ -288,12 +285,12 @@ namespace GakujoGUI
                 HtmlDocument htmlDocument = new();
                 htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
                 var relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
-                var SAMLResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
+                var samlResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
                 relayState = Uri.EscapeDataString(relayState);
-                SAMLResponse = Uri.EscapeDataString(SAMLResponse);
+                samlResponse = Uri.EscapeDataString(samlResponse);
                 httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
                 httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={SAMLResponse}");
+                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={samlResponse}");
                 httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
                 httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
                 Logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
@@ -523,14 +520,13 @@ namespace GakujoGUI
         private void ApplyReportsClassTables()
         {
             Logger.Info("Start Apply Reports to ClassTables.");
-            if (ClassTables == null) { Logger.Warn("Return Apply Reports to ClassTables by ClassTables is null."); return; }
-            foreach (var classTableRow in ClassTables.Where(x => x != null))
+            foreach (var classTableRow in ClassTables)
             {
                 foreach (var classTableCell in classTableRow) { classTableCell.ReportCount = 0; }
             }
             foreach (var report in Reports.Where(x => x.IsSubmittable))
             {
-                foreach (var classTableRow in ClassTables.Where(x => x != null))
+                foreach (var classTableRow in ClassTables)
                 {
                     foreach (var classTableCell in classTableRow) { if (report.Subjects.Contains($"{classTableCell.SubjectsName}（{classTableCell.ClassName}）")) { classTableCell.ReportCount++; } }
                 }
@@ -577,9 +573,8 @@ namespace GakujoGUI
             {
                 var htmlNodes = htmlDocument.GetElementbyId("searchList").SelectSingleNode("tbody").SelectNodes("tr")[i].SelectNodes("td");
                 var id = ReplaceJsArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 1);
-                var subjectCode = ReplaceJsArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 4); ;
-                var classCode = ReplaceJsArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 5); ;
-
+                var subjectCode = ReplaceJsArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 4);
+                var classCode = ReplaceJsArgs(htmlNodes[1].SelectSingleNode("a").Attributes["onclick"].Value, 5);
                 Quiz quiz = new()
                 {
                     Subjects = ReplaceSpace(htmlNodes[0].InnerText),
@@ -683,14 +678,13 @@ namespace GakujoGUI
         private void ApplyQuizzesClassTables()
         {
             Logger.Info("Start Apply Quizzes to ClassTables.");
-            if (ClassTables == null) { Logger.Warn("Return Apply Quizzes to ClassTables by ClassTables is null."); return; }
-            foreach (var classTableRow in ClassTables.Where(x => x != null))
+            foreach (var classTableRow in ClassTables)
             {
                 foreach (var classTableCell in classTableRow) { classTableCell.QuizCount = 0; }
             }
             foreach (var quiz in Quizzes.Where(x => x.IsSubmittable))
             {
-                foreach (var classTableRow in ClassTables.Where(x => x != null))
+                foreach (var classTableRow in ClassTables)
                 {
                     foreach (var classTableCell in classTableRow) { if (quiz.Subjects.Contains($"{classTableCell.SubjectsName}（{classTableCell.ClassName}）")) { classTableCell.QuizCount++; } }
                 }
@@ -702,7 +696,7 @@ namespace GakujoGUI
         {
             Logger.Info("Start Get ClassContacts.");
             var lastClassContact = ClassContacts.Count > 0 ? ClassContacts[0] : null;
-            List<ClassContact> diffClassContacts = new() { };
+            List<ClassContact> diffClassContacts = new();
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&headTitle=授業連絡一覧&menuCode=A01&nextPath=/classcontact/classContactList/initialize");
@@ -832,7 +826,7 @@ namespace GakujoGUI
         {
             Logger.Info("Start Get ClassSharedFiles.");
             var lastClassSharedFile = (ClassSharedFiles.Count > 0) ? ClassSharedFiles[0] : null;
-            List<ClassSharedFile> diffClassSharedFiles = new() { };
+            List<ClassSharedFile> diffClassSharedFiles = new();
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&headTitle=授業共有ファイル&menuCode=A08&nextPath=/classfile/classFile/initialize");
@@ -979,12 +973,12 @@ namespace GakujoGUI
             {
                 Logger.Warn("Additional transition.");
                 var relayState = ReplaceColon(htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[1]").Attributes["value"].Value);
-                var SAMLResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
+                var samlResponse = htmlDocument.DocumentNode.SelectSingleNode("/html/body/form/div/input[2]").Attributes["value"].Value;
                 relayState = Uri.EscapeDataString(relayState);
-                SAMLResponse = Uri.EscapeDataString(SAMLResponse);
+                samlResponse = Uri.EscapeDataString(samlResponse);
                 httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
                 httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={SAMLResponse}");
+                httpRequestMessage.Content = new StringContent($"RelayState={relayState}&SAMLResponse={samlResponse}");
                 httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
                 httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
                 Logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
@@ -1013,7 +1007,7 @@ namespace GakujoGUI
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form") == null) { Logger.Warn("Not found LotteryRegistrations."); return; }
-            foreach (var classTableRow in ClassTables.Where(x => x != null))
+            foreach (var classTableRow in ClassTables)
             {
                 foreach (var classTableCell in classTableRow) { classTableCell.LotteryRegistrations.Clear(); }
             }
@@ -1064,13 +1058,12 @@ namespace GakujoGUI
             var choiceNumbers = "";
             foreach (var lotteryRegistrationEntry in lotteryRegistrationEntries)
             {
-                foreach (var lotteryRegistrations in LotteryRegistrations)
+                foreach (var lotteryRegistrations in LotteryRegistrations.Where(lotteryRegistrations => lotteryRegistrations.Count(x =>
+                             x.SubjectsName == lotteryRegistrationEntry.SubjectsName &&
+                             x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable) == 1))
                 {
-                    if (lotteryRegistrations.Where(x => x.SubjectsName == lotteryRegistrationEntry.SubjectsName && x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable).Count() == 1)
-                    {
-                        lotteryRegistrations.Where(x => x.ChoiceNumberValue == lotteryRegistrationEntry.AspirationOrder).ToList().ForEach(x => x.ChoiceNumberValue = 0);
-                        lotteryRegistrations.Where(x => x.SubjectsName == lotteryRegistrationEntry.SubjectsName && x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable).First().ChoiceNumberValue = lotteryRegistrationEntry.AspirationOrder;
-                    }
+                    lotteryRegistrations.Where(x => x.ChoiceNumberValue == lotteryRegistrationEntry.AspirationOrder).ToList().ForEach(x => x.ChoiceNumberValue = 0);
+                    lotteryRegistrations.First(x => x.SubjectsName == lotteryRegistrationEntry.SubjectsName && x.ClassName == lotteryRegistrationEntry.ClassName && x.IsRegisterable).ChoiceNumberValue = lotteryRegistrationEntry.AspirationOrder;
                 }
             }
             LotteryRegistrations.SelectMany(_ => _).Where(x => x.IsRegisterable).ToList().ForEach(x => { choiceNumbers += x.ToChoiceNumberString(); Logger.Info($"ChoiceNumber {x.ToChoiceNumberString()}"); });
@@ -1116,7 +1109,7 @@ namespace GakujoGUI
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/form") == null) { Logger.Warn("Not found LotteryRegistrationsResult."); return; }
-            foreach (var classTableRow in ClassTables.Where(x => x != null))
+            foreach (var classTableRow in ClassTables)
             {
                 foreach (var classTableCell in classTableRow) { classTableCell.LotteryRegistrationsResult.Clear(); }
             }
@@ -1161,7 +1154,7 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[3]/tr/td/font[1]/b") != null) { Logger.Warn("Not found GeneralRegistrations."); return; }
             if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]") == null) { Logger.Warn("Not found GeneralRegistrations."); return; }
-            foreach (var classTableRow in ClassTables.Where(x => x != null))
+            foreach (var classTableRow in ClassTables)
             {
                 foreach (var classTableCell in classTableRow) { classTableCell.GeneralRegistrations = new(); }
             }
@@ -1534,7 +1527,7 @@ namespace GakujoGUI
                 if (ClassTables.Count < i + 1) { ClassTables.Add(new()); }
                 for (var j = 0; j < 5; j++)
                 {
-                    var classTableCell = (ClassTables[i] != null) ? ClassTables[i][j] : new();
+                    var classTableCell = ClassTables[i][j];
                     var htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table/tr[2]/td");
                     if (htmlNode == null) { classTableCell = new(); }
                     else if (htmlNode.SelectSingleNode("a") != null)
@@ -1965,7 +1958,7 @@ namespace GakujoGUI
     {
         public int Grade { get; set; }
         public double GPA { get; set; }
-        public List<SemesterGPA> SemesterGPAs { get; set; } = new() { };
+        public List<SemesterGPA> SemesterGPAs { get; set; } = new();
         public DateTime CalculationDate { get; set; }
         public int[] DepartmentRank { get; set; } = new int[2];
         public int[] CourseRank { get; set; } = new int[2];
@@ -1987,11 +1980,11 @@ namespace GakujoGUI
 
     public class SchoolGrade
     {
-        public List<ClassResult> ClassResults { get; set; } = new() { };
-        public List<EvaluationCredit> EvaluationCredits { get; set; } = new() { };
+        public List<ClassResult> ClassResults { get; set; } = new();
+        public List<EvaluationCredit> EvaluationCredits { get; set; } = new();
         public double PreliminaryGPA => 1.0 * ClassResults.Where(x => x.Score != 0).Select(x => x.GP * x.Credit).Sum() / ClassResults.Where(x => x.Score != 0).Select(x => x.Credit).Sum();
         public DepartmentGPA DepartmentGPA { get; set; } = new();
-        public List<YearCredit> YearCredits { get; set; } = new() { };
+        public List<YearCredit> YearCredits { get; set; } = new();
     }
 
     public class ClassTableRow
@@ -2031,8 +2024,6 @@ namespace GakujoGUI
                         break;
                     case 4:
                         Friday = value;
-                        break;
-                    default:
                         break;
                 }
             }

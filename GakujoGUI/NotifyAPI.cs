@@ -24,18 +24,17 @@ namespace GakujoGUI
         private Tokens tokens = new();
         private TodoistClient? todoistClient;
         private DiscordSocketClient? discordSocketClient;
-        private DateTime todoistUpdateDateTime = new();
+        private DateTime todoistUpdateDateTime;
         private Resources? todoistResources;
 
         private Resources TodoistResources
         {
             get
             {
-                if (todoistUpdateDateTime + TimeSpan.FromMinutes(3) < DateTime.Now && todoistClient != null)
-                {
-                    todoistUpdateDateTime = DateTime.Now;
-                    TodoistResources = todoistClient!.GetResourcesAsync().Result;
-                }
+                if (todoistUpdateDateTime + TimeSpan.FromMinutes(3) >= DateTime.Now || todoistClient == null)
+                    return todoistResources!;
+                todoistUpdateDateTime = DateTime.Now;
+                TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 return todoistResources!;
             }
             set => todoistResources = value;
@@ -44,14 +43,14 @@ namespace GakujoGUI
 
         private static string GetJsonPath(string value)
         {
-            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName)))
+            if (!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName)))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), assemblyName));
+                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AssemblyName));
             }
-            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData!), @$"{assemblyName}\{value}.json");
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @$"{AssemblyName}\{value}.json");
         }
 
-        private static readonly string assemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
+        private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
         public NotifyAPI()
         {
