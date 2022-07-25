@@ -17,7 +17,7 @@ using Todoist.Net.Models;
 
 namespace GakujoGUI
 {
-    internal class NotifyAPI
+    internal class NotifyApi
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -52,7 +52,7 @@ namespace GakujoGUI
 
         private static readonly string AssemblyName = Assembly.GetExecutingAssembly().GetName().Name!;
 
-        public NotifyAPI()
+        public NotifyApi()
         {
             if (File.Exists(GetJsonPath("Tokens")))
             {
@@ -64,9 +64,9 @@ namespace GakujoGUI
 
         public void SetTokens(string todoistToken, string discordChannel, string discordToken)
         {
-            Tokens.TodoistToken = GakujoAPI.Protect(todoistToken, null!, DataProtectionScope.CurrentUser);
+            Tokens.TodoistToken = GakujoApi.Protect(todoistToken, null!, DataProtectionScope.CurrentUser);
             Tokens.DiscordChannel = ulong.Parse(discordChannel);
-            Tokens.DiscordToken = GakujoAPI.Protect(discordToken, null!, DataProtectionScope.CurrentUser);
+            Tokens.DiscordToken = GakujoApi.Protect(discordToken, null!, DataProtectionScope.CurrentUser);
             try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented)); }
             catch (Exception exception) { Logger.Error(exception, "Error Save Tokens."); }
         }
@@ -75,7 +75,7 @@ namespace GakujoGUI
         {
             try
             {
-                todoistClient = new(GakujoAPI.Unprotect(Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser));
+                todoistClient = new(GakujoApi.Unprotect(Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser));
                 TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 Logger.Info("Login Todoist.");
             }
@@ -83,7 +83,7 @@ namespace GakujoGUI
             try
             {
                 discordSocketClient = new();
-                discordSocketClient.LoginAsync(TokenType.Bot, GakujoAPI.Unprotect(Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser)).Wait();
+                discordSocketClient.LoginAsync(TokenType.Bot, GakujoApi.Unprotect(Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser)).Wait();
                 discordSocketClient.StartAsync().Wait();
                 Logger.Info("Login Discord.");
             }
@@ -205,7 +205,7 @@ namespace GakujoGUI
             {
                 EmbedBuilder embedBuilder = new();
                 embedBuilder.WithTitle(classResult.Subjects);
-                if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}"); }
+                if (!hideDetail) { embedBuilder.WithDescription($"{classResult.Score} ({classResult.Evaluation})   {classResult.Gp:F1}"); }
                 embedBuilder.WithAuthor(classResult.TeacherName);
                 embedBuilder.WithTimestamp(classResult.ReportDate);
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
@@ -218,7 +218,7 @@ namespace GakujoGUI
 
         #region LINE
 
-        public void NotifyLINE(string content)
+        public void NotifyLine(string content)
         {
             try
             {

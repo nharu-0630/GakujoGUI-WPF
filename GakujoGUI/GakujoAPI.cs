@@ -19,7 +19,7 @@ using System.Web;
 
 namespace GakujoGUI
 {
-    internal class GakujoAPI
+    internal class GakujoApi
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -132,7 +132,7 @@ namespace GakujoGUI
 
         private static string GetApacheToken(HtmlDocument htmlDocument) => htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
 
-        public GakujoAPI(string schoolYear, int semesterCode, string userAgent)
+        public GakujoApi(string schoolYear, int semesterCode, string userAgent)
         {
             this.schoolYear = schoolYear;
             this.semesterCode = semesterCode;
@@ -787,7 +787,7 @@ namespace GakujoGUI
             ClassContacts[indexCount].ContactType = htmlNodes[0].SelectSingleNode("td").InnerText;
             ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlNodes[4].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].ReferenceURL = ReplaceSpace(htmlNodes[5].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].ReferenceUrl = ReplaceSpace(htmlNodes[5].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].Severity = ReplaceSpace(htmlNodes[6].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].WebReplyRequest = htmlNodes[8].SelectSingleNode("td").InnerText;
             if (htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div") != null)
@@ -1426,7 +1426,7 @@ namespace GakujoGUI
                             Evaluation = htmlNode.SelectNodes("td")[5].InnerText.Trim()
                         };
                         if (htmlNode.SelectNodes("td")[6].InnerText.Trim() != "") { classResult.Score = double.Parse(htmlNode.SelectNodes("td")[6].InnerText.Trim()); }
-                        if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "") { classResult.GP = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim()); }
+                        if (htmlNode.SelectNodes("td")[7].InnerText.Trim() != "") { classResult.Gp = double.Parse(htmlNode.SelectNodes("td")[7].InnerText.Trim()); }
                         classResult.AcquisitionYear = htmlNode.SelectNodes("td")[8].InnerText.Trim();
                         classResult.ReportDate = DateTime.Parse(htmlNode.SelectNodes("td")[9].InnerText.Trim());
                         classResult.TestType = htmlNode.SelectNodes("td")[10].InnerText.Trim();
@@ -1453,42 +1453,42 @@ namespace GakujoGUI
             Logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/gpa.do");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            SchoolGrade.DepartmentGPA.Grade = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[1]/td[2]").InnerText.Replace("年", ""));
-            SchoolGrade.DepartmentGPA.GPA = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[2]/td[2]").InnerText);
-            SchoolGrade.DepartmentGPA.SemesterGPAs.Clear();
+            SchoolGrade.DepartmentGpa.Grade = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[1]/td[2]").InnerText.Replace("年", ""));
+            SchoolGrade.DepartmentGpa.Gpa = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table/tr[2]/td[2]").InnerText);
+            SchoolGrade.DepartmentGpa.SemesterGpas.Clear();
             for (var i = 0; i < htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Count - 3; i++)
             {
-                SemesterGPA semesterGPA = new()
+                SemesterGpa semesterGpa = new()
                 {
                     Year = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[0].InnerText.Split('　')[0].Replace("\n", "").Replace(" ", ""),
                     Semester = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[0].InnerText.Split('　')[1].Replace("\n", "").Replace(" ", ""),
-                    GPA = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[1].InnerText)
+                    Gpa = double.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[i + 2].SelectNodes("td")[1].InnerText)
                 };
-                SchoolGrade.DepartmentGPA.SemesterGPAs.Add(semesterGPA);
+                SchoolGrade.DepartmentGpa.SemesterGpas.Add(semesterGpa);
             }
-            SchoolGrade.DepartmentGPA.CalculationDate = DateTime.ParseExact(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Last().SelectNodes("td")[1].InnerText, "yyyy年 MM月 dd日", null);
+            SchoolGrade.DepartmentGpa.CalculationDate = DateTime.ParseExact(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr").Last().SelectNodes("td")[1].InnerText, "yyyy年 MM月 dd日", null);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/gpaImage.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             Logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/gpaImage.do");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            SchoolGrade.DepartmentGPA.DepartmentImage = Convert.ToBase64String(httpResponseMessage.Content.ReadAsByteArrayAsync().Result);
+            SchoolGrade.DepartmentGpa.DepartmentImage = Convert.ToBase64String(httpResponseMessage.Content.ReadAsByteArrayAsync().Result);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/departmentGpa.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             Logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/departmentGpa.do");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            SchoolGrade.DepartmentGPA.DepartmentRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
-            SchoolGrade.DepartmentGPA.DepartmentRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
-            SchoolGrade.DepartmentGPA.CourseRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
-            SchoolGrade.DepartmentGPA.CourseRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
+            SchoolGrade.DepartmentGpa.DepartmentRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
+            SchoolGrade.DepartmentGpa.DepartmentRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^2].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
+            SchoolGrade.DepartmentGpa.CourseRank[0] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[1].Replace("位", ""));
+            SchoolGrade.DepartmentGpa.CourseRank[1] = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[2]/tr/td/table").SelectNodes("tr")[^1].SelectNodes("td")[1].InnerText.Trim(' ').Split('　')[0].Replace("人中", ""));
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/departmentGpaImage.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             Logger.Info("GET https://gakujo.shizuoka.ac.jp/kyoumu/departmentGpaImage.do");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            SchoolGrade.DepartmentGPA.CourseImage = Convert.ToBase64String(httpResponseMessage.Content.ReadAsByteArrayAsync().Result);
+            SchoolGrade.DepartmentGpa.CourseImage = Convert.ToBase64String(httpResponseMessage.Content.ReadAsByteArrayAsync().Result);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/kyoumu/nenbetuTaniSearch.do");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
@@ -1770,7 +1770,7 @@ namespace GakujoGUI
         public string Content { get; set; } = "";
         public string[] Files { get; set; } = Array.Empty<string>();
         public string FileLinkRelease { get; set; } = "";
-        public string ReferenceURL { get; set; } = "";
+        public string ReferenceUrl { get; set; } = "";
         public string Severity { get; set; } = "";
         public DateTime TargetDateTime { get; set; }
         public DateTime ContactDateTime { get; set; }
@@ -1905,12 +1905,12 @@ namespace GakujoGUI
         public int Credit { get; set; }
         public string Evaluation { get; set; } = "";
         public double Score { get; set; }
-        public double GP { get; set; }
+        public double Gp { get; set; }
         public string AcquisitionYear { get; set; } = "";
         public DateTime ReportDate { get; set; }
         public string TestType { get; set; } = "";
 
-        public override string ToString() => $"{Subjects} {Score} ({Evaluation}) {GP} {ReportDate.ToShortDateString()}";
+        public override string ToString() => $"{Subjects} {Score} ({Evaluation}) {Gp} {ReportDate.ToShortDateString()}";
 
         public override bool Equals(object? obj)
         {
@@ -1938,20 +1938,20 @@ namespace GakujoGUI
         public override string ToString() => $"{Year} {Credit}";
     }
 
-    public class SemesterGPA
+    public class SemesterGpa
     {
         public string Year { get; set; } = "";
         public string Semester { get; set; } = "";
-        public double GPA { get; set; }
+        public double Gpa { get; set; }
 
-        public override string ToString() => $"{Year}{Semester} {GPA}";
+        public override string ToString() => $"{Year}{Semester} {Gpa}";
     }
 
-    public class DepartmentGPA
+    public class DepartmentGpa
     {
         public int Grade { get; set; }
-        public double GPA { get; set; }
-        public List<SemesterGPA> SemesterGPAs { get; set; } = new();
+        public double Gpa { get; set; }
+        public List<SemesterGpa> SemesterGpas { get; set; } = new();
         public DateTime CalculationDate { get; set; }
         public int[] DepartmentRank { get; set; } = new int[2];
         public int[] CourseRank { get; set; } = new int[2];
@@ -1961,9 +1961,9 @@ namespace GakujoGUI
         public override string ToString()
         {
             var value = $"学年 {Grade}年";
-            value += $"\n累積GPA {GPA}";
+            value += $"\n累積GPA {Gpa}";
             value += $"\n学期GPA";
-            SemesterGPAs.ForEach(x => value += $"\n{x}");
+            SemesterGpas.ForEach(x => value += $"\n{x}");
             value += $"\n学科内順位 {DepartmentRank[0]}/{DepartmentRank[1]}";
             value += $"\nコース内順位 {CourseRank[0]}/{CourseRank[1]}";
             value += $"\n算出日 {CalculationDate:yyyy/MM/dd}";
@@ -1975,8 +1975,8 @@ namespace GakujoGUI
     {
         public List<ClassResult> ClassResults { get; set; } = new();
         public List<EvaluationCredit> EvaluationCredits { get; set; } = new();
-        public double PreliminaryGPA => 1.0 * ClassResults.Where(x => x.Score != 0).Select(x => x.GP * x.Credit).Sum() / ClassResults.Where(x => x.Score != 0).Select(x => x.Credit).Sum();
-        public DepartmentGPA DepartmentGPA { get; set; } = new();
+        public double PreliminaryGpa => 1.0 * ClassResults.Where(x => x.Score != 0).Select(x => x.Gp * x.Credit).Sum() / ClassResults.Where(x => x.Score != 0).Select(x => x.Credit).Sum();
+        public DepartmentGpa DepartmentGpa { get; set; } = new();
         public List<YearCredit> YearCredits { get; set; } = new();
     }
 
@@ -2059,7 +2059,7 @@ namespace GakujoGUI
         public int Credit { get; set; }
         public string ClassName { get; set; } = "";
         public string ClassRoom { get; set; } = "";
-        public string SyllabusURL { get; set; } = "";
+        public string SyllabusUrl { get; set; } = "";
         public string KamokuCode { get; set; } = "";
         public string ClassCode { get; set; } = "";
 

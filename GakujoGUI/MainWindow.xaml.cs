@@ -38,8 +38,8 @@ namespace GakujoGUI
     {
         private readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        private readonly GakujoAPI gakujoApi;
-        private readonly NotifyAPI notifyApi;
+        private readonly GakujoApi gakujoApi;
+        private readonly NotifyApi notifyApi;
         private readonly Settings settings = new();
         private readonly DispatcherTimer autoLoadTimer = new();
         private readonly bool settingsFlag;
@@ -74,11 +74,11 @@ namespace GakujoGUI
             }
             notifyApi = new();
             gakujoApi = new(settings.SchoolYear.ToString(), settings.SemesterCode, settings.UserAgent);
-            UserIdTextBox.Text = GakujoAPI.Unprotect(gakujoApi.Account.UserId, null!, DataProtectionScope.CurrentUser);
-            PassWordPasswordBox.Password = GakujoAPI.Unprotect(gakujoApi.Account.PassWord, null!, DataProtectionScope.CurrentUser);
-            TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
+            UserIdTextBox.Text = GakujoApi.Unprotect(gakujoApi.Account.UserId, null!, DataProtectionScope.CurrentUser);
+            PassWordPasswordBox.Password = GakujoApi.Unprotect(gakujoApi.Account.PassWord, null!, DataProtectionScope.CurrentUser);
+            TodoistTokenPasswordBox.Password = GakujoApi.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
             DiscordChannelTextBox.Text = notifyApi.Tokens.DiscordChannel.ToString();
-            DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
+            DiscordTokenPasswordBox.Password = GakujoApi.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
             AutoLoadEnableCheckBox.IsChecked = settings.AutoLoadEnable;
             AutoLoadSpanNumberBox.Value = settings.AutoLoadSpan;
             StartUpEnableCheckBox.IsChecked = settings.StartUpEnable;
@@ -702,7 +702,7 @@ namespace GakujoGUI
             ClassResultsDateTimeLabel.Content = $"最終更新 {gakujoApi.Account.ClassResultDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassResultsDataGrid.ItemsSource = gakujoApi.SchoolGrade.ClassResults;
             ClassResultsDataGrid.Items.Refresh();
-            ClassResultsGPALabel.Content = $"推定GPA {gakujoApi.SchoolGrade.PreliminaryGPA:N3}";
+            ClassResultsGPALabel.Content = $"推定GPA {gakujoApi.SchoolGrade.PreliminaryGpa:N3}";
             logger.Info("Refresh ClassResultsDataGrid.");
         }
 
@@ -733,9 +733,9 @@ namespace GakujoGUI
 
         private void DepartmentGPAButton_Click(object sender, RoutedEventArgs e)
         {
-            DepartmentGPALabel.Content = gakujoApi.SchoolGrade.DepartmentGPA;
-            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGPA.DepartmentImage);
-            CourseGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGPA.CourseImage);
+            DepartmentGPALabel.Content = gakujoApi.SchoolGrade.DepartmentGpa;
+            DepartmentGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGpa.DepartmentImage);
+            CourseGPAImage.Source = Base64ToBitmapImage(gakujoApi.SchoolGrade.DepartmentGpa.CourseImage);
             FlyoutBase.ShowAttachedFlyout(sender as FrameworkElement);
         }
 
@@ -1055,7 +1055,7 @@ namespace GakujoGUI
 
         private void NotifyToast(ClassResult classResult)
         {
-            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoApi.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.GP:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString(CultureInfo.CurrentCulture)).Show();
+            new ToastContentBuilder().AddArgument("Type", "ClassResult").AddArgument("Index", gakujoApi.SchoolGrade.ClassResults.IndexOf(classResult)).AddText(classResult.Subjects).AddText($"{classResult.Score} ({classResult.Evaluation})   {classResult.Gp:F1}").AddCustomTimeStamp(classResult.ReportDate).AddAttributionText(classResult.ReportDate.ToString(CultureInfo.CurrentCulture)).Show();
             logger.Info("Notify Toast ClassResult.");
         }
 
@@ -1183,9 +1183,9 @@ namespace GakujoGUI
                     SaveJson();
                     break;
                 case MessageBoxResult.Cancel:
-                    TodoistTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
+                    TodoistTokenPasswordBox.Password = GakujoApi.Unprotect(notifyApi.Tokens.TodoistToken, null!, DataProtectionScope.CurrentUser);
                     DiscordChannelTextBox.Text = notifyApi.Tokens.DiscordChannel.ToString();
-                    DiscordTokenPasswordBox.Password = GakujoAPI.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
+                    DiscordTokenPasswordBox.Password = GakujoApi.Unprotect(notifyApi.Tokens.DiscordToken, null!, DataProtectionScope.CurrentUser);
                     SchoolYearNumberBox.Value = settings.SchoolYear;
                     SchoolSemesterComboBox.SelectedIndex = settings.SemesterCode;
                     UserAgentTextBox.Text = settings.UserAgent;
