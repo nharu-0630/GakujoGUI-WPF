@@ -435,9 +435,13 @@ namespace GakujoGUI
                 {
                     Reports.Where(x => x.Id == report.Id && x.ClassCode == report.ClassCode).ToList().ForEach(x =>
                     {
+                        x.Title = report.Title;
                         x.Status = report.Status;
-                        x.Operation = report.Operation;
+                        x.StartDateTime = report.StartDateTime;
+                        x.EndDateTime = report.EndDateTime;
                         x.SubmittedDateTime = report.SubmittedDateTime;
+                        x.ImplementationFormat = report.ImplementationFormat;
+                        x.Operation = report.Operation;
                     });
                 }
             }
@@ -592,8 +596,12 @@ namespace GakujoGUI
                 {
                     Quizzes.Where(x => x.Id == quiz.Id && x.ClassCode == quiz.ClassCode).ToList().ForEach(x =>
                     {
+                        x.Title = quiz.Title;
                         x.Status = quiz.Status;
+                        x.StartDateTime = quiz.StartDateTime;
+                        x.EndDateTime = quiz.EndDateTime;
                         x.SubmissionStatus = quiz.SubmissionStatus;
+                        x.ImplementationFormat = quiz.ImplementationFormat;
                         x.Operation = quiz.Operation;
                     });
                 }
