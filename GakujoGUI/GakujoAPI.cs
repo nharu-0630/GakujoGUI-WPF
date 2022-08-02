@@ -1416,9 +1416,9 @@ namespace GakujoGUI
             if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]") == null) { Logger.Warn("Not found ClassResults list."); return; }
             else
             {
-                diffClassResults = new(SchoolGrade.ClassResults);
                 if (htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1 > 0)
                 {
+                    diffClassResults = new(SchoolGrade.ClassResults);
                     SchoolGrade.ClassResults.Clear();
                     Logger.Info($"Found {htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count - 1} ClassResults.");
                     for (var i = 1; i < htmlDocument.DocumentNode.SelectSingleNode("//table[@class=\"txt12\"]").SelectNodes("tr").Count; i++)
