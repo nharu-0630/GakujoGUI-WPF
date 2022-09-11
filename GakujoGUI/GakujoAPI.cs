@@ -1550,9 +1550,9 @@ namespace GakujoGUI
                             }
                         }
                     }
-                    else if (htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]/tr/td") != null && (semesterCode == 0 || semesterCode == 2))
+                    else if (htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]") != null && semesterCode is 0 or 2)
                     {
-                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]tr/td");
+                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]/tr/td");
                         var detailKamokuCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                         var detailClassCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
                         if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
@@ -1561,7 +1561,7 @@ namespace GakujoGUI
                             classTableCell.ClassRoom = ReplaceSpace(htmlNode.InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>")..].Replace("<br>", ""));
                         }
                     }
-                    else if (htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]/tr/td/a") != null && (semesterCode == 1 || semesterCode == 3))
+                    else if (htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]") != null && semesterCode is 1 or 3)
                     {
                         htmlNode = htmlDocument.DocumentNode.SelectSingleNode($"/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]/tr/td");
                         var detailKamokuCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);

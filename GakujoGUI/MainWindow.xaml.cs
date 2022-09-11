@@ -200,9 +200,9 @@ namespace GakujoGUI
             gakujoApi.GetLotteryRegistrationsResult();
             gakujoApi.GetGeneralRegistrations();
             //抽選履修登録
-            //gakujoApi.SetLotteryRegistrations(new List<LotteryRegistrationEntry>() { new LotteryRegistrationEntry() { SubjectsName = "心理と行動Ａ", ClassName = "情工１", AspirationOrder = 1 } });
+            //gakujoApi.SetLotteryRegistrations(new() { new() { SubjectsName = "心理と行動Ａ", ClassName = "情工１", AspirationOrder = 1 } });
             //一般履修登録
-            //gakujoApi.SetGeneralRegistrations(new List<GeneralRegistrationEntry>() { new GeneralRegistrationEntry() { WeekdayPeriod = "木1･2", SubjectsName = "上級英語Ｄ", ClassName = "情工（Ｍ）１" } }, true);
+            //gakujoApi.SetGeneralRegistrations(new() { new() { WeekdayPeriod = "木1･2", SubjectsName = "上級英語Ｄ", ClassName = "情工（Ｍ）１" } }, true);
             gakujoApi.GetClassResults(out var diffClassResults);
             Dispatcher.Invoke(() =>
             {
