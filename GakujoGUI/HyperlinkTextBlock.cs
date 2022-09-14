@@ -42,7 +42,7 @@ namespace HyperlinkTextBlock
             var i = 0;
             while ((i = message.IndexOf("\r\n", i, StringComparison.Ordinal)) >= 0)
             {
-                newLine.Add(i - (newLine.Count * 2));
+                newLine.Add(i - newLine.Count * 2);
                 i += 2;
             }
             newLine.Sort();

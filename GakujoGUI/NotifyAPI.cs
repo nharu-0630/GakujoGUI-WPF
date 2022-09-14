@@ -21,7 +21,6 @@ namespace GakujoGUI
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private Tokens tokens = new();
         private TodoistClient? todoistClient;
         private DiscordSocketClient? discordSocketClient;
         private DateTime todoistUpdateDateTime;
@@ -39,7 +38,7 @@ namespace GakujoGUI
             }
             set => todoistResources = value;
         }
-        public Tokens Tokens { get => tokens; set => tokens = value; }
+        public Tokens Tokens { get; set; } = new();
 
         private static string GetJsonPath(string value)
         {
