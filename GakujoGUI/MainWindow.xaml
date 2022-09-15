@@ -326,8 +326,8 @@
                             HorizontalAlignment="Stretch" />
                         <ScrollViewer
                             Grid.Column="2"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Vertical">
                                     <Label
@@ -468,8 +468,8 @@
                             HorizontalAlignment="Stretch" />
                         <ScrollViewer
                             Grid.Row="2"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Vertical">
                                     <Label
@@ -621,8 +621,8 @@
                             HorizontalAlignment="Stretch" />
                         <ScrollViewer
                             Grid.Row="2"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Vertical">
                                     <Label
@@ -733,8 +733,8 @@
                             HorizontalAlignment="Stretch" />
                         <ScrollViewer
                             Grid.Column="2"
-                            ScrollViewer.CanContentScroll="True"
-                            ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            CanContentScroll="True"
+                            VerticalScrollBarVisibility="Auto">
                             <DockPanel>
                                 <StackPanel Orientation="Vertical">
                                     <Label
@@ -1327,7 +1327,7 @@
                         NavigationCompleted="SyllabusSearchWebView2_NavigationCompleted"
                         Source="https://syllabus.shizuoka.ac.jp/ext_syllabus/syllabusSearchDirect.do?nologin=on"
                         WebMessageReceived="SyllabusSearchWebView2_WebMessageReceived" />
-                    <wv2:WebView2 Name="SyllabusViewWebView2" Grid.Column="2" />
+                    <wv2:WebView2 Name="SyllabusViewWebView2" Grid.Column="1" />
                 </Grid>
             </TabItem>
             <TabItem Name="SettingsTabItem" Header="設定">
