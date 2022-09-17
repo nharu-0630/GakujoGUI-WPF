@@ -1520,7 +1520,7 @@ namespace GakujoGUI
         public bool AlwaysVisibleTrayIcon { get; set; } = true;
         public int SchoolYear { get; set; } = 2022;
         public int SemesterCode { get; set; } = 1;
-        public string UserAgent { get; set; } = $"Chrome/103.0.5060.66 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
+        public string UserAgent { get; set; } = $"Chrome/105.0.5195.127 {Assembly.GetExecutingAssembly().GetName().Name}/{Assembly.GetExecutingAssembly().GetName().Version}";
         public bool UpdateBetaEnable { get; set; }
         public string BackgroundImagePath { get; set; } = "";
         public int BackgroundImageOpacity { get; set; } = 30;

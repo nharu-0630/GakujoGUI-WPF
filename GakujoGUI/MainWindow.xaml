@@ -1359,7 +1359,7 @@
                         <PasswordBox
                             Name="DiscordTokenPasswordBox"
                             Width="Auto"
-                            Margin="6,0,6,6" />
+                            Margin="6,0" />
                         <Separator Margin="6" />
                         <Label Margin="6" Content="学情設定" />
                         <StackPanel Orientation="Horizontal">
