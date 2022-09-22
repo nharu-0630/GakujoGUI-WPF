@@ -48,13 +48,13 @@ namespace GakujoGUI
         private readonly int semesterCode;
         private readonly string userAgent;
         private string SchoolYearSemesterCodeSuffix => $"_{schoolYear}_{ReplaceSemesterCode(semesterCode)}";
-        private DateTime ReportDateStart => new(int.Parse(schoolYear), semesterCode < 2 ? 4 : 10, 1);
+        private DateTime ReportDateStart => new(int.Parse(schoolYear), semesterCode < 2 ? 3 : 9, 1);
 
         private DateTime ReportDateEnd
         {
             get
             {
-                var dateTime = ReportDateStart.AddMonths(5);
+                var dateTime = ReportDateStart.AddMonths(6);
                 return new(dateTime.Year, dateTime.Month, DateTime.DaysInMonth(dateTime.Year, dateTime.Month));
             }
         }
@@ -96,6 +96,19 @@ namespace GakujoGUI
             var replacedValue = Regex.Replace(value, @"24:(\d\d)$", "00:$1");
             var replacedDateTime = DateTime.Parse(replacedValue);
             return value == replacedValue ? replacedDateTime : replacedDateTime.AddDays(1);
+        }
+
+        private static string ReplaceHtmlMarkdown(string value)
+        {
+            Config config = new()
+            {
+                UnknownTags = Config.UnknownTagsOption.Bypass,
+                GithubFlavored = true,
+                RemoveComments = true,
+                SmartHrefHandling = true,
+            };
+            value = new Converter(config).Convert(value);
+            return Regex.Replace(Regex.Replace(value, @" +", " ").Replace("|\r\n\n \n |", "|\r\n|"), "(?<=[^|])\\r\\n(?=[^|])", "  \r\n");
         }
 
         private static string ReplaceHtmlNewLine(string value) => Regex.Replace(HttpUtility.HtmlDecode(value).Replace("<br>", " \r\n").Trim('\r').Trim('\n'), "[\\r\\n]+", Environment.NewLine, RegexOptions.Multiline).Trim();
@@ -832,7 +845,7 @@ namespace GakujoGUI
             Account.ApacheToken = GetApacheToken(htmlDocument);
             var htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr");
             ClassContacts[indexCount].ContactType = htmlNodes[0].SelectSingleNode("td").InnerText;
-            ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].Content = ReplaceHtmlMarkdown(htmlNodes[2].SelectSingleNode("td").InnerHtml);
             ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlNodes[4].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].ReferenceUrl = ReplaceSpace(htmlNodes[5].SelectSingleNode("td").InnerText);
             ClassContacts[indexCount].Severity = ReplaceSpace(htmlNodes[6].SelectSingleNode("td").InnerText);
