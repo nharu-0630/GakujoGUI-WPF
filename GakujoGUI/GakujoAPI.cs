@@ -845,17 +845,28 @@ namespace GakujoGUI
             Account.ApacheToken = GetApacheToken(htmlDocument);
             var htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div/div/form/div[3]/div/div/div/table").SelectNodes("tr");
             ClassContacts[indexCount].ContactType = htmlNodes[0].SelectSingleNode("td").InnerText;
-            ClassContacts[indexCount].Content = ReplaceHtmlMarkdown(htmlNodes[2].SelectSingleNode("td").InnerHtml);
-            ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlNodes[4].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].ReferenceUrl = ReplaceSpace(htmlNodes[5].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].Severity = ReplaceSpace(htmlNodes[6].SelectSingleNode("td").InnerText);
-            ClassContacts[indexCount].WebReplyRequest = htmlNodes[8].SelectSingleNode("td").InnerText;
-            if (htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div") != null)
+            var offset = 0;
+            if (ClassContacts[indexCount].ContactType == "講義室変更")
+                offset = 2;
+            ClassContacts[indexCount].Content = ReplaceHtmlMarkdown(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml);
+            if (ClassContacts[indexCount].ContactType == "講義室変更")
             {
-                ClassContacts[indexCount].Files = new string[htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div").Count];
-                for (var i = 0; i < htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
+                ClassContacts[indexCount].Content += "\r\n";
+                ClassContacts[indexCount].Content +=
+                    $"\r\n講義室変更日 {ReplaceSpace(htmlNodes[1].SelectSingleNode("td").InnerText)}";
+                ClassContacts[indexCount].Content +=
+                    $"\r\n変更後講義室 {ReplaceSpace(htmlNodes[2].SelectSingleNode("td").InnerText)}";
+            }
+            ClassContacts[indexCount].FileLinkRelease = ReplaceSpace(htmlNodes[4 + offset].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].ReferenceUrl = ReplaceSpace(htmlNodes[5 + offset].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].Severity = ReplaceSpace(htmlNodes[6 + offset].SelectSingleNode("td").InnerText);
+            ClassContacts[indexCount].WebReplyRequest = htmlNodes[8 + offset].SelectSingleNode("td").InnerText;
+            if (htmlNodes[3 + offset].SelectSingleNode("td/div").SelectNodes("div") != null)
+            {
+                ClassContacts[indexCount].Files = new string[htmlNodes[3 + offset].SelectSingleNode("td/div").SelectNodes("div").Count];
+                for (var i = 0; i < htmlNodes[3 + offset].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
-                    var htmlNode = htmlNodes[3].SelectSingleNode("td/div").SelectNodes("div")[i];
+                    var htmlNode = htmlNodes[3 + offset].SelectSingleNode("td/div").SelectNodes("div")[i];
                     var prefix = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 0).Replace("fileDownLoad", "");
                     var no = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
                     httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/fileUploadDownload/fileDownLoad?EXCLUDE_SET=&prefix=" + $"{prefix}&no={no}&EXCLUDE_SET=");
