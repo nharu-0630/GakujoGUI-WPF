@@ -340,9 +340,8 @@
                                         Text="内容"
                                         Visibility="Collapsed" />
                                     <TextBlock
-                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
                                         Margin="12"
-                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
+                                        local:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         Text="{Binding Text, ElementName=ClassContactContentTextBox}"
                                         TextWrapping="Wrap" />
                                     <StackPanel Name="ClassContactFilesStackPanel" />
@@ -482,9 +481,8 @@
                                         Text="説明"
                                         Visibility="Collapsed" />
                                     <TextBlock
-                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
                                         Margin="12"
-                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportDescriptionTextBox}"
+                                        local:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=ReportDescriptionTextBox}"
                                         TextWrapping="Wrap" />
                                     <Separator Margin="6" />
@@ -493,9 +491,8 @@
                                         Text="伝達事項"
                                         Visibility="Collapsed" />
                                     <TextBlock
-                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
                                         Margin="12,6"
-                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
+                                        local:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ReportMessageTextBox}"
                                         Text="{Binding Text, ElementName=ReportMessageTextBox}"
                                         TextWrapping="Wrap" />
                                     <StackPanel Name="ReportFilesStackPanel" />
@@ -635,9 +632,8 @@
                                         Text="説明"
                                         Visibility="Collapsed" />
                                     <TextBlock
-                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
                                         Margin="12"
-                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
+                                        local:HyperlinkTextBlock.Inline="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=QuizDescriptionTextBox}"
                                         TextWrapping="Wrap" />
                                     <StackPanel Name="QuizFilesStackPanel" />
@@ -747,9 +743,8 @@
                                         Text="ファイル説明"
                                         Visibility="Collapsed" />
                                     <TextBlock
-                                        xmlns:link="clr-namespace:HyperlinkTextBlock"
                                         Margin="12"
-                                        link:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
+                                        local:HyperlinkTextBlock.Inline="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         Text="{Binding Text, ElementName=ClassSharedFileDescriptionTextBox}"
                                         TextWrapping="Wrap" />
                                     <StackPanel Name="ClassSharedFilesStackPanel" />

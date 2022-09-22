@@ -10,7 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Navigation;
 
-namespace HyperlinkTextBlock
+namespace GakujoGUI
 {
     public class HyperlinkTextBlock : TextBlock
     {
@@ -21,7 +21,7 @@ namespace HyperlinkTextBlock
                 typeof(HyperlinkTextBlock),
                 new(null, OnInlinePropertyChanged));
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static string? GetInline(TextBlock? textBlock)
         {
@@ -138,7 +138,7 @@ namespace HyperlinkTextBlock
             try
             {
                 Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
-                logger.Info($"Start Process {e.Uri.AbsoluteUri}");
+                Logger.Info($"Start Process {e.Uri.AbsoluteUri}");
                 e.Handled = true;
             }
             catch { }
