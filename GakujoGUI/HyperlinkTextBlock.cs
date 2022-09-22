@@ -19,7 +19,7 @@ namespace HyperlinkTextBlock
                 "Inline",
                 typeof(string),
                 typeof(HyperlinkTextBlock),
-                new PropertyMetadata(null, OnInlinePropertyChanged));
+                new(null, OnInlinePropertyChanged));
 
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -36,7 +36,8 @@ namespace HyperlinkTextBlock
         private static void OnInlinePropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
             var textBlock = (dependencyObject as TextBlock)!;
-            if (e.NewValue is not string message) { return; }
+            if (e.NewValue is not string message)
+                return;
             message = message.TrimEnd('\n').TrimEnd('\r');
             List<int> newLine = new();
             var i = 0;
