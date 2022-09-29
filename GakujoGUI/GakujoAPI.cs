@@ -302,6 +302,8 @@ namespace GakujoGUI
                 return false;
             }
             cookieContainer = new();
+            if (Account.AccessEnvironmentKey != "" && Account.AccessEnvironmentValue != "")
+                cookieContainer.Add(new Cookie(Account.AccessEnvironmentKey, Account.AccessEnvironmentValue) { Domain = "gakujo.shizuoka.ac.jp" });
             httpClientHandler = new() { AutomaticDecompression = ~DecompressionMethods.None, CookieContainer = cookieContainer };
             httpClient = new(httpClientHandler);
             httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/portal/");
@@ -352,22 +354,28 @@ namespace GakujoGUI
             Logger.Info("POST https://gakujo.shizuoka.ac.jp/Shibboleth.sso/SAML2/POST");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@id=\"AdaptiveAuthentication\"]/form/div/input").Attributes["value"].Value;
-            httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
-            httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&accessEnvName=GakujoGUI&newAccessKey=");
-            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
-            httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            Logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
-            Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            if (cookieContainer.GetAllCookies().Any(x => x.Name.Contains("Access-Environment-Cookie")))
+            if (htmlDocument.DocumentNode.SelectSingleNode("//*[@id=\"AdaptiveAuthentication\"]/form/div/input") != null)
             {
-                Logger.Info(cookieContainer.GetAllCookies()
-                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Domain);
-                Account.AccessEnvironmentKey = cookieContainer.GetAllCookies()
-                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Name;
-                Account.AccessEnvironmentValue = cookieContainer.GetAllCookies()
-                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Value;
+                Account.ApacheToken = htmlDocument.DocumentNode
+                    .SelectSingleNode("//*[@id=\"AdaptiveAuthentication\"]/form/div/input").Attributes["value"].Value;
+                httpRequestMessage = new(new("POST"),
+                    "https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
+                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+                httpRequestMessage.Content =
+                    new StringContent(
+                        $"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&accessEnvName=GakujoGUI {Guid.NewGuid().ToString("N")[..8]}&newAccessKey=");
+                httpRequestMessage.Content.Headers.ContentType =
+                    MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
+                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                Logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
+                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                if (cookieContainer.GetAllCookies().Any(x => x.Name.Contains("Access-Environment-Cookie")))
+                {
+                    Account.AccessEnvironmentKey = cookieContainer.GetAllCookies()
+                        .First(x => x.Name.Contains("Access-Environment-Cookie")).Name;
+                    Account.AccessEnvironmentValue = cookieContainer.GetAllCookies()
+                        .First(x => x.Name.Contains("Access-Environment-Cookie")).Value;
+                }
             }
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
