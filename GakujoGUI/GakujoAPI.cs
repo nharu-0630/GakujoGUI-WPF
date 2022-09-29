@@ -355,11 +355,20 @@ namespace GakujoGUI
             Account.ApacheToken = htmlDocument.DocumentNode.SelectSingleNode("//*[@id=\"AdaptiveAuthentication\"]/form/div/input").Attributes["value"].Value;
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&accessEnvName=GakujoGUI&checkBox=on&newAccessKey=");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&accessEnvName=GakujoGUI&newAccessKey=");
             httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             Logger.Info("POST https://gakujo.shizuoka.ac.jp/portal/common/accessEnvironmentRegist/goHome/");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (cookieContainer.GetAllCookies().Any(x => x.Name.Contains("Access-Environment-Cookie")))
+            {
+                Logger.Info(cookieContainer.GetAllCookies()
+                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Domain);
+                Account.AccessEnvironmentKey = cookieContainer.GetAllCookies()
+                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Name;
+                Account.AccessEnvironmentValue = cookieContainer.GetAllCookies()
+                    .First(x => x.Name.Contains("Access-Environment-Cookie")).Value;
+            }
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/home/home/initialize");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent("EXCLUDE_SET=");
@@ -1827,6 +1836,8 @@ namespace GakujoGUI
         public string StudentName { get; set; } = "";
         public string StudentCode { get; set; } = "";
         public string ApacheToken { get; set; } = "";
+        public string AccessEnvironmentKey { get; set; } = "";
+        public string AccessEnvironmentValue { get; set; } = "";
 
         public DateTime LoginDateTime { get; set; }
         public DateTime ReportDateTime { get; set; }
