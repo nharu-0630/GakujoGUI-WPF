@@ -873,6 +873,11 @@ namespace GakujoGUI
             if (ClassContacts[indexCount].ContactType == "講義室変更")
                 offset = 2;
             ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2 + offset].SelectSingleNode("td").InnerText);
+            //foreach (Match match in Regex.Matches(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
+            //{
+            //    if (!ClassContacts[indexCount].Content.Contains(match.Value))
+            //        ClassContacts[indexCount].Content += $"\r\n{match.Value}";
+            //}
             if (ClassContacts[indexCount].ContactType == "講義室変更")
             {
                 ClassContacts[indexCount].Content += "\r\n";
