@@ -395,7 +395,7 @@ namespace GakujoGUI
         {
             if (ClassContactsDataGrid.SelectedIndex != -1)
             {
-                if (!((ClassContact)ClassContactsDataGrid.SelectedItem).IsAcquired)
+                if (!((ClassContact)ClassContactsDataGrid.SelectedItem).IsAcquired || Keyboard.Modifiers == ModifierKeys.Shift)
                 {
                     if (MessageBox.Show("授業連絡の詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -470,7 +470,7 @@ namespace GakujoGUI
         {
             if (ReportsDataGrid.SelectedIndex != -1)
             {
-                if (!((Report)ReportsDataGrid.SelectedItem).IsAcquired)
+                if (!((Report)ReportsDataGrid.SelectedItem).IsAcquired || Keyboard.Modifiers == ModifierKeys.Shift)
                 {
                     if (MessageBox.Show("レポートの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -546,7 +546,7 @@ namespace GakujoGUI
         {
             if (QuizzesDataGrid.SelectedIndex != -1)
             {
-                if (!((Quiz)QuizzesDataGrid.SelectedItem).IsAcquired)
+                if (!((Quiz)QuizzesDataGrid.SelectedItem).IsAcquired || Keyboard.Modifiers == ModifierKeys.Shift)
                 {
                     if (MessageBox.Show("小テストの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
@@ -614,7 +614,7 @@ namespace GakujoGUI
         {
             if (ClassSharedFilesDataGrid.SelectedIndex != -1)
             {
-                if (!((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).IsAcquired)
+                if (!((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).IsAcquired || Keyboard.Modifiers == ModifierKeys.Shift)
                 {
                     if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {

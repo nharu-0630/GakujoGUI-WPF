@@ -872,7 +872,7 @@ namespace GakujoGUI
             var offset = 0;
             if (ClassContacts[indexCount].ContactType == "講義室変更")
                 offset = 2;
-            ClassContacts[indexCount].Content = ReplaceHtmlMarkdown(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml);
+            ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2 + offset].SelectSingleNode("td").InnerText);
             if (ClassContacts[indexCount].ContactType == "講義室変更")
             {
                 ClassContacts[indexCount].Content += "\r\n";
@@ -1713,35 +1713,59 @@ namespace GakujoGUI
                             classTableCell = new();
                         else
                         {
-                            var detailKamokuCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
-                            var detailClassCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
-                            if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                            if (htmlNode.SelectSingleNode("a") != null)
                             {
-                                classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                                classTableCell.ClassRoom = ReplaceSpace(htmlNode.InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..].Replace("<br>", ""));
+                                var detailKamokuCode =
+                                    ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                                var detailClassCode =
+                                    ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
+                                if (classTableCell.KamokuCode != detailKamokuCode ||
+                                    classTableCell.ClassCode != detailClassCode)
+                                {
+                                    classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                                    classTableCell.ClassRoom = ReplaceSpace(htmlNode
+                                        .InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..]
+                                        .Replace("<br>", ""));
+                                }
                             }
                         }
                     }
                     else if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]") != null && semesterCode is 0 or 2)
                     {
                         htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]/tr/td");
-                        var detailKamokuCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
-                        var detailClassCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
-                        if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                        if (htmlNode.SelectSingleNode("a") != null)
                         {
-                            classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                            classTableCell.ClassRoom = ReplaceSpace(htmlNode.InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..].Replace("<br>", ""));
+                            var detailKamokuCode =
+                                ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                            var detailClassCode =
+                                ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
+                            if (classTableCell.KamokuCode != detailKamokuCode ||
+                                classTableCell.ClassCode != detailClassCode)
+                            {
+                                classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                                classTableCell.ClassRoom = ReplaceSpace(htmlNode
+                                    .InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..]
+                                    .Replace("<br>", ""));
+                            }
                         }
                     }
                     else if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]") != null && semesterCode is 1 or 3)
                     {
                         htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]/tr/td");
-                        var detailKamokuCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
-                        var detailClassCode = ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
-                        if (classTableCell.KamokuCode != detailKamokuCode || classTableCell.ClassCode != detailClassCode)
+                        if (htmlNode.SelectSingleNode("a") != null)
                         {
-                            classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
-                            classTableCell.ClassRoom = ReplaceSpace(htmlNode.InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..].Replace("<br>", ""));
+                            var detailKamokuCode =
+                                ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 1);
+                            var detailClassCode =
+                                ReplaceJsArgs(htmlNode.SelectSingleNode("a").Attributes["onclick"].Value, 2);
+                            if (classTableCell.KamokuCode != detailKamokuCode ||
+                                classTableCell.ClassCode != detailClassCode)
+                            {
+                                classTableCell = GetClassTableCell(detailKamokuCode, detailClassCode);
+                                classTableCell.ClassRoom = ReplaceSpace(htmlNode
+                                    .InnerHtml[htmlNode.InnerHtml.LastIndexOf("<br>", StringComparison.Ordinal)..]
+                                    .Replace("<br>", ""));
+                            }
                         }
                     }
                     ClassTables[i][j] = classTableCell;
