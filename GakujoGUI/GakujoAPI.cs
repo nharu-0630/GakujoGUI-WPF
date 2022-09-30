@@ -835,6 +835,16 @@ namespace GakujoGUI
             SaveJsons();
         }
 
+        private static string GetEmbedLinks(string value)
+        {
+            HtmlDocument htmlDocument = new();
+            htmlDocument.LoadHtml(value);
+            if (htmlDocument.DocumentNode.SelectNodes("//a").Count == 0)
+                return "";
+            var links = htmlDocument.DocumentNode.SelectNodes("//a").Aggregate("", (current, linkNode) => current + $"\r\n{linkNode.InnerText} {linkNode.Attributes["href"].Value}");
+            return links;
+        }
+
         public void GetClassContact(int indexCount)
         {
             Logger.Info($"Start Get ClassContact indexCount={indexCount}.");
@@ -873,11 +883,8 @@ namespace GakujoGUI
             if (ClassContacts[indexCount].ContactType == "講義室変更")
                 offset = 2;
             ClassContacts[indexCount].Content = ReplaceHtmlNewLine(htmlNodes[2 + offset].SelectSingleNode("td").InnerText);
-            //foreach (Match match in Regex.Matches(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml, @"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)"))
-            //{
-            //    if (!ClassContacts[indexCount].Content.Contains(match.Value))
-            //        ClassContacts[indexCount].Content += $"\r\n{match.Value}";
-            //}
+            if (GetEmbedLinks(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml) != "")
+                ClassContacts[indexCount].Content += $"\r\n\r\n埋込リンク{GetEmbedLinks(htmlNodes[2 + offset].SelectSingleNode("td").InnerHtml)}";
             if (ClassContacts[indexCount].ContactType == "講義室変更")
             {
                 ClassContacts[indexCount].Content += "\r\n";
