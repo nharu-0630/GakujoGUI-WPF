@@ -839,7 +839,7 @@ namespace GakujoGUI
         {
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(value);
-            if (htmlDocument.DocumentNode.SelectNodes("//a").Count == 0)
+            if (htmlDocument.DocumentNode.SelectNodes("//a") == null)
                 return "";
             var links = htmlDocument.DocumentNode.SelectNodes("//a").Aggregate("", (current, linkNode) => current + $"\r\n{linkNode.InnerText} {linkNode.Attributes["href"].Value}");
             return links;
