@@ -861,6 +861,17 @@ namespace GakujoGUI
                 SyllabusClassTablesTabItem.Visibility = Visibility.Collapsed;
         }
 
+        private void ClassTableCellControl_OnClassSharedFileMenuItemClick(object sender, RoutedEventArgs e)
+        {
+            var classTableCell = GetSelectedClassTableCell();
+            if (classTableCell == null)
+                return;
+            ClassSharedFilesSearchAutoSuggestBox.Text = classTableCell.SubjectsName;
+            RefreshClassSharedFilesDataGrid();
+            e.Handled = true;
+            ClassSharedFilesTabItem.IsSelected = true;
+        }
+
         private void ClassTableCellControl_SyllabusMenuItemClick(object sender, RoutedEventArgs e)
         {
             var classTableCell = GetSelectedClassTableCell();

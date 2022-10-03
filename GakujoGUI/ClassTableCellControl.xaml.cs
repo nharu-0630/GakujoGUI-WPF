@@ -22,6 +22,7 @@ namespace GakujoGUI
         public static readonly RoutedEvent ClassContactButtonClickEvent = EventManager.RegisterRoutedEvent("ClassContactButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent ReportButtonClickEvent = EventManager.RegisterRoutedEvent("ReportButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent QuizButtonClickEvent = EventManager.RegisterRoutedEvent("QuizButtonClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
+        public static readonly RoutedEvent ClassSharedFileMenuItemClickEvent = EventManager.RegisterRoutedEvent("ClassSharedFileMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent SyllabusMenuItemClickEvent = EventManager.RegisterRoutedEvent("SyllabusMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
         public static readonly RoutedEvent VideoMenuItemClickEvent = EventManager.RegisterRoutedEvent("VideoMenuItemClick", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(ClassTableCellControl));
 
@@ -43,6 +44,12 @@ namespace GakujoGUI
         {
             add => AddHandler(QuizButtonClickEvent, value);
             remove => RemoveHandler(QuizButtonClickEvent, value);
+        }
+
+        public event RoutedEventHandler ClassSharedFileMenuItemClick
+        {
+            add => AddHandler(ClassSharedFileMenuItemClickEvent, value);
+            remove => RemoveHandler(ClassSharedFileMenuItemClickEvent, value);
         }
 
         public event RoutedEventHandler SyllabusMenuItemClick
@@ -72,6 +79,12 @@ namespace GakujoGUI
         private void QuizButton_Click(object sender, RoutedEventArgs e)
         {
             RoutedEventArgs routedEventArgs = new(QuizButtonClickEvent);
+            RaiseEvent(routedEventArgs);
+        }
+
+        private void ClassSharedFileMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            RoutedEventArgs routedEventArgs = new(ClassSharedFileMenuItemClickEvent);
             RaiseEvent(routedEventArgs);
         }
 

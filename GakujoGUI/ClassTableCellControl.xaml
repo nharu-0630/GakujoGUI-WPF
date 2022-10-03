@@ -60,6 +60,10 @@
         <StackPanel.ContextMenu>
             <ContextMenu>
                 <MenuItem
+                    Name="ClassSharedFileMenuItem"
+                    Click="ClassSharedFileMenuItem_Click"
+                    Header="授業共有ファイル" />
+                <MenuItem
                     Name="SyllabusMenuItem"
                     Click="SyllabusMenuItem_Click"
                     Header="シラバス" />
