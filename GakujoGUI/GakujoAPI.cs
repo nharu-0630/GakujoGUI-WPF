@@ -930,8 +930,7 @@ namespace GakujoGUI
         public void GetClassSharedFiles(out int diffCount, int maxCount = 10)
         {
             Logger.Info("Start Get ClassSharedFiles.");
-            var lastClassSharedFile = ClassSharedFiles.Count > 0 ? ClassSharedFiles[0] : null;
-            List<ClassSharedFile> diffClassSharedFiles = new();
+            Dictionary<int, ClassSharedFile> diffClassSharedFiles = new();
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&headTitle=授業共有ファイル&menuCode=A08&nextPath=/classfile/classFile/initialize");
@@ -972,25 +971,20 @@ namespace GakujoGUI
                     Size = htmlNodes[3].InnerText,
                     UpdateDateTime = DateTime.Parse(htmlNodes[4].InnerText)
                 };
-                if (classSharedFile.Equals(lastClassSharedFile))
-                {
-                    Logger.Info("Break by equals last ClassSharedFile.");
-                    break;
-                }
-                diffClassSharedFiles.Add(classSharedFile);
+                if (!ClassSharedFiles.Contains(classSharedFile))
+                    diffClassSharedFiles.Add(i, classSharedFile);
             }
             diffCount = diffClassSharedFiles.Count;
             Logger.Info($"Found {diffCount} new ClassSharedFiles.");
-            ClassSharedFiles.InsertRange(0, diffClassSharedFiles);
-            maxCount = maxCount == -1 ? diffCount : maxCount;
-            for (var i = 0; i < Math.Min(diffCount, maxCount); i++)
-                GetClassSharedFile(i);
+            foreach (var diffClassSharedFile in diffClassSharedFiles)
+                GetClassSharedFile(diffClassSharedFile.Key, diffClassSharedFile.Value);
+            ClassSharedFiles.InsertRange(0, diffClassSharedFiles.Values);
             Account.ClassSharedFileDateTime = DateTime.Now;
             Logger.Info("End Get ClassSharedFiles.");
             SaveJsons();
         }
 
-        public void GetClassSharedFile(int indexCount)
+        public void GetClassSharedFile(int indexCount, ClassSharedFile classSharedFile)
         {
             Logger.Info($"Start Get ClassSharedFile indexCount={indexCount}.");
             httpRequestMessage = new(new("POST"), "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
@@ -1021,11 +1015,11 @@ namespace GakujoGUI
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
             var htmlNodes = htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[2]/div[1]/div/form[2]/div[2]/div[2]/div/div/div/table[1]").SelectNodes("tr");
-            ClassSharedFiles[indexCount].Description = HttpUtility.HtmlDecode(htmlNodes[2].SelectSingleNode("td").InnerText);
-            ClassSharedFiles[indexCount].PublicPeriod = ReplaceSpace(htmlNodes[3].SelectSingleNode("td").InnerText);
+            classSharedFile.Description = HttpUtility.HtmlDecode(htmlNodes[2].SelectSingleNode("td").InnerText);
+            classSharedFile.PublicPeriod = ReplaceSpace(htmlNodes[3].SelectSingleNode("td").InnerText);
             if (htmlNodes[1].SelectSingleNode("td/div") != null)
             {
-                ClassSharedFiles[indexCount].Files = new string[htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div").Count];
+                classSharedFile.Files = new string[htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div").Count];
                 for (var i = 0; i < htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div").Count; i++)
                 {
                     var htmlNode = htmlNodes[1].SelectSingleNode("td/div").SelectNodes("div")[i];
@@ -1046,7 +1040,7 @@ namespace GakujoGUI
                         stream.Seek(0, SeekOrigin.Begin);
                         stream.CopyTo(fileStream);
                     }
-                    ClassSharedFiles[indexCount].Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
+                    classSharedFile.Files[i] = Path.Combine(downloadPath, htmlNode.SelectSingleNode("a").InnerText.Trim());
                 }
             }
             Logger.Info($"End Get ClassSharedFile indexCount={indexCount}.");
@@ -2026,7 +2020,7 @@ namespace GakujoGUI
         {
             if (obj == null || GetType() != obj.GetType()) { return false; }
             var objClassSharedFile = (ClassSharedFile)obj;
-            return Subjects == objClassSharedFile.Subjects && Title == objClassSharedFile.Title && UpdateDateTime == objClassSharedFile.UpdateDateTime;
+            return Subjects == objClassSharedFile.Subjects && Title == objClassSharedFile.Title;
         }
 
         public override int GetHashCode() => Subjects.GetHashCode() ^ Title.GetHashCode() ^ UpdateDateTime.GetHashCode();

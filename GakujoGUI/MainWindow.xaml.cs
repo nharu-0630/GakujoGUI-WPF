@@ -621,7 +621,7 @@ namespace GakujoGUI
                         if (!LoginStatusCheck())
                             return;
                         var index = ClassSharedFilesDataGrid.SelectedIndex;
-                        Task.Run(() => gakujoApi.GetClassSharedFile(index));
+                        Task.Run(() => gakujoApi.GetClassSharedFile(index, (ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem));
                     }
                 }
                 ClassSharedFileUpdateDateTimeLabel.Content = ((ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem).UpdateDateTime.ToString("yyyy/MM/dd HH:mm");
