@@ -1785,31 +1785,56 @@ namespace GakujoGUI
 
         private ClassTableCell GetClassTableCell(string detailKamokuCode, string detailClassCode)
         {
-            Logger.Info($"Start Get ClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
+            Logger.Info(
+                $"Start Get ClassTableCell detailKamokuCode={detailKamokuCode}, detailClassCode={detailClassCode}.");
             ClassTableCell classTableCell = new();
-            httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/kyoumu/detailKamoku.do?detailKamokuCode={detailKamokuCode}&detailClassCode={detailClassCode}&gamen=jikanwari");
+            httpRequestMessage = new(new("GET"),
+                $"https://gakujo.shizuoka.ac.jp/kyoumu/detailKamoku.do?detailKamokuCode={detailKamokuCode}&detailClassCode={detailClassCode}&gamen=jikanwari");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            Logger.Info($"GET https://gakujo.shizuoka.ac.jp/kyoumu/detailKamoku.do?detailKamokuCode={detailKamokuCode}&detailClassCode={detailClassCode}&gamen=jikanwari");
+            Logger.Info(
+                $"GET https://gakujo.shizuoka.ac.jp/kyoumu/detailKamoku.do?detailKamokuCode={detailKamokuCode}&detailClassCode={detailClassCode}&gamen=jikanwari");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             HtmlDocument htmlDocument = new();
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
-            classTableCell.SubjectsName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目名\")]/following-sibling::td").InnerText);
-            classTableCell.SubjectsId = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目番号\")]/following-sibling::td").InnerText);
-            classTableCell.ClassName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"クラス名\")]/following-sibling::td").InnerText);
-            classTableCell.TeacherName = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText);
-            classTableCell.SubjectsSection = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText);
-            classTableCell.SelectionSection = ReplaceSpace(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText);
-            classTableCell.Credit = int.Parse(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "").Replace("\t", "").Replace("単位", ""));
+            classTableCell.SubjectsName = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"科目名\")]/following-sibling::td").InnerText);
+            classTableCell.SubjectsId = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"科目番号\")]/following-sibling::td").InnerText);
+            classTableCell.ClassName = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"クラス名\")]/following-sibling::td").InnerText);
+            classTableCell.TeacherName = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"担当教員\")]/following-sibling::td").InnerText);
+            classTableCell.SubjectsSection = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"科目区分\")]/following-sibling::td").InnerText);
+            classTableCell.SelectionSection = ReplaceSpace(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"必修選択区分\")]/following-sibling::td").InnerText);
+            classTableCell.Credit = int.Parse(htmlDocument.DocumentNode
+                .SelectSingleNode("//td[contains(text(), \"単位数\")]/following-sibling::td").InnerText.Replace("\n", "")
+                .Replace("\t", "").Replace("単位", ""));
             classTableCell.KamokuCode = detailKamokuCode;
             classTableCell.ClassCode = detailClassCode;
-            Logger.Info($"Start Get Syllabus schoolYear={schoolYear}, subjectCD={classTableCell.SubjectsId}, classCD={classTableCell.ClassCode}.");
-            httpRequestMessage = new(new("GET"), $"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do?schoolYear={schoolYear}&subjectCD={classTableCell.SubjectsId}&classCD={classTableCell.ClassCode}");
+            Logger.Info(
+                $"Start Get Syllabus schoolYear={schoolYear}, subjectCD={classTableCell.SubjectsId}, classCD={classTableCell.ClassCode}.");
+            httpRequestMessage = new(new("GET"),
+                $"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do?schoolYear={schoolYear}&subjectCD={classTableCell.SubjectsId}&classCD={classTableCell.ClassCode}");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
             Logger.Info($"GET https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusSearch.do?schoolYear={schoolYear}&subjectCD={classTableCell.SubjectsId}&classCD={classTableCell.ClassCode}");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            if (htmlDocument.DocumentNode.SelectSingleNode("//td[contains(text(), \"シラバスの詳細は以下となります。\")]") == null)
+            {
+                var subjectId = Regex.Match(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(@onclick, \"dbLinkClick\")]").Attributes["onclick"].Value, "(?<=subjectID=)\\d*").Value;
+                var formatCd = Regex.Match(htmlDocument.DocumentNode.SelectSingleNode("//td[contains(@onclick, \"dbLinkClick\")]").Attributes["onclick"].Value, "(?<=formatCD=)\\d*").Value;
+                httpRequestMessage = new(new("GET"),
+                    $"https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusDetailEdit.do?subjectID={subjectId}&formatCD={formatCd}&rowIndex=0&jikanwariSchoolYear={schoolYear}");
+                httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
+                httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
+                Logger.Info($"GET https://gakujo.shizuoka.ac.jp/syllabus2/rishuuSyllabusDetailEdit.do?subjectID={subjectId}&formatCD={formatCd}&rowIndex=0&jikanwariSchoolYear={schoolYear}");
+                Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
+                htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
+            }
             classTableCell.Syllabus.SubjectsName = GetSyllabusValue(htmlDocument, "授業科目名");
             classTableCell.Syllabus.TeacherName = GetSyllabusValue(htmlDocument, "担当教員名");
             classTableCell.Syllabus.Affiliation = GetSyllabusValue(htmlDocument, "所属等");
