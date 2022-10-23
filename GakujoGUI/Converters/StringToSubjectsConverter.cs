@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Windows.Data;
 
 namespace GakujoGUI.Converters
@@ -21,8 +20,7 @@ namespace GakujoGUI.Converters
             var isString = true;
             try { stringValue = (string)value; }
             catch { isString = false; }
-            if (!isString) { return NullContent; }
-            return Regex.Replace(stringValue, "（.*）(前|後)期.*", "");
+            return !isString ? NullContent : GakujoApi.ReplaceSubjectsShort(stringValue);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

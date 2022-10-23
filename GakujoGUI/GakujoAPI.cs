@@ -98,7 +98,7 @@ namespace GakujoGUI
             return value == replacedValue ? replacedDateTime : replacedDateTime.AddDays(1);
         }
 
-        private static string ReplaceHtmlMarkdown(string value)
+        public static string ReplaceHtmlMarkdown(string value)
         {
             Config config = new()
             {
@@ -134,7 +134,10 @@ namespace GakujoGUI
 
         private static string ReplacePeriod(int index) => new[] { "1･2", "3･4", "5･6", "7･8", "9･10", "11･12", "13･14" }[index];
 
+        public static string ReplaceSubjectsShort(string value) => Regex.Replace(value, "（.*）(前|後)期.*", "");
+
         private static string GetApacheToken(HtmlDocument htmlDocument) => htmlDocument.DocumentNode.SelectSingleNode("/html/body/div[1]/form[1]/div/input").Attributes["value"].Value;
+
 
         public GakujoApi(string schoolYear, int semesterCode, string userAgent)
         {
@@ -1915,7 +1918,6 @@ namespace GakujoGUI
         public DateTime ClassResultDateTime { get; set; }
     }
 
-
     public class News
     {
         public int Index { get; set; }
@@ -1924,8 +1926,6 @@ namespace GakujoGUI
         public string Title { get; set; } = "";
         public override string ToString() => $"[{Type}] {DateTime:yyyy/MM/dd} {Title}";
     }
-
-
 
     public class Report
     {
@@ -1949,9 +1949,9 @@ namespace GakujoGUI
         public bool IsSubmit => SubmittedDateTime != new DateTime();
         public bool IsSubmittable => Status == "受付中" && SubmittedDateTime == new DateTime();
 
-        public override string ToString() => $"[{Status}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        public override string ToString() => $"[{Status}] {GakujoApi.ReplaceSubjectsShort(Subjects)} {Title} -> {EndDateTime}";
 
-        public string ToShortString() => $"{Subjects.Split(' ')[0]} {Title}";
+        public string ToShortString() => $"{GakujoApi.ReplaceSubjectsShort(Subjects)} {Title}";
 
         public override bool Equals(object? obj)
         {
@@ -1986,9 +1986,9 @@ namespace GakujoGUI
         public bool IsSubmit => SubmissionStatus != "未提出";
         public bool IsSubmittable => Status == "受付中" && SubmissionStatus == "未提出";
 
-        public override string ToString() => $"[{SubmissionStatus}] {Subjects.Split(' ')[0]} {Title} -> {EndDateTime}";
+        public override string ToString() => $"[{SubmissionStatus}] {GakujoApi.ReplaceSubjectsShort(Subjects)} {Title} -> {EndDateTime}";
 
-        public string ToShortString() => $"{Subjects.Split(' ')[0]} {Title}";
+        public string ToShortString() => $"{GakujoApi.ReplaceSubjectsShort(Subjects)} {Title}";
 
         public override bool Equals(object? obj)
         {
@@ -2016,7 +2016,7 @@ namespace GakujoGUI
         public string WebReplyRequest { get; set; } = "";
         public bool IsAcquired => Content != "";
 
-        public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {ContactDateTime.ToShortDateString()}";
+        public override string ToString() => $"{GakujoApi.ReplaceSubjectsShort(Subjects)} {Title} {ContactDateTime.ToShortDateString()}";
 
         public override bool Equals(object? obj)
         {
@@ -2039,7 +2039,7 @@ namespace GakujoGUI
         public DateTime UpdateDateTime { get; set; }
         public bool IsAcquired => Files.Length != 0;
 
-        public override string ToString() => $"{Subjects.Split(' ')[0]} {Title} {UpdateDateTime.ToShortDateString()}";
+        public override string ToString() => $"{GakujoApi.ReplaceSubjectsShort(Subjects)} {Title} {UpdateDateTime.ToShortDateString()}";
 
         public override bool Equals(object? obj)
         {
