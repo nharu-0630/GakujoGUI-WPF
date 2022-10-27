@@ -1009,11 +1009,13 @@ namespace GakujoGUI
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);
-            httpRequestMessage = new(new("GET"), "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/showClassFileDetail?EXCLUDE_SET=&org.apache.struts.taglib.html.TOKEN=" + $"{Account.ApacheToken}&selectIndex={indexCount}&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_searchConditionDisp.accordionSearchCondition=false&_scrollTop=0");
+            httpRequestMessage = new(new("POST"), $"https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/showClassFileDetail/{indexCount}");
             httpRequestMessage.Headers.TryAddWithoutValidation("User-Agent", userAgent);
-            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/common/generalPurpose/");
+            httpRequestMessage.Headers.TryAddWithoutValidation("Referer", "https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/selectClassFileList");
+            httpRequestMessage.Content = new StringContent($"org.apache.struts.taglib.html.TOKEN={Account.ApacheToken}&schoolYear={schoolYear}&semesterCode={ReplaceSemesterCode(semesterCode)}&subjectDispCode=&searchKeyWord=&searchScopeTitle=Y&lastUpdateDate=&tbl_classFile_length=-1&linkDetailIndex=0&linkDetailIndex=1&linkDetailIndex=2&linkDetailIndex=3&linkDetailIndex=4&linkDetailIndex=5&linkDetailIndex=6&linkDetailIndex=7&linkDetailIndex=8&linkDetailIndex=9&selectIndex=&prevPageId=backToList&confirmMsg=&_searchConditionDisp.accordionSearchCondition=true&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_scrollTop=0");
+            httpRequestMessage.Content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/x-www-form-urlencoded");
             httpResponseMessage = httpClient.SendAsync(httpRequestMessage).Result;
-            Logger.Info("GET https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/showClassFileDetail?EXCLUDE_SET=&org.apache.struts.taglib.html.TOKEN=" + $"{Account.ApacheToken}&selectIndex={indexCount}&_screenIdentifier=SC_A08_01&_screenInfoDisp=true&_searchConditionDisp.accordionSearchCondition=false&_scrollTop=0");
+            Logger.Info($"POST https://gakujo.shizuoka.ac.jp/portal/classfile/classFile/showClassFileDetail/{indexCount}");
             Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
             htmlDocument.LoadHtml(httpResponseMessage.Content.ReadAsStringAsync().Result);
             Account.ApacheToken = GetApacheToken(htmlDocument);

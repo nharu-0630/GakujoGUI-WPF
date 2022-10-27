@@ -282,7 +282,7 @@ end;
 #define UseWebview
 
 #define MyAppName "GakujoGUI"
-#define MyAppVersion "1.3.8.6"
+#define MyAppVersion "1.3.9.0"
 #define MyAppPublisher "xyzyxJP"
 #define MyAppURL "https://xyzyxjp.github.io/GakujoGUI/"
 #define MyAppExeName "GakujoGUI.exe"
