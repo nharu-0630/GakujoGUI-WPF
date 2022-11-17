@@ -1088,12 +1088,14 @@ namespace GakujoGUI
                         break;
                     case "Report":
                         ReportsSearchAutoSuggestBox.Text = "";
+                        FilterReportsCheckBox.IsChecked = false;
                         RefreshReportsDataGrid();
                         ReportsDataGrid.SelectedIndex = toastArguments.GetInt("Index");
                         ReportsTabItem.IsSelected = true;
                         break;
                     case "Quiz":
                         QuizzesSearchAutoSuggestBox.Text = "";
+                        FilterQuizzesCheckBox.IsChecked = false;
                         RefreshQuizzesDataGrid();
                         QuizzesDataGrid.SelectedIndex = toastArguments.GetInt("Index");
                         QuizzesTabItem.IsSelected = true;
@@ -1183,6 +1185,9 @@ namespace GakujoGUI
         {
             SetVisibility(Visibility.Visible);
             ReportsTabItem.IsSelected = true;
+            ReportsSearchAutoSuggestBox.Text = "";
+            FilterReportsCheckBox.IsChecked = true;
+            RefreshReportsDataGrid();
             logger.Info("Activate MainForm by ReportMenuItem.");
         }
 
@@ -1190,6 +1195,9 @@ namespace GakujoGUI
         {
             SetVisibility(Visibility.Visible);
             QuizzesTabItem.IsSelected = true;
+            QuizzesSearchAutoSuggestBox.Text = "";
+            FilterReportsCheckBox.IsChecked = true;
+            RefreshQuizzesDataGrid();
             logger.Info("Activate MainForm by QuizMenuItem.");
         }
 
