@@ -1743,7 +1743,7 @@ namespace GakujoGUI
                     }
                     else if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]") != null && semesterCode is 0 or 2)
                     {
-                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]/tr/td");
+                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[1]").SelectSingleNode("tr/td");
                         if (htmlNode.SelectSingleNode("a") != null)
                         {
                             var detailKamokuCode =
@@ -1762,7 +1762,7 @@ namespace GakujoGUI
                     }
                     else if (htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]") != null && semesterCode is 1 or 3)
                     {
-                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]/tr/td");
+                        htmlNode = htmlDocument.DocumentNode.SelectSingleNode("/html/body/table[4]/tr/td/table").SelectNodes("tr")[i + 1].SelectNodes("td")[j + 1].SelectSingleNode("table[2]").SelectSingleNode("tr[3]/td");
                         if (htmlNode.SelectSingleNode("a") != null)
                         {
                             var detailKamokuCode =
