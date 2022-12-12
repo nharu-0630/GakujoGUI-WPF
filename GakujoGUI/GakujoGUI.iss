@@ -239,7 +239,7 @@ begin
     Dependency_Add('dotnet60desktop' + Dependency_ArchSuffix + '.exe',
       '/lcid ' + IntToStr(GetUILanguage) + ' /passive /install /quiet /norestart',
       '.NET Desktop Runtime 6.0.4' + Dependency_ArchTitle,
-      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/05b30243-5cd2-48c3-a9bb-6ac83d7d481b/03a25aecb5cf4ba53c8b9cf5194e3c86/windowsdesktop-runtime-6.0.4-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/f13d7b5c-608f-432b-b7ec-8fe84f4030a1/5e06998f9ce23c620b9d6bac2dae6c1d/windowsdesktop-runtime-6.0.4-win-x64.exe'),
+      Dependency_String('https://download.visualstudio.microsoft.com/download/pr/2a392287-fd51-4ee8-9c15-a672ab9bc55d/03d4784b3a543a0fb9ce5677ed13a9a3/windowsdesktop-runtime-6.0.11-win-x86.exe', 'https://download.visualstudio.microsoft.com/download/pr/0192a249-3ec8-4374-a827-e186dd58d55d/cec046575f3eb2247a10ba3d50f5cf6c/windowsdesktop-runtime-6.0.11-win-x64.exe'),
       '', False, False);
   end;
 end;
@@ -259,7 +259,7 @@ begin
     Dependency_Add('MicrosoftEdgeWebView2RuntimeInstaller' + Dependency_ArchSuffix + '.exe',
       '/silent /install',
       'WebView2 Runtime' + Dependency_ArchTitle,
-      Dependency_String('https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/beebacad-9157-418a-b81e-2b49ec58a667/MicrosoftEdgeWebView2RuntimeInstallerX86.exe', 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/664448d2-682d-40a1-ace7-e515a4006ae6/MicrosoftEdgeWebView2RuntimeInstallerX64.exe'),
+      Dependency_String('https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/a6eb8fdb-ffe3-4886-a1a3-14c7f72627a3/MicrosoftEdgeWebView2RuntimeInstallerX86.exe', 'https://msedge.sf.dl.delivery.mp.microsoft.com/filestreamingservice/files/7e516d67-e834-4e72-ae7b-fe18b0ea75bb/MicrosoftEdgeWebView2RuntimeInstallerX64.exe'),
       '', False, False);
   end;
 end;
@@ -282,7 +282,7 @@ end;
 #define UseWebview
 
 #define MyAppName "GakujoGUI"
-#define MyAppVersion "1.3.9.0"
+#define MyAppVersion "1.3.9.1"
 #define MyAppPublisher "xyzyxJP"
 #define MyAppURL "https://xyzyxjp.github.io/GakujoGUI/"
 #define MyAppExeName "GakujoGUI.exe"
