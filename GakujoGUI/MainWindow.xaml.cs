@@ -1,4 +1,5 @@
-﻿using Microsoft.Toolkit.Uwp.Notifications;
+﻿using GakujoGUI.Models;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
 using ModernWpf.Controls;

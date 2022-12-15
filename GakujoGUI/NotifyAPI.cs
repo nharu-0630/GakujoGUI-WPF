@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using GakujoGUI.Models;
 using Newtonsoft.Json;
 using NLog;
 using System;
