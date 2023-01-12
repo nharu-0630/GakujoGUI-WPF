@@ -1,4 +1,5 @@
-﻿using NLog;
+﻿using GakujoGUI.Models;
+using NLog;
 using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;

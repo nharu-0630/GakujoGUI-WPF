@@ -67,8 +67,14 @@ namespace GakujoGUI
             Tokens.TodoistToken = GakujoApi.Protect(todoistToken, null!, DataProtectionScope.CurrentUser);
             Tokens.DiscordChannel = ulong.Parse(discordChannel);
             Tokens.DiscordToken = GakujoApi.Protect(discordToken, null!, DataProtectionScope.CurrentUser);
-            try { File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented)); }
-            catch (Exception exception) { Logger.Error(exception, "Error Save Tokens."); }
+            try
+            {
+                File.WriteAllText(GetJsonPath("Tokens"), JsonConvert.SerializeObject(Tokens, Formatting.Indented));
+            }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Save Tokens.");
+            }
         }
 
         public void Login()
@@ -79,7 +85,10 @@ namespace GakujoGUI
                 TodoistResources = todoistClient!.GetResourcesAsync().Result;
                 Logger.Info("Login Todoist.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Login Todoist."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Login Todoist.");
+            }
             try
             {
                 discordSocketClient = new();
@@ -87,7 +96,10 @@ namespace GakujoGUI
                 discordSocketClient.StartAsync().Wait();
                 Logger.Info("Login Discord.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Login Discord."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Login Discord.");
+            }
         }
 
         #region Todoist
@@ -99,11 +111,12 @@ namespace GakujoGUI
             try
             {
                 if (!ExistsTodoistTask(content, dateTime))
-                {
                     Logger.Info($"Add Todoist task {todoistClient!.Items.AddAsync(new Item(content) { DueDate = new DueDate(dateTime.ToLocalTime()) }).Result}.");
-                }
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Add Todoist task."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Add Todoist task.");
+            }
         }
 
         private void ArchiveTodoistTask(string content, DateTime dateTime)
@@ -116,7 +129,10 @@ namespace GakujoGUI
                     Logger.Info($"Archive Todoist task {x.Id}.");
                 });
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Archive Todoist task."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Archive Todoist task.");
+            }
         }
 
         public void SetTodoistTask(List<Report> reports)
@@ -151,7 +167,10 @@ namespace GakujoGUI
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 Logger.Info("Notify Discord ClassContact.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassContact."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify Discord ClassContact.");
+            }
         }
 
         public void NotifyDiscord(Report report)
@@ -166,7 +185,10 @@ namespace GakujoGUI
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 Logger.Info("Notify Discord Report.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord Report."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify Discord Report.");
+            }
         }
 
         public void NotifyDiscord(Quiz quiz)
@@ -181,7 +203,10 @@ namespace GakujoGUI
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 Logger.Info("Notify Discord Quiz.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord Quiz."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify Discord Quiz.");
+            }
         }
 
         public void NotifyDiscord(ClassSharedFile classSharedFile)
@@ -196,7 +221,10 @@ namespace GakujoGUI
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 Logger.Info("Notify Discord ClassSharedFile.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassSharedFile."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify Discord ClassSharedFile.");
+            }
         }
 
         public void NotifyDiscord(ClassResult classResult, bool hideDetail)
@@ -211,7 +239,10 @@ namespace GakujoGUI
                 (discordSocketClient!.GetChannel(Tokens.DiscordChannel) as IMessageChannel)!.SendMessageAsync(embed: embedBuilder.Build());
                 Logger.Info("Notify Discord ClassResult.");
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify Discord ClassResult."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify Discord ClassResult.");
+            }
         }
 
         #endregion
@@ -233,7 +264,10 @@ namespace GakujoGUI
                 Logger.Trace(httpResponseMessage.Content.ReadAsStringAsync().Result);
                 httpClient.Dispose();
             }
-            catch (Exception exception) { Logger.Error(exception, "Error Notify LINE."); }
+            catch (Exception exception)
+            {
+                Logger.Error(exception, "Error Notify LINE.");
+            }
         }
 
         #endregion

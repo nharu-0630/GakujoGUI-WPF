@@ -1362,7 +1362,7 @@ namespace GakujoGUI
             LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
             {
-                gakujoApi.GetClassSharedFiles(out _, -1);
+                gakujoApi.GetClassSharedFiles(out _);
                 Dispatcher.Invoke(() =>
                 {
                     RefreshClassSharedFilesDataGrid();
