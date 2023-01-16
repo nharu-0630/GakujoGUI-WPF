@@ -1,4 +1,5 @@
-﻿using GakujoGUI.Models;
+﻿using GakujoGUI.ExceptionModel;
+using GakujoGUI.Models;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Win32;
@@ -159,12 +160,19 @@ namespace GakujoGUI
                 LoginButtonFontIcon.Visibility = Visibility.Collapsed;
                 LoginButtonProgressRing.Visibility = Visibility.Visible;
             });
-            if (!gakujoApi.Login(out var networkAvailable))
-                Dispatcher.Invoke(() => MessageBox.Show(networkAvailable ? "自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．" : "自動ログインに失敗しました．インターネット接続に問題があります．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
-            else
+            try
             {
+                gakujoApi.Login();
                 gakujoApi.GetClassTables();
                 notifyApi.Login();
+            }
+            catch (UnableConnectException)
+            {
+                Dispatcher.Invoke(() => MessageBox.Show("自動ログインに失敗しました．インターネット接続に問題があります．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
+            }
+            catch (UnableAuthenticateException)
+            {
+                Dispatcher.Invoke(() => MessageBox.Show("自動ログインに失敗しました．静大IDまたはパスワードが正しくありません．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error));
             }
             Dispatcher.Invoke(() =>
             {
@@ -181,8 +189,6 @@ namespace GakujoGUI
 
         private void Load()
         {
-            if (!gakujoApi.LoginStatus)
-                return;
             Dispatcher.Invoke(() =>
             {
                 LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
@@ -275,13 +281,6 @@ namespace GakujoGUI
             });
         }
 
-        private bool LoginStatusCheck()
-        {
-            if (gakujoApi.LoginStatus)
-                return true;
-            MessageBox.Show("ログイン状態ではありません．", AssemblyName, MessageBoxButton.OK, MessageBoxImage.Error); return false;
-        }
-
         private void StartProcessFile(string path)
         {
             if (!File.Exists(path))
@@ -330,8 +329,6 @@ namespace GakujoGUI
 
         private void LoadClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadClassContactsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -400,8 +397,6 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("授業連絡の詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!LoginStatusCheck())
-                            return;
                         var index = ClassContactsDataGrid.SelectedIndex;
                         Task.Run(() => gakujoApi.GetClassContact(index));
                     }
@@ -430,8 +425,6 @@ namespace GakujoGUI
 
         private void LoadReportsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadReportsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadReportsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -475,8 +468,6 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("レポートの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!LoginStatusCheck())
-                            return;
                         Task.Run(() => gakujoApi.GetReport((Report)ReportsDataGrid.SelectedItem));
                     }
                 }
@@ -506,8 +497,6 @@ namespace GakujoGUI
 
         private void LoadQuizzesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadQuizzesButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadQuizzesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -551,8 +540,6 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("小テストの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!LoginStatusCheck())
-                            return;
                         Task.Run(() => gakujoApi.GetQuiz((Quiz)QuizzesDataGrid.SelectedItem));
                     }
                 }
@@ -580,8 +567,6 @@ namespace GakujoGUI
 
         private void LoadClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadClassSharedFilesButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -619,8 +604,6 @@ namespace GakujoGUI
                 {
                     if (MessageBox.Show("授業共有ファイルの詳細を取得しますか．", AssemblyName, MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
                     {
-                        if (!LoginStatusCheck())
-                            return;
                         var index = ClassSharedFilesDataGrid.SelectedIndex;
                         Task.Run(() => gakujoApi.GetClassSharedFile(index, (ClassSharedFile)ClassSharedFilesDataGrid.SelectedItem));
                     }
@@ -643,8 +626,6 @@ namespace GakujoGUI
 
         private void LoadLotteryRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadLotteryRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadLotteryRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -680,8 +661,6 @@ namespace GakujoGUI
 
         private void LoadLotteryRegistrationsResultButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadLotteryRegistrationsResultButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadLotteryRegistrationsResultButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -717,8 +696,6 @@ namespace GakujoGUI
 
         private void LoadGeneralRegistrationsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadGeneralRegistrationsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadGeneralRegistrationsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -757,8 +734,6 @@ namespace GakujoGUI
 
         private void LoadClassResultsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadClassResultsButtonFontIcon.Visibility = Visibility.Collapsed;
             LoadClassResultsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -915,7 +890,7 @@ namespace GakujoGUI
             {
                 classTableCell.Favorites.AddRange(favorites);
                 logger.Info($"Add {favorites.Count} Favorites to {classTableCell.SubjectsName}");
-                gakujoApi.SaveJsons();
+                gakujoApi.SaveConfigs();
             }
             else
             {
@@ -929,7 +904,7 @@ namespace GakujoGUI
         public void RefreshClassTablesDataGrid(bool saveJsons = false)
         {
             if (saveJsons)
-                gakujoApi.SaveJsons();
+                gakujoApi.SaveConfigs();
             LoginDateTimeLabel.Content = $"最終ログイン\n{gakujoApi.Account.LoginDateTime:yyyy/MM/dd HH:mm:ss}";
             ClassTablesDataGrid.ItemsSource = gakujoApi.ClassTables.GetRange(0, Math.Min(5, gakujoApi.ClassTables.Count));
             ClassTablesDataGrid.Items.Refresh();
@@ -1338,8 +1313,6 @@ namespace GakujoGUI
 
         private void LoadAllClassContactsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadAllClassContactsButtonLabel.Visibility = Visibility.Collapsed;
             LoadAllClassContactsButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
@@ -1356,8 +1329,6 @@ namespace GakujoGUI
 
         private void LoadAllClassSharedFilesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!LoginStatusCheck())
-                return;
             LoadAllClassSharedFilesButtonLabel.Visibility = Visibility.Collapsed;
             LoadAllClassSharedFilesButtonProgressRing.Visibility = Visibility.Visible;
             Task.Run(() =>
