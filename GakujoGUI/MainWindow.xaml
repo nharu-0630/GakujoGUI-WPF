@@ -33,7 +33,6 @@
         <tb:TaskbarIcon
             Name="TaskBarIcon"
             IconSource="Resources/GakujoGUI.ico"
-            ToolTipText="GakujoGUI"
             TrayMouseDoubleClick="TaskBarIcon_TrayMouseDoubleClick"
             Visibility="Hidden">
             <tb:TaskbarIcon.ContextMenu>
